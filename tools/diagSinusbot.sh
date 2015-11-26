@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.3.0
+# Version: 0.3.1
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -49,7 +49,7 @@
 #  v0.3.0: [26.11.2015 19:00]
 #          Release: Beta.
 #          New: Added TS3Client version to output.
-#          New: Added support to retrieving sinusbot version by 'sinusbot --version' parameter (including fallback to old method)
+#          New: Added support to retrieve sinusbot version by 'sinusbot --version' parameter (including fallback to old method)
 #          New: Added SWAP info display
 #          New: Added DISK info display
 #          New: Added KERNEL info display
@@ -60,6 +60,9 @@
 #          New: Added bot running checks (and under which user it is running)
 #          New: Added bot webinterface port checks
 #          Improved: Supported operating system checks.
+#  v0.3.1: [26.11.2015 21:00]
+#          Changed: Using 'lscpu' for determining CPU data now
+#          New: Check for bot autostart script (/etc/init.d/sinusbot)
 #
 ### THANKS TO...
 # all people, who helped developing and testing
@@ -99,7 +102,7 @@ SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/ma
 # script COMMANDS dependencies
 SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df nc stat"
 # script PACKAGES dependencies
-SCRIPT_REQ_PKGS="bc binutils coreutils lsb-release"
+SCRIPT_REQ_PKGS="bc binutils coreutils lsb-release util-linux"
 
 # BOT
 # bot PACKAGES dependencies
@@ -348,7 +351,7 @@ is_command_available()
 is_user_root()
 {
 	if [ $(id -u) -ne 0 ]; then
-		say "error" "This diagnostic script nmust be run as root!"
+		say "error" "This diagnostic script must be run as root!"
 		failed "no root privileges"
 	fi
 }
@@ -742,10 +745,8 @@ SYS_OS_KERNEL=$(uname -srm)
 
 # get CPU info
 say "debug" "Getting processor information..."
-SYS_CPU_INFO=$(cat /proc/cpuinfo)
-SYS_CPU_MODEL=$(trim_spaces "$(echo "$SYS_CPU_INFO" | grep 'model name' | uniq | cut -d":" -f2)")
-SYS_CPU_CORES=$(echo "$SYS_CPU_INFO" | grep "^core id" | sort -u | wc -l)
-SYS_CPU_MHZ=$(trim_spaces "$(echo "$SYS_CPU_INFO" | grep 'cpu MHz' | cut -d: -f2 | awk 'NR==1')")
+SYS_CPU_DATA=$(lscpu | egrep "^(Architecture|CPU\(s\)|Thread\(s\) per core|Core\(s\) per socket:|Socket\(s\)|Model name|CPU MHz|Hypervisor|Virtualization)")
+SYS_CPU_DATA=$(echo "$SYS_CPU_DATA" | sed 's/^/    /')
 
 # get os updatesinfo
 if [ "$NO_OS_UPD_CHECK" == "yes" ]; then
@@ -831,6 +832,15 @@ else
 		BOT_WEB_STATUS="port locally not reachable"
 	fi
 	BOT_WEB_STATUS_EXTENDED="(Port: $BOT_CONFIG_WEB_PORT)"
+fi
+
+# check autostart script for bot
+SYS_BOT_AUTOSTART="unknown"
+SYS_BOT_AUTOSTART_PATH="/etc/init.d/sinusbot"
+if [ -f "$SYS_BOT_AUTOSTART_PATH" ]; then
+	SYS_BOT_AUTOSTART="found [$SYS_BOT_AUTOSTART_PATH]"
+else
+	SYS_BOT_AUTOSTART="not found [$SYS_BOT_AUTOSTART_PATH]"
 fi
 
 # get installed scripts
@@ -928,7 +938,9 @@ SYSTEM INFORMATION
  - OS Updates: $SYS_AVAIL_UPDS $SYS_AVAIL_UPDS_TEXT
  - OS Missing Packages: $SYS_PACKAGES_MISSING
  - OS APT Last Update: $SYS_APT_LASTUPDATE
- - CPU: $SYS_CPU_MODEL ($SYS_CPU_CORES core(s) @ $SYS_CPU_MHZ MHz)
+ - Bot Start Script: $SYS_BOT_AUTOSTART
+ - CPU:
+$SYS_CPU_DATA
  - RAM: $(bytes_format $SYS_RAM_USAGE)/$(bytes_format $SYS_RAM_TOTAL) in use (${SYS_RAM_PERNT}%)
  - SWAP: $(bytes_format $SYS_SWAP_USAGE)/$(bytes_format $SYS_SWAP_TOTAL) in use (${SYS_SWAP_PERNT}%)
  - DISK: $(bytes_format $SYS_DISK_USAGE)/$(bytes_format $SYS_DISK_TOTAL) in use (${SYS_DISK_PERNT}%)
