@@ -63,6 +63,8 @@
 #  v0.3.1: [26.11.2015 21:00]
 #          Changed: Using 'lscpu' for determining CPU data now
 #          New: Check for bot autostart script (/etc/init.d/sinusbot)
+#  v0.3.2: [26.11.2015 21:20]
+#          New: Added advanced permissions checks for the autostart script
 #
 ### THANKS TO...
 # all people, who helped developing and testing
@@ -94,8 +96,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="3.0.0"
-SCRIPT_VERSION_DATE="26.11.2015 19:00"
+SCRIPT_VERSION_NUMBER="0.3.2"
+SCRIPT_VERSION_DATE="26.11.2015 21:20"
 
 SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh"
 
@@ -836,12 +838,22 @@ fi
 
 # check autostart script for bot
 SYS_BOT_AUTOSTART="unknown"
-SYS_BOT_AUTOSTART_PATH="/etc/init.d/sinusbot"
-if [ -f "$SYS_BOT_AUTOSTART_PATH" ]; then
-	SYS_BOT_AUTOSTART="found [$SYS_BOT_AUTOSTART_PATH]"
-else
-	SYS_BOT_AUTOSTART="not found [$SYS_BOT_AUTOSTART_PATH]"
-fi
+SYS_BOT_AUTOSTART_EXTENDED=""
+
+SYS_BOT_AUTOSTART_PATHS="/etc/init.d/sinusbot"
+for SYS_BOT_AUTOSTART_PATH in $SYS_BOT_AUTOSTART_PATHS; do
+	if [ -f "$SYS_BOT_AUTOSTART_PATH" ]; then
+		SYS_BOT_AUTOSTART="found at $SYS_BOT_AUTOSTART_PATH"
+		SYS_BOT_AUTOSTART_PERMS="$(stat "$SYS_BOT_AUTOSTART_PATH" | sed -n '/^Access: (/{s/Access: (\([0-9]\+\).*$/\1/;p}')"
+		if [ $SYS_BOT_AUTOSTART_PERMS -le 0755 ]; then
+			say "warning" "Please set the permissions of your autostart script at '$SYS_BOT_AUTOSTART_PATH' to 0755, using: chmod 0755 $SYS_BOT_AUTOSTART_PATH"
+		fi
+		SYS_BOT_AUTOSTART_EXTENDED="[perms: $SYS_BOT_AUTOSTART_PERMS]"
+		break
+	else
+		SYS_BOT_AUTOSTART="not found"
+	fi
+done
 
 # get installed scripts
 say "debug" "Getting installed bot scripts..."
@@ -938,7 +950,7 @@ SYSTEM INFORMATION
  - OS Updates: $SYS_AVAIL_UPDS $SYS_AVAIL_UPDS_TEXT
  - OS Missing Packages: $SYS_PACKAGES_MISSING
  - OS APT Last Update: $SYS_APT_LASTUPDATE
- - Bot Start Script: $SYS_BOT_AUTOSTART
+ - Bot Start Script: $SYS_BOT_AUTOSTART $SYS_BOT_AUTOSTART_EXTENDED
  - CPU:
 $SYS_CPU_DATA
  - RAM: $(bytes_format $SYS_RAM_USAGE)/$(bytes_format $SYS_RAM_TOTAL) in use (${SYS_RAM_PERNT}%)

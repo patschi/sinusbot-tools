@@ -20,6 +20,7 @@ Any feedback, suggestions, ideas and - ofcourse - pull requests are welcome.
   - RAM usage
   - SWAP usage
   - DISK usage
+  - Bot autostart script checks
  * Bot
   - Status of bot and webinterface
   - Version
@@ -50,12 +51,12 @@ SINUSBOT RELATED
 SYSTEM INFORMATION
  - Operating System: Debian GNU/Linux 8.1 (jessie)
  - Kernel: Linux 3.16.0-4-amd64 x86_64
- - Load Average: 0.45 0.36 0.34
- - Uptime: 58 days, 23 hours, 23 minutes, 6 seconds
+ - Load Average: 0.24 0.32 0.32
+ - Uptime: 58 days, 23 hours, 44 minutes, 32 seconds
  - OS Updates: 0 (well done!)
  - OS Missing Packages: None (v1)
  - OS APT Last Update: 23.08.2015 00:41:12 CEST +02:00:00
- - Bot Start Script: not found [/etc/init.d/sinusbot]
+ - Bot Start Script: found at /etc/init.d/sinusbot [perms: 0644]
  - CPU:
     Architecture:          x86_64
     CPU(s):                2
@@ -66,10 +67,10 @@ SYSTEM INFORMATION
     CPU MHz:               3499.999
     Hypervisor vendor:     VMware
     Virtualization type:   full
- - RAM: 449.90 MB/1000.32 MB in use (44%)
+ - RAM: 449.76 MB/1000.32 MB in use (44%)
  - SWAP: 0 B/871.99 MB in use (0%)
- - DISK: 2.00 GB/15.73 GB in use (12%)
- - Report date: 26.11.2015 20:59:09 CET +01:00:00 (timezone: Europe/Berlin)
+ - DISK: 2.01 GB/15.73 GB in use (12%)
+ - Report date: 26.11.2015 21:13:47 CET +01:00:00 (timezone: Europe/Berlin)
 
 BOT INFORMATION
  - Status: running (PIDs: 23012 23011, User: sinusbot)
