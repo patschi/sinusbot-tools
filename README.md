@@ -8,7 +8,7 @@ Any feedback, suggestions, ideas and - ofcourse - pull requests are welcome.
 
 [diagSinusbot.sh](https://github.com/patschi/sinusbot-tools/blob/master/tools/diagSinusbot.sh) collects some important diagnostic data about the operating system and the bot installation. When finished it returns informative information, ready to copy and paste it in the right section in the sinusbot forum. The main purpose of this script is to solve bugs and any other issues easier and faster with more details about the situation - easily collected with this script.
 
-**Remember**: This script does not send any data to anywhere. It is only collecting some details offline about the system and the bot. Then it generates a text output, which can be copied and pasted in the forum.
+**Remember**: This script does not send any data to anywhere. It is only collecting some details offline about the system and the bot. Then it generates a text output, which can be copied and pasted in the forum. This tool is not officially developed from the Sinusbot team.
 
 **Some information which may be scanned:**
  * System
@@ -33,13 +33,14 @@ Any feedback, suggestions, ideas and - ofcourse - pull requests are welcome.
   - Checks if all required OS packages got installed
 
 **Requirements:**
- * Operating System: Debian, Ubuntu
+ * Operating Systems: Debian, Ubuntu
  * Installed Packages: `bc binutils coreutils lsb-release util-linux`
    - Install: `apt-get install bc binutils coreutils lsb-release util-linux`
    - (Most packages are already pre-installed by default on the most systems.)
 
 **Usage:**
 ```
+$ cd /path/to/sinusbot/ # usually /opt/ts3bot/
 $ wget https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh
 $ bash diagSinusbot.sh
 ```
@@ -50,6 +51,7 @@ $ bash diagSinusbot.sh
 SINUSBOT RELATED
 SYSTEM INFORMATION
  - Operating System: Debian GNU/Linux 8.1 (jessie)
+ - OS x64 check: OK
  - Kernel: Linux 3.16.0-4-amd64 x86_64
  - Load Average: 0.24 0.32 0.32
  - Uptime: 58 days, 23 hours, 44 minutes, 32 seconds
@@ -57,6 +59,7 @@ SYSTEM INFORMATION
  - OS Missing Packages: None (v1)
  - OS APT Last Update: 23.08.2015 00:41:12 CEST +02:00:00
  - Bot Start Script: found at /etc/init.d/sinusbot [perms: 0644]
+ - DNS resolution check: google.com -> OK
  - CPU:
     Architecture:          x86_64
     CPU(s):                2
@@ -88,4 +91,4 @@ BOT INFORMATION
 ==========================================================
 ```
 
-**Notice**: Because this script does also collect information like CPU, RAM, SWAP, DISK usage and more, this script needs to be executed with root privileges.
+**Notice**: Because this script does also collect information like CPU, RAM, SWAP, DISK usage and more, this script needs to be executed with root privileges. The script is not installing any dependencies of the script or bot without asking.

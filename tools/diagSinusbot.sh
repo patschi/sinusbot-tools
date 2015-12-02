@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.3.1
+# Version: 0.3.3
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -65,6 +65,9 @@
 #          New: Check for bot autostart script (/etc/init.d/sinusbot)
 #  v0.3.2: [26.11.2015 21:20]
 #          New: Added advanced permissions checks for the autostart script
+#  v0.3.3: [02.12.2015 10:00]
+#          New: Check if x64 bit operating system
+#          New: Added DNS resolution check of google.com
 #
 ### THANKS TO...
 # all people, who helped developing and testing
@@ -96,13 +99,13 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.3.2"
-SCRIPT_VERSION_DATE="26.11.2015 21:20"
+SCRIPT_VERSION_NUMBER="0.3.3"
+SCRIPT_VERSION_DATE="02.12.2015 10:00"
 
 SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh"
 
 # script COMMANDS dependencies
-SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df nc stat"
+SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df nc stat getconf"
 # script PACKAGES dependencies
 SCRIPT_REQ_PKGS="bc binutils coreutils lsb-release util-linux"
 
@@ -543,6 +546,16 @@ script_done()
 	exit 0
 }
 
+## Function to check DNS resolution
+check_dns_resolution()
+{
+	if [ "$(getent hosts $1 | head -n 1 | cut -d ' ' -f 1)" != "" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
 ## MAIN CODE
 
 # PARAMETERS
@@ -745,6 +758,26 @@ SYS_UPTIME_TEXT="$SYS_UP_DAYS days, $SYS_UP_HOURS hours, $SYS_UP_MINUTES minutes
 # get kernel
 SYS_OS_KERNEL=$(uname -srm)
 
+# check if x64 bit os
+SYS_OS_ARCH=`getconf LONG_BIT`
+if [ "$SYS_OS_ARCH" = "64" ]; then
+    SYS_OS_ARCH_X64="Y"
+	SYS_OS_ARCH_X64_TEXT="OK"
+else
+    SYS_OS_ARCH_X64="N"
+	SYS_OS_ARCH_X64_TEXT="FAIL: Not x64 OS. [$SYS_OS_ARCH]"
+fi
+
+# check dns resolution
+check_dns_resolution "google.com"
+if [ $? -eq 0 ]; then
+	SYS_OS_DNS_CHECK="Y"
+	SYS_OS_DNS_CHECK_TEXT="google.com -> OK"
+else
+	SYS_OS_DNS_CHECK="N"
+	SYS_OS_DNS_CHECK_TEXT="google.com -> FAIL"
+fi
+
 # get CPU info
 say "debug" "Getting processor information..."
 SYS_CPU_DATA=$(lscpu | egrep "^(Architecture|CPU\(s\)|Thread\(s\) per core|Core\(s\) per socket:|Socket\(s\)|Model name|CPU MHz|Hypervisor|Virtualization)")
@@ -944,6 +977,7 @@ OUTPUT=$(cat << EOF
 SINUSBOT RELATED
 SYSTEM INFORMATION
  - Operating System: $SYS_OS $SYS_OS_EXTENDED
+ - OS x64 check: $SYS_OS_ARCH_X64_TEXT
  - Kernel: $SYS_OS_KERNEL
  - Load Average: $SYS_LOAD_AVG
  - Uptime: $SYS_UPTIME_TEXT
@@ -951,6 +985,7 @@ SYSTEM INFORMATION
  - OS Missing Packages: $SYS_PACKAGES_MISSING
  - OS APT Last Update: $SYS_APT_LASTUPDATE
  - Bot Start Script: $SYS_BOT_AUTOSTART $SYS_BOT_AUTOSTART_EXTENDED
+ - DNS resolution check: $SYS_OS_DNS_CHECK_TEXT
  - CPU:
 $SYS_CPU_DATA
  - RAM: $(bytes_format $SYS_RAM_USAGE)/$(bytes_format $SYS_RAM_TOTAL) in use (${SYS_RAM_PERNT}%)
@@ -988,4 +1023,3 @@ say "debug" "Done."
 
 # we are done.
 script_done
-
