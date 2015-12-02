@@ -10,6 +10,10 @@ Any feedback, suggestions, ideas and - ofcourse - pull requests are welcome.
 
 **Remember**: This script does not send any data to anywhere. It is only collecting some details offline about the system and the bot. Then it generates a text output, which can be copied and pasted in the forum. This tool is not officially developed from the Sinusbot team.
 
+**Links:**
+ * [Sinusbot english forum thread](https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostic-script.831/#post-4418)
+ * [Sinusbot german forum thread](https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostik-script.832/#post-4419)
+
 **Some information which may be scanned:**
  * System
   - Operating system
@@ -21,6 +25,7 @@ Any feedback, suggestions, ideas and - ofcourse - pull requests are welcome.
   - SWAP usage
   - DISK usage
   - Bot autostart script checks
+  - Check if DNS resolution is working
  * Bot
   - Status of bot and webinterface
   - Version
@@ -84,7 +89,7 @@ BOT INFORMATION
    - Bot Plugin: 4f888043455d865231047616da069ed8
    - TS3 Client: 4f888043455d865231047616da069ed8
  - Config:
-   - LogLevel = 4
+   - LogLevel = 10 (debug log active)
    - TS3Path = /home/sinusbot/ts3/TeamSpeak3-Client-linux_amd64/ts3client_linux_amd64 (Version 3.0.18.2)
    - YoutubeDLPath = /usr/local/bin/youtube-dl (does exist, version: 2015.08.16.1)
  - Installed Scripts: advertising.js; aloneMode.js; badchan.js; bookmark.js; covatar.js; dev.js; followme.js; idle.js; metadata.js; norecording.js; showcase.js; welcometext.js

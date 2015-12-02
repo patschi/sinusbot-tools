@@ -15,8 +15,11 @@
 #  in the sinusbot forum to your post.
 #
 # Important links:
+#  Development of this script: https://github.com/patschi/sinusbot-tools
 #  TeamSpeak: http://www.teamspeak.com
 #  Sinusbot forum: https://forum.sinusbot.com
+#  Sinusbot forum thread [english]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostic-script.831/#post-4418
+#  Sinusbot forum thread [german]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostik-script.832/#post-4419
 #
 ### CHANGELOG
 #  v0.1.0: [25.11.2015 12:00]
@@ -761,10 +764,10 @@ SYS_OS_KERNEL=$(uname -srm)
 # check if x64 bit os
 SYS_OS_ARCH=`getconf LONG_BIT`
 if [ "$SYS_OS_ARCH" = "64" ]; then
-    SYS_OS_ARCH_X64="Y"
+	SYS_OS_ARCH_X64="Y"
 	SYS_OS_ARCH_X64_TEXT="OK"
 else
-    SYS_OS_ARCH_X64="N"
+	SYS_OS_ARCH_X64="N"
 	SYS_OS_ARCH_X64_TEXT="FAIL: Not x64 OS. [$SYS_OS_ARCH]"
 fi
 
