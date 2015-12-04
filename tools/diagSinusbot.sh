@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.3.3
+# Version: 0.3.4
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -71,6 +71,9 @@
 #  v0.3.3: [02.12.2015 10:00]
 #          New: Check if x64 bit operating system
 #          New: Added DNS resolution check of google.com
+#  v0.3.4: [04.12.2015 18:15]
+#          Changed: Switched from 'nc' to 'netstat' to determine if webinterface port is up
+#          Improved: Some text changes
 #
 ### THANKS TO...
 # all people, who helped developing and testing
@@ -102,13 +105,13 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.3.3"
-SCRIPT_VERSION_DATE="02.12.2015 10:00"
+SCRIPT_VERSION_NUMBER="0.3.4"
+SCRIPT_VERSION_DATE="04.12.2015 18:15"
 
 SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh"
 
 # script COMMANDS dependencies
-SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df nc stat getconf"
+SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf netstat"
 # script PACKAGES dependencies
 SCRIPT_REQ_PKGS="bc binutils coreutils lsb-release util-linux"
 
@@ -221,12 +224,14 @@ show_welcome()
 	say "welcome" "=  [Link: https://forum.sinusbot.com]          ="
 	say "welcome" "=                                              ="
 	say "welcome" "=  No private information will be collected    ="
-	say "welcome" "=  nor any data will be sent to anywhere.      ="
+	say "welcome" "=  nor the data will be sent to anywhere.      ="
 	say "welcome" "=  This just generates an example forum post.  ="
+	say "welcome" "=                                              ="
+	say "welcome" "=  The script does perform a DNS resolution    ="
+	say "welcome" "=  of 'google.com' to determine if your DNS    ="
+	say "welcome" "=  settings are working as expected.           ="
 	say "welcome" "================================================"
 	say
-	say "info" "Continuing in five seconds... Please read this above!"
-	sleep 5
 	pause
 }
 
@@ -377,7 +382,7 @@ is_supported_os()
 		failed "unsupported operating system"
 	fi
 
-	say "info" "Detect operating system: $SYS_OS_LSBRELEASE_DESCRIPTION"
+	say "info" "Detected operating system: $SYS_OS_LSBRELEASE_DESCRIPTION"
 
 	# check version of operating system: debian
 	if [ "$SYS_OS_LSBRELEASE_ID" == "debian" ] && (( $(echo "$SYS_OS_LSBRELEASE_RELEASE <= 6" | bc -l) )); then
@@ -527,7 +532,7 @@ get_file_hash()
 port_in_use()
 {
 	# check if port $1 is in use.
-	nc -v -z -w 3 $1 $2 2>/dev/null
+	netstat -lnt | awk '$4 ~ ".${1}"' | grep -i 'LISTEN' &>/dev/null
 	return $?
 }
 
@@ -882,7 +887,7 @@ for SYS_BOT_AUTOSTART_PATH in $SYS_BOT_AUTOSTART_PATHS; do
 		SYS_BOT_AUTOSTART="found at $SYS_BOT_AUTOSTART_PATH"
 		SYS_BOT_AUTOSTART_PERMS="$(stat "$SYS_BOT_AUTOSTART_PATH" | sed -n '/^Access: (/{s/Access: (\([0-9]\+\).*$/\1/;p}')"
 		if [ $SYS_BOT_AUTOSTART_PERMS -le 0755 ]; then
-			say "warning" "Please set the permissions of your autostart script at '$SYS_BOT_AUTOSTART_PATH' to 0755, using: chmod 0755 $SYS_BOT_AUTOSTART_PATH"
+			say "warning" "Please set the permissions of your autostart script at '$SYS_BOT_AUTOSTART_PATH' from $SYS_BOT_AUTOSTART_PERMS to 0755, using: chmod 0755 $SYS_BOT_AUTOSTART_PATH"
 		fi
 		SYS_BOT_AUTOSTART_EXTENDED="[perms: $SYS_BOT_AUTOSTART_PERMS]"
 		break
@@ -975,7 +980,6 @@ fi
 say "debug" "Generating output..."
 
 OUTPUT=$(cat << EOF
-\e[1mPlease attach this output to your forum post:\e[0;37m
 ==========================================================
 SINUSBOT RELATED
 SYSTEM INFORMATION
@@ -1010,15 +1014,18 @@ BOT INFORMATION
    - YoutubeDLPath = $BOT_CONFIG_YTDLPATH $BOT_CONFIG_YTDLPATH_EXTENDED
  - Installed Scripts: $BOT_INSTALLED_SCRIPTS
 ==========================================================
-\e[1mNotice\e[0;37m: For a better overview, post this data
-in the forum within a CODE-tag!
 EOF
 )
 
 # new lines and the finished output
 say
 say
+
+say "" "\e[1mPlease attach this output to your forum post:\e[0;37m"
 say "" "$OUTPUT"
+say "" "\e[1mNotice\e[0;37m: For a better overview, post this data
+in the forum within a CODE-tag!"
+
 say
 say
 
