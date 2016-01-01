@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.3.4
+# Version: 0.3.5
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -74,6 +74,10 @@
 #  v0.3.4: [04.12.2015 18:15]
 #          Changed: Switched from 'nc' to 'netstat' to determine if webinterface port is up
 #          Improved: Some text changes
+#  v0.3.5: [01.01.2016 04:00]
+#          Happy new year!
+#          Changed: Added CODE-tags for forum to output
+#          Changed copyright year
 #
 ### THANKS TO...
 # all people, who helped developing and testing
@@ -91,8 +95,8 @@
 # May contain traces of eastereggs.
 #
 ##################################################
-#### DO NOT TOUCH ANYTHING BELOW, IF YOU DO
-#### NOT KNOW WHAT YOU ARE DOING!
+#### DO NOT TOUCH ANYTHING BELOW, IF YOU 
+#### DO NOT KNOW WHAT YOU ARE DOING!
 ##################################################
 
 ### SCRIPT CONFIGURATION VARIABLES
@@ -102,11 +106,11 @@
 # SCRIPT
 SCRIPT_AUTHOR_NAME="Patrik Kernstock"
 SCRIPT_AUTHOR_WEBSITE="pkern.at"
-SCRIPT_YEAR="2015"
+SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.3.4"
-SCRIPT_VERSION_DATE="04.12.2015 18:15"
+SCRIPT_VERSION_NUMBER="0.3.5"
+SCRIPT_VERSION_DATE="01.01.2016 04:00"
 
 SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh"
 
@@ -1022,7 +1026,9 @@ say
 say
 
 say "" "\e[1mPlease attach this output to your forum post:\e[0;37m"
+say "" "[CODE]"
 say "" "$OUTPUT"
+say "" "[/CODE]"
 say "" "\e[1mNotice\e[0;37m: For a better overview, post this data
 in the forum within a CODE-tag!"
 
