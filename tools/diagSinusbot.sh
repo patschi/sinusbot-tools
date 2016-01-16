@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.3.5
+# Version: 0.3.6
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -78,6 +78,10 @@
 #          Happy new year!
 #          Changed: Added CODE-tags for forum to output
 #          Changed copyright year
+#  v0.3.6: [16.01.2016 13:55]
+#          Fixed some bugs in operating system package detection function
+#          Fixed lsb_release errors when checking OS support before checking package installation of lsb-release
+#          Fixed dpkg-query errors when package was never installed before (when package detection)
 #
 ### THANKS TO...
 # all people, who helped developing and testing
@@ -109,8 +113,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.3.5"
-SCRIPT_VERSION_DATE="01.01.2016 04:00"
+SCRIPT_VERSION_NUMBER="0.3.6"
+SCRIPT_VERSION_DATE="16.01.2016 13:55"
 
 SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh"
 
@@ -467,7 +471,7 @@ get_bot_version()
 ## Function to check if package is installed
 is_os_package_installed()
 {
-	dpkg-query -W -f='${Status}' $1 | grep -q -P '^install ok installed$'
+	dpkg-query -W -f='${Status}' $1 2>&1 | grep -q -P '^install ok installed$' 2>&1
 	if [ $? -eq 0 ]; then
 		return 0
 	else
@@ -496,11 +500,7 @@ get_missing_os_packages()
 	for PACKAGE in $1; do
 		is_os_package_installed "$PACKAGE"
 		if [ $? -ne 0 ]; then
-			if [ "$OS_PACKAGES_MISSING" == "" ]; then
-				OS_PACKAGES_MISSING="$PACKAGE"
-			else
-				OS_PACKAGES_MISSING="$INSTALLED_SCRIPTS $PACKAGE"
-			fi
+			OS_PACKAGES_MISSING="$OS_PACKAGES_MISSING $PACKAGE"
 		fi
 	done
 	echo $(trim_spaces "$OS_PACKAGES_MISSING")
@@ -611,7 +611,6 @@ done
 
 # further checks.
 is_user_root
-is_supported_os
 
 # do not show welcome screen, when user dont want to
 if [ "$NO_WELCOME" != "yes" ]; then
@@ -696,6 +695,9 @@ if [ "$PACKAGES_MISSING" != "" ]; then
 		failed "automated bot installation aborted"
 	fi
 fi
+
+# checking if OS is supported after package installation
+is_supported_os
 
 # checking dependencies for bot
 if [ "$PACKAGES_MISSING" == "" ]; then
