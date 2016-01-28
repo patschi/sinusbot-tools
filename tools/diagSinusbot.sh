@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.3.6
+# Version: 0.3.7
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -82,6 +82,8 @@
 #          Fixed some bugs in operating system package detection function
 #          Fixed lsb_release errors when checking OS support before checking package installation of lsb-release
 #          Fixed dpkg-query errors when package was never installed before (when package detection)
+#  v0.3.7: [29.01.2016 00:45]
+#          Fixed retrieving of youtube-dl version when binary exists and is set in the bot configuration (Thanks Xuxe!, see PR #1)
 #
 ### THANKS TO...
 # all people, who helped developing and testing
@@ -113,8 +115,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.3.6"
-SCRIPT_VERSION_DATE="16.01.2016 13:55"
+SCRIPT_VERSION_NUMBER="0.3.7"
+SCRIPT_VERSION_DATE="29.01.2016 00:45"
 
 SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh"
 
