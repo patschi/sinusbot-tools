@@ -975,7 +975,7 @@ if [ "$BOT_CONFIG_YTDLPATH" == "" ]; then
 
 else
 	if [ -f "$BOT_CONFIG_YTDLPATH" ]; then
-		YTDL_VERSION=$($(which youtube-dl) --version)
+		YTDL_VERSION=$($BOT_CONFIG_YTDLPATH --version)
 		BOT_CONFIG_YTDLPATH_EXTENDED="(does exist, version: $YTDL_VERSION)"
 	else
 		BOT_CONFIG_YTDLPATH_EXTENDED="(does not exist!)"
