@@ -750,6 +750,15 @@ SYS_OS=$(lsb_release --short --description)
 SYS_OS_EXTENDED=""
 if [ -f "/proc/user_beancounters" ]; then
 	SYS_OS_EXTENDED="(OpenVZ)"
+	
+elif [ -f "/proc/1/cgroup" ]; then 
+	lxc=$(cat /proc/1/cgroup | grep -e '.*\/lxc\/.*')
+	if [ lxc != "" ]; then
+		SYS_OS_EXTENDED="(Lxc)"
+	fi
+	
+elif [ -f "/.dockerinit" ]; then
+	SYS_OS_EXTENDED="(Docker)"
 fi
 
 # get load avg
