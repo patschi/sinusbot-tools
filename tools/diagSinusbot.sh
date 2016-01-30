@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.3.7
+# Version: 0.3.8
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -83,7 +83,9 @@
 #          Fixed lsb_release errors when checking OS support before checking package installation of lsb-release
 #          Fixed dpkg-query errors when package was never installed before (when package detection)
 #  v0.3.7: [29.01.2016 00:45]
-#          Fixed retrieving of youtube-dl version when binary exists and is set in the bot configuration (Thanks Xuxe!, see PR #1)
+#          Fixed retrieving of youtube-dl version when binary exists and is set in the bot configuration (Thanks Xuxe!, see PR #1 on Github)
+#  v0.3.8: [30.01.2016 12:55]
+#          Added detection for LXC & Docker (Thanks Xuxe!, see PR #2 on Github)
 #
 ### THANKS TO...
 # all people, who helped developing and testing
@@ -115,8 +117,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.3.7"
-SCRIPT_VERSION_DATE="29.01.2016 00:45"
+SCRIPT_VERSION_NUMBER="0.3.8"
+SCRIPT_VERSION_DATE="30.01.2016 12:55"
 
 SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh"
 
@@ -267,7 +269,7 @@ show_credits()
 {
 	say "info" "THANKS TO..."
 	say "info" "  \e[1mflyth\e[0;37m, Michael F.        for developing sinusbot, testing this script and ideas"
-	say "info" "  \e[1mXuxe\e[0;37m, Julian H.          for testing"
+	say "info" "  \e[1mXuxe\e[0;37m, Julian H.          for testing and supporting development"
 	say "info" "  \e[1mGetMeOutOfHere\e[0;37m           for testing and ideas"
 	say "info" "  \e[1mJANNIX\e[0;37m, Jan              for testing"
 }
@@ -754,7 +756,7 @@ if [ -f "/proc/user_beancounters" ]; then
 elif [ -f "/proc/1/cgroup" ]; then 
 	lxc=$(cat /proc/1/cgroup | grep -e '.*\/lxc\/.*')
 	if [ lxc != "" ]; then
-		SYS_OS_EXTENDED="(Lxc)"
+		SYS_OS_EXTENDED="(LXC)"
 	fi
 	
 elif [ -f "/.dockerinit" ]; then
@@ -764,10 +766,10 @@ fi
 # get load avg
 SYS_LOAD_AVG=$(cat /proc/loadavg | cut -d " " -f -3)
 
-# get package manager date
+# get package manager last modified date
 SYS_APT_LASTUPDATE=$(date --date="@$(stat -c %Y '/var/lib/apt/lists')" +"%d.%m.%Y %H:%M:%S %Z %::z")
 
-# get os date
+# get current operating system date
 SYS_TIME=$(date +"%d.%m.%Y %H:%M:%S %Z %::z")
 SYS_TIME_ZONE=$(cat /etc/timezone)
 
