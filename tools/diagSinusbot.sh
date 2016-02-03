@@ -22,75 +22,77 @@
 #  Sinusbot forum thread [german]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostik-script.832/#post-4419
 #
 ### CHANGELOG
-#  v0.1.0: [25.11.2015 12:00]
-#          Release: Alpha.
-#          New: Basic functionality.
-## v0.2.0: [25.11.2015 14:00]
-#          New: OpenVZ checks
-#          New: YouTubeDL support
-#          New: welcome header
-#          New: asking for automated package install
-#          New: Missing operating system packages check
-#          New: Check when package manager was updated last time
-#          New: parameter support
-#          New: parameter: '-w|--no-welcome' to hide welcome text
-#          New: parameter: '-u|--no-os-update-check' to skip OS update check
-#  v0.2.1: [25.11.2015 18:00]
-#          Fixed: Corrected calculating RAM usage (now without cached RAM)
-#          New: Added time as prefix to log messages
-#          New: Added report date including timezone to output
-#  v0.2.5: [25.11.2015 21:00]
-#          New: Added help with '-h|--help' parameter
-#          New: More colorful output (everyone likes colors... and cookies.)
-#          Fixed: TS3Path check if exists
-#          Fixed: 'cpu model' was shown multiple times if more processors exists (even when different processors)
-#          New: Fallback for bot location when binary not found to /opt/ts3bot/
-#          Changed: Output style. From BBCode to clean text.
-#          New: Added '-v|--version' parameter
-#          New: Added '-c|--credits' parameter
-#          Improved: own function for trimming whitespaces
-#  v0.3.0: [26.11.2015 19:00]
-#          Release: Beta.
-#          New: Added TS3Client version to output.
-#          New: Added support to retrieve sinusbot version by 'sinusbot --version' parameter (including fallback to old method)
-#          New: Added SWAP info display
-#          New: Added DISK info display
-#          New: Added KERNEL info display
-#          New: Added LOAD AVERAGE info display
-#          New: Added UPTIME info display
-#          New: Added 'installed bot scripts' display
-#          New: Added TS3client bot-plugin checks
-#          New: Added bot running checks (and under which user it is running)
-#          New: Added bot webinterface port checks
-#          Improved: Supported operating system checks.
-#  v0.3.1: [26.11.2015 21:00]
-#          Changed: Using 'lscpu' for determining CPU data now
-#          New: Check for bot autostart script (/etc/init.d/sinusbot)
-#  v0.3.2: [26.11.2015 21:20]
-#          New: Added advanced permissions checks for the autostart script
-#  v0.3.3: [02.12.2015 10:00]
-#          New: Check if x64 bit operating system
-#          New: Added DNS resolution check of google.com
-#  v0.3.4: [04.12.2015 18:15]
-#          Changed: Switched from 'nc' to 'netstat' to determine if webinterface port is up
-#          Improved: Some text changes
-#  v0.3.5: [01.01.2016 04:00]
-#          Happy new year!
-#          Changed: Added CODE-tags for forum to output
-#          Changed copyright year
-#  v0.3.6: [16.01.2016 13:55]
-#          Fixed some bugs in operating system package detection function
-#          Fixed lsb_release errors when checking OS support before checking package installation of lsb-release
-#          Fixed dpkg-query errors when package was never installed before (when package detection)
-#  v0.3.7: [29.01.2016 00:45]
-#          Fixed retrieving of youtube-dl version when binary exists and is set in the bot configuration (Thanks Xuxe!, see PR #1 on Github)
-#  v0.3.8: [30.01.2016 12:55]
-#          Added detection for LXC & Docker (Thanks Xuxe!, see PR #2 on Github)
-#  v0.3.9: [03.02.2016 20:30]
-#          Mostly a bug fix release.
-#          Added check if the scripts-folder does exist. (which hopefully fixes the issue of displaying files of a wrong folder)
-#          Fixed issue with detecting Sinusbot version with "--version" parameter on some pre-release Sinusbot versions.
-#          Changed the uppercase "S" in "Installed Scripts" to lowercase. Whyever I mention this here in the changelog.
+#  v0.1.0:  [25.11.2015 12:00]
+#           Release: Alpha.
+#           New: Basic functionality.
+#  v0.2.0:  [25.11.2015 14:00]
+#           New: OpenVZ checks
+#           New: YouTubeDL support
+#           New: welcome header
+#           New: asking for automated package install
+#           New: Missing operating system packages check
+#           New: Check when package manager was updated last time
+#           New: parameter support
+#           New: parameter: '-w|--no-welcome' to hide welcome text
+#           New: parameter: '-u|--no-os-update-check' to skip OS update check
+#  v0.2.1:  [25.11.2015 18:00]
+#           Fixed: Corrected calculating RAM usage (now without cached RAM)
+#           New: Added time as prefix to log messages
+#           New: Added report date including timezone to output
+#  v0.2.5:  [25.11.2015 21:00]
+#           New: Added help with '-h|--help' parameter
+#           New: More colorful output (everyone likes colors... and cookies.)
+#           Fixed: TS3Path check if exists
+#           Fixed: 'cpu model' was shown multiple times if more processors exists (even when different processors)
+#           New: Fallback for bot location when binary not found to /opt/ts3bot/
+#           Changed: Output style. From BBCode to clean text.
+#           New: Added '-v|--version' parameter
+#           New: Added '-c|--credits' parameter
+#           Improved: own function for trimming whitespaces
+#  v0.3.0:  [26.11.2015 19:00]
+#           Release: Beta.
+#           New: Added TS3Client version to output.
+#           New: Added support to retrieve sinusbot version by 'sinusbot --version' parameter (including fallback to old method)
+#           New: Added SWAP info display
+#           New: Added DISK info display
+#           New: Added KERNEL info display
+#           New: Added LOAD AVERAGE info display
+#           New: Added UPTIME info display
+#           New: Added 'installed bot scripts' display
+#           New: Added TS3client bot-plugin checks
+#           New: Added bot running checks (and under which user it is running)
+#           New: Added bot webinterface port checks
+#           Improved: Supported operating system checks.
+#  v0.3.1:  [26.11.2015 21:00]
+#           Changed: Using 'lscpu' for determining CPU data now
+#           New: Check for bot autostart script (/etc/init.d/sinusbot)
+#  v0.3.2:  [26.11.2015 21:20]
+#           New: Added advanced permissions checks for the autostart script
+#  v0.3.3:  [02.12.2015 10:00]
+#           New: Check if x64 bit operating system
+#           New: Added DNS resolution check of google.com
+#  v0.3.4:  [04.12.2015 18:15]
+#           Changed: Switched from 'nc' to 'netstat' to determine if webinterface port is up
+#           Improved: Some text changes
+#  v0.3.5:  [01.01.2016 04:00]
+#           Happy new year!
+#           Changed: Added CODE-tags for forum to output
+#           Changed copyright year
+#  v0.3.6:  [16.01.2016 13:55]
+#           Fixed some bugs in operating system package detection function
+#           Fixed lsb_release errors when checking OS support before checking package installation of lsb-release
+#           Fixed dpkg-query errors when package was never installed before (when package detection)
+#  v0.3.7:  [29.01.2016 00:45]
+#           Fixed retrieving of youtube-dl version when binary exists and is set in the bot configuration (Thanks Xuxe!, see PR #1 on Github)
+#  v0.3.8:  [30.01.2016 12:55]
+#           Added detection for LXC & Docker (Thanks Xuxe!, see PR #2 on Github)
+#  v0.3.9:  [03.02.2016 20:30]
+#           Mostly a bug fix release.
+#           Added check if the scripts-folder does exist. (which hopefully fixes the issue of displaying files of a wrong folder)
+#           Fixed issue with detecting Sinusbot version with "--version" parameter on some pre-release Sinusbot versions.
+#           Changed the uppercase "S" in "Installed Scripts" to lowercase. Whyever I mention this here in the changelog.
+#  v0.3.10: [03.02.2016 20:35]
+#           Fixed a little issue with collecting installed scripts
 #
 ### Known issues:
 # - Sometimes retrieving CPU information does fail and does just return empty text 
@@ -125,8 +127,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.3.9"
-SCRIPT_VERSION_DATE="03.02.2016 20:30"
+SCRIPT_VERSION_NUMBER="0.3.10"
+SCRIPT_VERSION_DATE="03.02.2016 20:35"
 
 SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh"
 
@@ -523,7 +525,7 @@ get_installed_bot_scripts()
 {
 	INSTALLED_SCRIPTS=""
 	if [ -d "$BOT_PATH/scripts/" ]; then
-		for SCRIPT_FILE in "$BOT_PATH/scripts/*"; do
+		for SCRIPT_FILE in $BOT_PATH/scripts/*; do
 			if [ "$INSTALLED_SCRIPTS" == "" ]; then
 				INSTALLED_SCRIPTS="$(basename $SCRIPT_FILE)"
 			else
