@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.3.8
+# Version: 0.3.9
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -86,6 +86,14 @@
 #          Fixed retrieving of youtube-dl version when binary exists and is set in the bot configuration (Thanks Xuxe!, see PR #1 on Github)
 #  v0.3.8: [30.01.2016 12:55]
 #          Added detection for LXC & Docker (Thanks Xuxe!, see PR #2 on Github)
+#  v0.3.9: [03.02.2016 20:30]
+#          Mostly a bug fix release.
+#          Added check if the scripts-folder does exist. (which hopefully fixes the issue of displaying files of a wrong folder)
+#          Fixed issue with detecting Sinusbot version with "--version" parameter on some pre-release Sinusbot versions.
+#          Changed the uppercase "S" in "Installed Scripts" to lowercase. Whyever I mention this here in the changelog.
+#
+### Known issues:
+# - Sometimes retrieving CPU information does fail and does just return empty text 
 #
 ### THANKS TO...
 # all people, who helped developing and testing
@@ -117,8 +125,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.3.8"
-SCRIPT_VERSION_DATE="30.01.2016 12:55"
+SCRIPT_VERSION_NUMBER="0.3.9"
+SCRIPT_VERSION_DATE="03.02.2016 20:30"
 
 SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh"
 
@@ -456,7 +464,7 @@ parse_bot_config()
 get_bot_version()
 {
 	say "debug" "Trying to get sinusbot version using version parameter..." > /proc/${PPID}/fd/0
-	BOT_VERSION_CMD=$($BOT_PATH/$BOT_BINARY --version 2>&1)
+	BOT_VERSION_CMD=$($BOT_PATH/$BOT_BINARY --version 2>/dev/null)
 	echo "$BOT_VERSION_CMD" | grep -q -P '^flag provided but not defined' >/dev/null
 	if [ $? -eq 0 ]; then
 		say "debug" "Error getting sinusbot version. Falling back to other method." > /proc/${PPID}/fd/0
@@ -514,14 +522,18 @@ get_missing_os_packages()
 get_installed_bot_scripts()
 {
 	INSTALLED_SCRIPTS=""
-	for SCRIPT_FILE in $BOT_PATH/scripts/*; do
-		if [ "$INSTALLED_SCRIPTS" == "" ]; then
-			INSTALLED_SCRIPTS="$(basename $SCRIPT_FILE)"
-		else
-			INSTALLED_SCRIPTS="$INSTALLED_SCRIPTS; $(basename $SCRIPT_FILE)"
-		fi
-	done
-	echo $(trim_spaces "$INSTALLED_SCRIPTS")
+	if [ -d "$BOT_PATH/scripts/" ]; then
+		for SCRIPT_FILE in "$BOT_PATH/scripts/*"; do
+			if [ "$INSTALLED_SCRIPTS" == "" ]; then
+				INSTALLED_SCRIPTS="$(basename $SCRIPT_FILE)"
+			else
+				INSTALLED_SCRIPTS="$INSTALLED_SCRIPTS; $(basename $SCRIPT_FILE)"
+			fi
+		done
+		echo $(trim_spaces "$INSTALLED_SCRIPTS")
+	else
+		echo "scripts folder not found (using < v0.9.9?)"
+	fi
 }
 
 ## Function to trim whitespaces before and after a string
@@ -1031,7 +1043,7 @@ BOT INFORMATION
    - LogLevel = $BOT_CONFIG_LOGLEVEL $BOT_CONFIG_LOGLEVEL_EXTENDED
    - TS3Path = $BOT_CONFIG_TS3PATH $BOT_CONFIG_TS3PATH_EXTENDED
    - YoutubeDLPath = $BOT_CONFIG_YTDLPATH $BOT_CONFIG_YTDLPATH_EXTENDED
- - Installed Scripts: $BOT_INSTALLED_SCRIPTS
+ - Installed scripts: $BOT_INSTALLED_SCRIPTS
 ==========================================================
 EOF
 )
