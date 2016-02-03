@@ -93,6 +93,8 @@
 #           Changed the uppercase "S" in "Installed Scripts" to lowercase. Whyever I mention this here in the changelog.
 #  v0.3.10: [03.02.2016 20:35]
 #           Fixed a little issue with collecting installed scripts
+#  v0.3.11: [03.02.2016 20:45]
+#           Fixed LXC-detection bug
 #
 ### Known issues:
 # - Sometimes retrieving CPU information does fail and does just return empty text 
@@ -127,8 +129,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.3.10"
-SCRIPT_VERSION_DATE="03.02.2016 20:35"
+SCRIPT_VERSION_NUMBER="0.3.11"
+SCRIPT_VERSION_DATE="03.02.2016 20:45"
 
 SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh"
 
@@ -768,8 +770,8 @@ if [ -f "/proc/user_beancounters" ]; then
 	SYS_OS_EXTENDED="(OpenVZ)"
 	
 elif [ -f "/proc/1/cgroup" ]; then 
-	lxc=$(cat /proc/1/cgroup | grep -e '.*\/lxc\/.*')
-	if [ lxc != "" ]; then
+	lxc=$(cat /proc/1/cgroup | grep -Pq 'lxc')
+	if [ $lxc -eq 0 ]; then
 		SYS_OS_EXTENDED="(LXC)"
 	fi
 	
