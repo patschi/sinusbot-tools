@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.3.9
+# Version: 0.4.0
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -95,9 +95,25 @@
 #           Fixed a little issue with collecting installed scripts
 #  v0.3.11: [03.02.2016 20:45]
 #           Fixed LXC-detection bug
+#  v0.4.0:  [08.02.2016 16:40]
+#           Added 'known issues' section to the top of the script.
+#           Added version check for this script.
+#           Added automated updater for this script.
+#           (The script is checking for a newer version of the diagnostic script on every start.)
+#           Added diagSinusbot script version to code output.
+#           Added check for vulnerable and outdated ts3client versions.
+#           Added optional display of changelog for every update (if changelog file does exist).
+#           New: New parameter '-o|--skip-update-check' to skip script update check.
+#           New: New parameter '-u|--only-update-check|--update' to only check for script update and then abort.
+#           Changed: Renamed parameter '--no-os-update-check' to '--skip-os-update-check'.
+#           Changed: Renamed short parameter '-u' to '-a' (for skipping APT OS update checks).
+#           Changed: Renamed parameter '--no-welcome' to '--skip-welcome-text'. Short parameter stays the same.
+#           Changed: Optimized say-function to be able to output bold text.
+#           Some cosmetic and overall little improvements.
+#           Fixed LXC detection (finally).
 #
 ### Known issues:
-# - Sometimes retrieving CPU information does fail and does just return empty text 
+# - Sometimes retrieving CPU information does fail and does just return empty text
 #
 ### THANKS TO...
 # all people, who helped developing and testing
@@ -106,7 +122,7 @@
 #
 ### USAGE
 # To download and execute you can use:
-#  $ wget https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh
+#  $ curl -O https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh
 #  $ bash diagSinusbot.sh
 #
 ### DISCLAIMER
@@ -115,7 +131,7 @@
 # May contain traces of eastereggs.
 #
 ##################################################
-#### DO NOT TOUCH ANYTHING BELOW, IF YOU 
+#### DO NOT TOUCH ANYTHING BELOW, IF YOU
 #### DO NOT KNOW WHAT YOU ARE DOING!
 ##################################################
 
@@ -129,10 +145,15 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.3.11"
-SCRIPT_VERSION_DATE="03.02.2016 20:45"
+SCRIPT_VERSION_NUMBER="0.4.0"
+SCRIPT_VERSION_DATE="08.02.2016 16:40"
 
-SCRIPT_PROJECT_SITE="https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh"
+VERSION_CHANNEL="master"
+SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
+SCRIPT_PROJECT_SCDL="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/diagSinusbot.sh"
+
+SCRIPT_VERSION_FILE="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/updates/diagSinusbot/version.txt"
+SCRIPT_CHANGELOG_FILE="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/updates/diagSinusbot/changelog-{VER}.txt"
 
 # script COMMANDS dependencies
 SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf netstat"
@@ -158,6 +179,8 @@ say()
 
 	# message
 	MSG="$2"
+	MSG="$(string_replace "$MSG" "\[b\]" "\x1b[1m")"
+	MSG="$(string_replace "$MSG" "\[\/b\]" "\x1b[0m")"
 
 	# default prefix
 	PREFIX=""
@@ -218,13 +241,19 @@ say()
 	echo -ne "\e[0m"
 }
 
+## Function for string replacing
+# Usage: string_replace "string" "pattern" "replacement"
+string_replace()
+{
+	# (the missing $ of "$1" is correct!)
+	echo "${1/$2/$3}"
+}
+
+## Function to pause till input
 pause()
 {
 	say "wait" "Press [ENTER] to continue..."
-	read -p "" < /proc/${PPID}/fd/0
-	# workaround with /proc/[...] required only when read command
-	# is in a function. When not given, the script may not wait
-	# for an entered answer.
+	await_answer
 }
 
 ## Function for welcome header
@@ -232,7 +261,7 @@ show_welcome()
 {
 	say
 	say "welcome" "================================================"
-	say "welcome" "= HELLO! Please invest some time to read this. ="
+	say "welcome" "= [b]HELLO![/b] Please invest some time to read this. ="
 	say "welcome" "=                                              ="
 	say "welcome" "=  Thanks for using this diagnostic script!    ="
 	say "welcome" "=  The more information you provide, the       ="
@@ -255,37 +284,52 @@ show_welcome()
 	say "welcome" "=  of 'google.com' to determine if your DNS    ="
 	say "welcome" "=  settings are working as expected.           ="
 	say "welcome" "================================================"
+	say "welcome" "= I am thankful for any feedback. Please also  ="
+	say "welcome" "= report any issues you may find either on the ="
+	say "welcome" "= Sinusbot forum or via Github issues. Thanks! ="
+	say "welcome" "=   -- $SCRIPT_AUTHOR_NAME. ="
+	say "welcome" "================================================"
 	say
 	pause
 }
 
+## Function to show help text
 show_help()
 {
 	say "info" "Available parameters:"
-	say "info" "  -h|--help                 This help."
-	say "info" "  -w|--no-welcome           Skips the welcome screen."
-	say "info" "  -u|--no-os-update-check   Skips the OS updates check."
-	say "info" "  -c|--credits              Show credits."
-	say "info" "  -v|--version              Show version."
+	say "info" "  -h|--help                  This help."
+	say "info" "  -w|--skip-welcome-text     Skips the welcome screen."
+	say "info" "  -a|--skip-os-update-check  Skips the APT OS updates check."
+	say "info" "  -o|--skip-update-check     Skips the script update check."
+	say "info" "  -u|--only-update-check     Only check for script update. (overrides update skip)"
+	say "info" "  -c|--credits               Show credits."
+	say "info" "  -v|--version               Show version."
 	say "info" "This tool has Super Cow Powers."
 }
 
+## Function to show current version
 show_version()
 {
 	say "info" "(C) $SCRIPT_YEAR, $SCRIPT_AUTHOR_NAME ($SCRIPT_AUTHOR_WEBSITE)"
 	say "info" "$SCRIPT_NAME v$SCRIPT_VERSION_NUMBER [$SCRIPT_VERSION_DATE]"
 	say "info" "Project site: $SCRIPT_PROJECT_SITE"
+	say "info" "Script download: $SCRIPT_PROJECT_SCDL"
 }
 
+## Function to show credits (whooaaa!)
 show_credits()
 {
 	say "info" "THANKS TO..."
-	say "info" "  \e[1mflyth\e[0;37m, Michael F.        for developing sinusbot, testing this script and ideas"
-	say "info" "  \e[1mXuxe\e[0;37m, Julian H.          for testing and supporting development"
-	say "info" "  \e[1mGetMeOutOfHere\e[0;37m           for testing and ideas"
-	say "info" "  \e[1mJANNIX\e[0;37m, Jan              for testing"
+	say "info" ""
+	say "info" "  [b]flyth[/b]            Michael F.     for developing sinusbot, testing this script and ideas"
+	say "info" "  [b]Xuxe[/b]             Julian H.      for testing and supporting development"
+	say "info" "  [b]GetMeOutOfHere[/b]   Mr. Somebody   for testing and ideas"
+	say "info" "  [b]JANNIX[/b]           Jan            for testing"
+	say "info" ""
+	say "info" "...if u see 'em somewhere, give 'em a chocolate cookieees!"
 }
 
+## Function t000 m0o0o0o0o0o0oo t000d4y
 show_moo()
 {
 	cat <<EOF
@@ -304,7 +348,7 @@ failed()
 {
 	say "error" "Something went wrong!"
 	say "wait" "Press [ENTER] to exit."
-	read -p "" < /proc/${PPID}/fd/0
+	await_answer
 	if [ ! -z "$1" ]; then
 		say "debug" "exit reason code: $1"
 	fi
@@ -335,8 +379,7 @@ bytes_format()
 confirm_package_install()
 {
 	say "question" "Should I install '$1' for you? [y/N] "
-	read -p "" prompt < /proc/${PPID}/fd/0
-	if [[ $prompt =~ [yY](es)* ]]; then
+	if [[ $(await_answer) =~ [yY](es)* ]]; then
 		INSTALL_CMD="apt-get install -y $1"
 		say "debug" "Installing package '$1' using '$INSTALL_CMD'..."
 		sleep 1
@@ -420,6 +463,74 @@ is_supported_os()
 		# is less or equal 12.04 = too old.
 		say "warning" "You are using a too old operating system! Ubuntu 12.04 and before are not officially supported for Sinusbot. Please upgrade to a more recent system."
 		sleep 1
+	fi
+}
+
+## Function to crawl given URL
+load_webfile()
+{
+	echo "$(curl --fail --silent $1)"
+}
+
+## Function to check if a new update is available
+script_check_for_update()
+{
+	# Return codes:
+	#  0 = no update
+	#  1 = failed retrieving info
+	#  2 = update available
+	UPD_CHECK=$(load_webfile "$SCRIPT_VERSION_FILE")
+	if [ $? -ne 0 ]; then
+		return 1
+	else
+		UPD_CHECK_STATUS="$(echo $UPD_CHECK | grep -Po '(?<="status": ")[^"]*')"
+		if [ "$UPD_CHECK_STATUS" != "true" ]; then
+			return 1
+		else
+			UPD_CHECK_VER="$(echo $UPD_CHECK | grep -Po '(?<="version": ")[^"]*')"
+			if compare_version $SCRIPT_VERSION_NUMBER $UPD_CHECK_VER; then
+				return 2
+			else
+				return 0
+			fi
+		fi
+	fi
+}
+
+## Function to check if there is a changelog for the given version number
+script_check_for_changelog()
+{
+	# Return codes:
+	#  1 = failed retrieving changelog
+	# ...else changelog may be returned.
+	UPD_CHANGELOG=$(load_webfile "$(script_get_changelog_url $1)")
+	if [ $? -ne 0 ]; then
+		return 1
+	else
+		echo "$UPD_CHANGELOG"
+	fi
+}
+
+## Function to get actual changelog url file of the given version number
+script_get_changelog_url()
+{
+	echo "$(string_replace "$SCRIPT_CHANGELOG_FILE" "\{VER\}" "$1")"
+}
+
+## Function to compare version numbers
+compare_version()
+{
+	# Return codes:
+	#  0 = does not match (means: there is a newer version available)
+	#  1 = does match (means: no other version available = no update)
+	if [ "$1" == "$2" ]; then
+		return 1
+	else
+		if [ "$1" == "$(echo -e "$1\n$2" | sort --version-sort --reverse | head -n1)" ]; then
+			return 1
+		else
+			return 0
+		fi
 	fi
 }
 
@@ -588,17 +699,39 @@ check_dns_resolution()
 	fi
 }
 
-## MAIN CODE
+## Function await answer
+await_answer()
+{
+	# workaround with /proc/[...] required only when read command
+	# is in a function. When not given, the script may not wait
+	# for an entered answer.
+	read -p "" prompt < /proc/${PPID}/fd/0
+	echo $prompt
+}
+
+################
+## MAIN CODE! ##
+################
+
+SCRIPT_PATH=$(pwd)
 
 # PARAMETERS
 while [ $# -gt 0 ]; do
 	case "$1" in
-		-w|--no-welcome )
+		-w|--skip-welcome-text )
 			NO_WELCOME="yes"
 		;;
 
-		-u|--no-os-update-check )
+		-a|--skip-os-update-check )
 			NO_OS_UPD_CHECK="yes"
+		;;
+
+		-o|--skip-update-check )
+			NO_UPD_CHECK="yes"
+		;;
+
+		-u|--only-update-check|--update )
+			ONLY_SCRIPT_UPDATE_CHECK="yes"
 		;;
 
 		-h|--help )
@@ -667,8 +800,7 @@ if [ "$PACKAGES_MISSING" != "" ]; then
 	say "info" "Following packages are missing: $PACKAGES_MISSING"
 
 	say "question" "Should I install them for you now? [y/N] "
-	read -p "" prompt < /proc/${PPID}/fd/0
-	if [[ $prompt =~ [yY](es)* ]]; then
+	if [[ $(await_answer) =~ [yY](es)* ]]; then
 		INSTALL_CMD="apt-get install -y $PACKAGES_MISSING"
 		say "debug" "Installing packages using '$INSTALL_CMD'..."
 		sleep 1
@@ -688,6 +820,153 @@ if [ "$PACKAGES_MISSING" != "" ]; then
 	fi
 fi
 
+# check for script update... maybe there are important changes, or something like that.
+# ofcourse skip check, if the user don't want to stay up 2 date.
+if [ "$NO_UPD_CHECK" == "yes" ] && [ "$ONLY_SCRIPT_UPDATE_CHECK" != "yes" ]; then
+	say "warning" "Script update check skipped by user. This is NOT recommended!"
+
+	say "warning" "Please at least check manually if there is any new update available."
+	say "warning" "You are currently using script version: $SCRIPT_VERSION_NUMBER from $SCRIPT_VERSION_DATE."
+	say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+
+else
+	DISPLAY_CHANGELOG="yes"
+
+	say "info" "Checking for new diagnostic script version..."
+	script_check_for_update
+	UPD_CHECK_RETURN=$?
+	if [ $UPD_CHECK_RETURN -eq 0 ]; then
+		say "okay" "You are using the latest version."
+	else
+		if [ $UPD_CHECK_RETURN -eq 2 ]; then
+			say "info" "There is a new version available for download! You are using v$SCRIPT_VERSION_NUMBER, but v$UPD_CHECK_VER is already available."
+			say "info" "It is recommended to update the script to the latest version before continuing executing this diagnostic script."
+
+			# does the user want to see the changelog?
+			say "question" "Do you want to see the changelog of the recent update? [Y/n] "
+			if [[ $(await_answer) =~ [nN](o)* ]]; then
+				DISPLAY_CHANGELOG="no"
+			fi
+
+			# load and show it!
+			if [ "$DISPLAY_CHANGELOG" == "yes" ]; then
+				# trying to get changelog
+				say "debug" "Trying to get script update changelog..."
+				CHANGELOG="$(script_check_for_changelog "$UPD_CHECK_VER")"
+				if [ "$CHANGELOG" != "" ]; then
+					say "info" "Displaying CHANGELOG for diagSinusbot v$UPD_CHECK_VER:"
+					while IFS= read -r line; do
+						say "info" " $line"
+					done <<< "$CHANGELOG"
+				else
+					say "warning" "Failed getting update changelog."
+					say "debug" "Tried getting changelog from '$(script_get_changelog_url $UPD_CHECK_VER)'..."
+				fi
+			fi
+
+			# do u wanna update?
+			say "question" "Should I automatically update the diagnostic script for you? [Y/n] "
+			# default is here yes. So if the user says explicity no, we do nothing than throwing out some text.
+			if [[ $(await_answer) =~ [nN](o)* ]]; then
+				say "warning" "Automated update skipped by user."
+				sleep 1
+
+				say "warning" "Please at least update the diagnostic script manually before continuing using this script."
+				say "warning" "You are currently using version: $SCRIPT_VERSION_NUMBER from $SCRIPT_VERSION_DATE, but v$UPD_CHECK_VER is already available."
+				say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+				sleep 1
+
+				pause
+			else
+				say "info" "Downloading new script version..."
+				say "debug" "Download script URL: '$SCRIPT_PROJECT_SCDL'."
+				CUR_SCRIPT_PATH="$SCRIPT_PATH/$(basename $0)"
+
+				# check if tmp file of this script does already exist. if so, we delete it.
+				if [ -f "$CUR_SCRIPT_PATH.tmp" ]; then
+					rm $CUR_SCRIPT_PATH.tmp
+				fi
+
+				# downloading new script...
+				curl -o $CUR_SCRIPT_PATH.tmp "$SCRIPT_PROJECT_SCDL"
+				if [ $? -ne 0 ]; then
+					say "error" "Error when downloading the new script! Please investigate issues and try again. Skipping update for now."
+					say "warning" "Please at least update the diagnostic script manually before continuing using this script."
+					say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+					pause
+				else
+
+					if [ ! -f "$CUR_SCRIPT_PATH.tmp" ]; then
+						say "error" "Strange issue here: Even after successful download according to the exit status, the new script file is missing. Please investigate."
+						say "warning" "Please at least update the diagnostic script manually before continuing using this script."
+						say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+						pause
+					else
+
+						# check syntax of new script (should be enough to detect non-bash script files, when something got wrong when downloading)
+						bash -n $CUR_SCRIPT_PATH.tmp &>/dev/null
+						if [ $? -ne 0 ]; then
+							say "error" "Something went wrong while downloading the script. Either the download failed or the syntax of the script is faulty."
+							say "warning" "Skipping automated update..."
+							sleep 1
+
+							say "warning" "Please at least update the diagnostic script manually before continuing using this script."
+							say "warning" "You are currently using version: $SCRIPT_VERSION_NUMBER from $SCRIPT_VERSION_DATE, but v$UPD_CHECK_VER is already available."
+							say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+							pause
+
+						else
+
+							# make backup of old script
+							mv $CUR_SCRIPT_PATH $CUR_SCRIPT_PATH.bak
+							if [ $? -ne 0 ] || [ ! -f "$CUR_SCRIPT_PATH.bak" ]; then
+								say "error" "Strange issue here: Renaming script file to backup file did failed. Skipping update. Please investigate."
+								say "warning" "Please at least update the diagnostic script manually before continuing using this script."
+								say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+								pause
+							else
+
+								# rename temp update script to the filename of before
+								mv $CUR_SCRIPT_PATH.tmp $CUR_SCRIPT_PATH
+								if [ $? -ne 0 ] || [ ! -f "$CUR_SCRIPT_PATH.bak" ]; then
+									say "error" "Strange issue here: Renaming the new script file to the original file name failed. Skipping update. Please investigate."
+									say "warning" "Please at least update the diagnostic script manually before continuing using this script."
+									say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+									pause
+								else
+
+									say "info" "Update complete. Please re-run the script, so that the changes take effect!"
+									sleep 1
+
+									say "info" "Thanks for using and updating the script! :)"
+									say
+									say "info" "Re-run the script using the command:"
+									say "info" " $ bash $CUR_SCRIPT_PATH"
+									say
+
+									pause
+									exit 0
+								fi
+							fi
+						fi
+					fi
+				fi
+			fi
+
+		else
+			say "error" "There was an error while checking for an update. Check your internet connection."
+			say "info" "Make sure that the version check file at '$SCRIPT_VERSION_FILE' is accessible by the server."
+			pause
+		fi
+	fi
+fi
+
+# check if only script update check was initiated
+if [ "$ONLY_SCRIPT_UPDATE_CHECK" == "yes" ]; then
+	say "debug" "Only update check was initiated. Exiting..."
+	exit 0
+fi
+
 # checking bot dependencies
 PACKAGES_MISSING=$(get_missing_os_packages "$BOT_REQ_PACKAGES")
 if [ "$PACKAGES_MISSING" != "" ]; then
@@ -695,8 +974,7 @@ if [ "$PACKAGES_MISSING" != "" ]; then
 	say "info" "Following packages are missing: $PACKAGES_MISSING"
 
 	say "question" "Should I install them for you now? [y/N] "
-	read -p "" prompt
-	if [[ $prompt =~ [yY](es)* ]]; then
+	if [[ $(await_answer) =~ [yY](es)* ]]; then
 		INSTALL_CMD="apt-get install -y $PACKAGES_MISSING"
 		say "debug" "Installing packages using '$INSTALL_CMD'..."
 		sleep 1
@@ -726,7 +1004,7 @@ else
 	SYS_PACKAGES_MISSING="Missing packages: $PACKAGES_MISSING"
 fi
 
-# current path of script
+# set bot path by default to current path of script
 BOT_PATH=$(pwd)
 
 # bot binary searching
@@ -737,6 +1015,7 @@ check_bot_binary
 if [ $? -ne 0 ]; then
 	BOT_PATH="/opt/ts3bot/"
 	say "warning" "Binary not found in current path. Fallback to default directory."
+	say "debug" "Set bot path to directory '$BOT_PATH'..."
 
 	if [ ! -d "$BOT_PATH" ]; then
 		say "error" "Bot binary not found in default directory!"
@@ -768,13 +1047,13 @@ SYS_OS=$(lsb_release --short --description)
 SYS_OS_EXTENDED=""
 if [ -f "/proc/user_beancounters" ]; then
 	SYS_OS_EXTENDED="(OpenVZ)"
-	
-elif [ -f "/proc/1/cgroup" ]; then 
-	lxc=$(cat /proc/1/cgroup | grep -Pq 'lxc')
-	if [ $lxc -eq 0 ]; then
+
+elif [ -f "/proc/1/cgroup" ]; then
+	cat /proc/1/cgroup | grep -Pq 'lxc'
+	if [ $? -eq 0 ]; then
 		SYS_OS_EXTENDED="(LXC)"
 	fi
-	
+
 elif [ -f "/.dockerinit" ]; then
 	SYS_OS_EXTENDED="(Docker)"
 fi
@@ -948,18 +1227,41 @@ say "debug" "Reading TS3Path from bot configuration..."
 BOT_CONFIG_TS3PATH=$(parse_bot_config "TS3Path")
 BOT_CONFIG_TS3PATH_EXTENDED=""
 
+# get ts3 plugin information
 BOT_TS3_PLUGIN="unknown"
 BOT_TS3_PLUGIN_EXTENDED="(TS3client not found)"
 BOT_TS3_PLUGIN_HASH_TS3CLIENT="unknown"
 BOT_TS3_PLUGIN_HASH_BOTPLUGIN="unknown"
+
+# ts3 client info
+BOT_CONFIG_TS3PATH_VERSION="unknown"
+BOT_CONFIG_TS3PATH_VERSION_EXTENDED=""
 
 if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 	BOT_CONFIG_TS3PATH_DIRECTORY=$(dirname "$BOT_CONFIG_TS3PATH")
 	# trying to get ts3client version
 	say "debug" "Trying to get ts3client version..."
 	if [ -f "$BOT_CONFIG_TS3PATH_DIRECTORY/CHANGELOG" ]; then
-		BOT_CONFIG_TS3PATH_VERSION=$(cat "$BOT_CONFIG_TS3PATH_DIRECTORY/CHANGELOG" | awk 'match($0, /\=== Client Release (.*)/) { print $4 };' | awk 'NR==1')
+		BOT_CONFIG_TS3PATH_VERSION=$(cat "$BOT_CONFIG_TS3PATH_DIRECTORY/CHANGELOG" | awk 'match($0, /Client Release (.*)/) { print $4 };' | awk 'NR==1')
 		BOT_CONFIG_TS3PATH_EXTENDED="(Version $BOT_CONFIG_TS3PATH_VERSION)"
+
+		# check ts3 client version
+		if [ "$BOT_CONFIG_TS3PATH_VERSION" != "" ]; then
+			if compare_version $BOT_CONFIG_TS3PATH_VERSION 3.0.18.2; then
+				BOT_CONFIG_TS3PATH_VERSION_EXTENDED="(vulnerable! outdated!)"
+				say "warning" "*************************** ATTENTION ***************************"
+				say "warning" "[b]IMPORTANT! YOUR SYSTEM IS VULNERABLE DUE TO OUTDATED TS3CLIENT![/b]"
+				say "warning" "You are still using an outdated TS3Client version 3.0.18.2 or later, which has very serious security vulnerabilities!"
+				say "warning" "This security defects allows Remote Code Executions and Remote Code Inclusions! With this vulnerabilities it is possible"
+				say "warning" "to infect your system or even to take control over your whole system. This can lead to very dangerous situations."
+				say "warning" "[b]Update as soon as possible![/b] Download the latest TeamSpeak 3 Linux amd64 client from here: http://www.teamspeak.com/downloads"
+				say "warning" "*************************** ATTENTION ***************************"
+				say "info" "READ THE MESSAGE ABOVE! This is really important. Seriously. (Script will continue in five seconds...)"
+				sleep 5
+				pause
+			fi
+		fi
+
 	else
 		BOT_CONFIG_TS3PATH_EXTENDED="(CHANGELOG file not found!)"
 	fi
@@ -1048,6 +1350,10 @@ BOT INFORMATION
    - TS3Path = $BOT_CONFIG_TS3PATH $BOT_CONFIG_TS3PATH_EXTENDED
    - YoutubeDLPath = $BOT_CONFIG_YTDLPATH $BOT_CONFIG_YTDLPATH_EXTENDED
  - Installed scripts: $BOT_INSTALLED_SCRIPTS
+
+OTHER INFORMATION
+ - TeamSpeak 3 Version: $BOT_CONFIG_TS3PATH_VERSION $BOT_CONFIG_TS3PATH_VERSION_EXTENDED
+ - DiagScript version: v$SCRIPT_VERSION_NUMBER
 ==========================================================
 EOF
 )
@@ -1056,11 +1362,13 @@ EOF
 say
 say
 
-say "" "\e[1mPlease attach this output to your forum post:\e[0;37m"
+say "" "[b]Please attach this output to your forum post:[/b]"
+say
 say "" "[CODE]"
 say "" "$OUTPUT"
 say "" "[/CODE]"
-say "" "\e[1mNotice\e[0;37m: For a better overview, post this data
+say
+say "" "[b]Notice[/b]: For a better overview, post this data
 in the forum within a CODE-tag!"
 
 say
