@@ -1,0 +1,3 @@
+Added check if webinterface is listening either on IPv4 or IPv6 localhost
+Fixed detection if libglib2.0-0 package is installed properly (Thanks for testing iTaskmanager)
+Improved installed-package detection a bit

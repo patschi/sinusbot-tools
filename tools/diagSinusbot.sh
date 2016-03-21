@@ -111,6 +111,10 @@
 #           Changed: Optimized say-function to be able to output bold text.
 #           Some cosmetic and overall little improvements.
 #           Fixed LXC detection (finally).
+#  v0.4.1:  [21.03.2016 13:15]
+#           Added check if webinterface is listening either on IPv4 or IPv6 localhost
+#           Fixed detection if libglib2.0-0 package is installed properly (Thanks for testing iTaskmanager)
+#           Improved installed-package detection a bit
 #
 ### Known issues:
 # - Sometimes retrieving CPU information does fail and does just return empty text
@@ -122,6 +126,7 @@
 #
 ### USAGE
 # To download and execute you can use:
+#  $ cd /path/to/sinusbot/ # usually /opt/ts3bot/
 #  $ curl -O https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh
 #  $ bash diagSinusbot.sh
 #
@@ -145,8 +150,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.4.0"
-SCRIPT_VERSION_DATE="08.02.2016 16:40"
+SCRIPT_VERSION_NUMBER="0.4.1"
+SCRIPT_VERSION_DATE="21.03.2016 13:15"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -323,10 +328,10 @@ show_credits()
 	say "info" ""
 	say "info" "  [b]flyth[/b]            Michael F.     for developing sinusbot, testing this script and ideas"
 	say "info" "  [b]Xuxe[/b]             Julian H.      for testing and supporting development"
-	say "info" "  [b]GetMeOutOfHere[/b]   Mr. Somebody   for testing and ideas"
+	say "info" "  [b]GetMeOutOfHere[/b]   -              for testing and ideas"
 	say "info" "  [b]JANNIX[/b]           Jan            for testing"
 	say "info" ""
-	say "info" "...if u see 'em somewhere, give 'em a chocolate cookieees!"
+	say "info" "...if u see 'em somewhere, give 'em some chocolate cookieees!"
 }
 
 ## Function t000 m0o0o0o0o0o0oo t000d4y
@@ -348,7 +353,7 @@ failed()
 {
 	say "error" "Something went wrong!"
 	say "wait" "Press [ENTER] to exit."
-	await_answer
+	read -p ""
 	if [ ! -z "$1" ]; then
 		say "debug" "exit reason code: $1"
 	fi
@@ -598,7 +603,7 @@ get_bot_version()
 ## Function to check if package is installed
 is_os_package_installed()
 {
-	dpkg-query -W -f='${Status}' $1 2>&1 | grep -q -P '^install ok installed$' 2>&1
+	dpkg-query -W -f='${Status}' $1 2>&1 | grep -q -P 'install ok installed' 2>&1
 	if [ $? -eq 0 ]; then
 		return 0
 	else
@@ -1183,7 +1188,8 @@ BOT_CONFIG_WEB_PORT=$(parse_bot_config "ListenPort")
 if [ "$BOT_CONFIG_WEB_PORT" == "" ]; then
 	BOT_WEB_STATUS_EXTENDED="(Port not set?)"
 else
-	if port_in_use "127.0.0.1" "$BOT_CONFIG_WEB_PORT"; then
+	# check if port is listening either on IPv4 or IPv6 localhost
+	if port_in_use "127.0.0.1" "$BOT_CONFIG_WEB_PORT" || port_in_use "::1" "$BOT_CONFIG_WEB_PORT"; then
 		BOT_WEB_STATUS="port locally reachable"
 	else
 		BOT_WEB_STATUS="port locally not reachable"
