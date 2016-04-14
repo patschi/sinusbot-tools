@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.4.0
+# Version: 0.4.2
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -115,6 +115,16 @@
 #           Added check if webinterface is listening either on IPv4 or IPv6 localhost
 #           Fixed detection if libglib2.0-0 package is installed properly (Thanks for testing iTaskmanager)
 #           Improved installed-package detection a bit
+#  v0.4.2:  [14.04.2016 13:15]
+#           > This is just a bugfix release, fixing some issues on non-english operating system-setups.
+#           > Thanks for testing and letting me know about the issues, MaxS! [from the Sinusbot forum]
+#           Added connection timeout for outgoing web requests (e.g. for script update checks)
+#           Added some checks of RAM, SWAP and DISK parsing functions when any errors happens
+#           Reworked the way how RAM and SWAP information gets read from the system (not OS language-dependend anymore)
+#           Changed: Calculate md5 hash of installed TS3 plugin even if the bot plugin does not exist in the bot directory
+#           Fixed: Reading out RAM and SWAP-data was not possible when the operating system had any other language than english
+#           Fixed: Retrieving permissions of the sinusbot init.d script did not work on systems with any other language than english
+#           Known issue: Getting DISK data on OpenVZ machines and non-english systems may still not work. Not critical, fix may be released in the future.
 #
 ### Known issues:
 # - Sometimes retrieving CPU information does fail and does just return empty text
@@ -150,8 +160,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.4.1"
-SCRIPT_VERSION_DATE="21.03.2016 13:15"
+SCRIPT_VERSION_NUMBER="0.4.2"
+SCRIPT_VERSION_DATE="14.04.2016 13:15"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -330,6 +340,7 @@ show_credits()
 	say "info" "  [b]Xuxe[/b]             Julian H.      for testing and supporting development"
 	say "info" "  [b]GetMeOutOfHere[/b]   -              for testing and ideas"
 	say "info" "  [b]JANNIX[/b]           Jan            for testing"
+	say "info" "  [b]MaxS[/b]             Max            for testing and finding bugs"
 	say "info" ""
 	say "info" "...if u see 'em somewhere, give 'em some chocolate cookieees!"
 }
@@ -371,8 +382,7 @@ bytes_format()
 	POWER=1
 	VAL=$(echo "scale=2; $1 * 1024" | bc)
 	VINT=$(echo $VAL / 1024 | bc )
-	while [ $VINT -gt 0 ]
-	do
+	while [ $VINT -gt 0 ]; do
 		let POWER=POWER+1
 		VAL=$(echo "scale=2; $VAL / 1024" | bc)
 		VINT=$(echo $VAL / 1024 | bc )
@@ -474,7 +484,8 @@ is_supported_os()
 ## Function to crawl given URL
 load_webfile()
 {
-	echo "$(curl --fail --silent $1)"
+	# timeout are 10 seconds, because maybe slower internet connections or slow DNS resolutions.
+	echo "$(curl --fail --connect-timeout 10 --silent $1)"
 }
 
 ## Function to check if a new update is available
@@ -1126,18 +1137,46 @@ fi
 
 # get ram/memory info
 say "debug" "Getting RAM information..."
-SYS_RAM_FIELD=$(free | grep Mem | sed 's/ \+/ /g')
-SYS_RAM_TOTAL=$(echo "$SYS_RAM_FIELD" | cut -d " " -f2)
-SYS_RAM_CACHED=$(echo "$SYS_RAM_FIELD" | cut -d " " -f7)
-SYS_RAM_USAGE=$(($(echo "$SYS_RAM_FIELD" | cut -d " " -f3) - $SYS_RAM_CACHED))
-SYS_RAM_PERNT=$(($SYS_RAM_USAGE * 10000 / $SYS_RAM_TOTAL / 100))
+MEMINFO=$(cat /proc/meminfo)
 
-# get swap info
-say "debug" "Getting SWAP information..."
-SYS_SWAP_FIELD=$(free | grep Swap | sed 's/ \+/ /g')
-SYS_SWAP_TOTAL=$(echo "$SYS_SWAP_FIELD" | cut -d " " -f2)
-SYS_SWAP_USAGE=$(echo "$SYS_SWAP_FIELD" | cut -d " " -f3)
-SYS_SWAP_PERNT=$(($SYS_SWAP_USAGE * 10000 / $SYS_SWAP_TOTAL / 100))
+if [ $? -ne 0 ]; then
+	SYS_RAM_TOTAL="0"
+	SYS_RAM_CACHED="0"
+	SYS_RAM_FREE="0"
+	SYS_RAM_USAGE="0"
+	SYS_RAM_PERNT="0"
+	SYS_RAM_EXTENDED="(error when reading file)"
+
+	SYS_SWAP_TOTAL="0"
+	SYS_SWAP_FREE="0"
+	SYS_SWAP_USAGE="0"
+	SYS_SWAP_PERNT="0"
+	SYS_SWAP_EXTENDED="(error when reading file)"
+
+	say "error" "Error when reading /proc/meminfo! [continuing]"
+
+else
+	SYS_RAM_TOTAL=$(echo "$MEMINFO" | grep MemTotal | awk '{ print $2 }')
+	SYS_RAM_CACHED=$(echo "$MEMINFO" | grep "^Cached" | awk '{ print $2 }')
+	SYS_RAM_FREE=$(echo "$MEMINFO" | grep MemAvailable | awk '{ print $2 }')
+	SYS_RAM_USAGE=$(($SYS_RAM_TOTAL - $SYS_RAM_CACHED))
+	if [ $SYS_RAM_TOTAL -eq 0 ]; then
+		SYS_RAM_PERNT="0"
+	else
+		SYS_RAM_PERNT=$(($SYS_RAM_USAGE * 10000 / $SYS_RAM_TOTAL / 100))
+	fi
+
+	# get swap info
+	say "debug" "Getting SWAP information..."
+	SYS_SWAP_TOTAL=$(echo "$MEMINFO" | grep "SwapTotal" | awk '{ print $2 }')
+	SYS_SWAP_FREE=$(echo "$MEMINFO" | grep "SwapFree" | awk '{ print $2 }')
+	SYS_SWAP_USAGE=$(($SYS_SWAP_TOTAL - $SYS_SWAP_FREE))
+	if [ $SYS_SWAP_TOTAL -eq 0 ]; then
+		SYS_SWAP_PERNT="0"
+	else
+		SYS_SWAP_PERNT=$(($SYS_SWAP_USAGE * 10000 / $SYS_SWAP_TOTAL / 100))
+	fi
+fi
 
 # get disk data
 # check if the machine is a OpenVZ container
@@ -1150,10 +1189,20 @@ else
 	SYS_DISK_PARMS="-t ext4 -t ext3 -t ext2 -t reiserfs -t jfs -t ntfs -t fat32 -t btrfs -t fuseblk"
 fi
 
-SYS_DISK_FIELD=$(df -Tl --total $SYS_DISK_PARMS | grep total | sed 's/ \+/ /g')
-SYS_DISK_TOTAL=$(echo "$SYS_DISK_FIELD" | cut -d " " -f5)
-SYS_DISK_USAGE=$(echo "$SYS_DISK_FIELD" | cut -d " " -f4)
-SYS_DISK_PERNT=$(($SYS_DISK_USAGE * 10000 / $SYS_DISK_TOTAL / 100))
+SYS_DISK_DATA=$(df -Tl --total $SYS_DISK_PARMS)
+if [ $? -eq 0 ]; then
+	SYS_DISK_FIELD=$(echo "$SYS_DISK_DATA" | grep total | sed 's/ \+/ /g')
+	SYS_DISK_TOTAL=$(echo "$SYS_DISK_FIELD" | cut -d " " -f5)
+	SYS_DISK_USAGE=$(echo "$SYS_DISK_FIELD" | cut -d " " -f4)
+	SYS_DISK_PERNT=$(($SYS_DISK_USAGE * 10000 / $SYS_DISK_TOTAL / 100))
+else
+	SYS_DISK_TOTAL="0"
+	SYS_DISK_USAGE="0"
+	SYS_DISK_PERNT="0"
+	SYS_DISK_EXTENDED="(error when getting disk data)"
+
+	say "error" "Error when reading >df< output! [continuing]"
+fi
 
 # collecting bot info
 say "info" "Collecting bot information..."
@@ -1205,9 +1254,9 @@ SYS_BOT_AUTOSTART_PATHS="/etc/init.d/sinusbot"
 for SYS_BOT_AUTOSTART_PATH in $SYS_BOT_AUTOSTART_PATHS; do
 	if [ -f "$SYS_BOT_AUTOSTART_PATH" ]; then
 		SYS_BOT_AUTOSTART="found at $SYS_BOT_AUTOSTART_PATH"
-		SYS_BOT_AUTOSTART_PERMS="$(stat "$SYS_BOT_AUTOSTART_PATH" | sed -n '/^Access: (/{s/Access: (\([0-9]\+\).*$/\1/;p}')"
-		if [ $SYS_BOT_AUTOSTART_PERMS -le 0755 ]; then
-			say "warning" "Please set the permissions of your autostart script at '$SYS_BOT_AUTOSTART_PATH' from $SYS_BOT_AUTOSTART_PERMS to 0755, using: chmod 0755 $SYS_BOT_AUTOSTART_PATH"
+		SYS_BOT_AUTOSTART_PERMS="$(stat -c %a "$SYS_BOT_AUTOSTART_PATH")"
+		if [ $SYS_BOT_AUTOSTART_PERMS -ne 755 ]; then
+			say "warning" "Please set the permissions of your autostart script at '$SYS_BOT_AUTOSTART_PATH' from $SYS_BOT_AUTOSTART_PERMS to 755, using: chmod 755 $SYS_BOT_AUTOSTART_PATH"
 		fi
 		SYS_BOT_AUTOSTART_EXTENDED="[perms: $SYS_BOT_AUTOSTART_PERMS]"
 		break
@@ -1275,9 +1324,10 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 	# checking bot plugin in ts3client
 	say "debug" "Checking installation of bot plugin in ts3client..."
 	if [ -f "$BOT_CONFIG_TS3PATH_DIRECTORY/plugins/libsoundbot_plugin.so" ]; then
+		BOT_TS3_PLUGIN="installed"
+		BOT_TS3_PLUGIN_HASH_TS3CLIENT="$(get_file_hash "$BOT_CONFIG_TS3PATH_DIRECTORY/plugins/libsoundbot_plugin.so")"
+
 		if [ -f "$BOT_PATH/plugin/libsoundbot_plugin.so" ]; then
-			BOT_TS3_PLUGIN="installed"
-			BOT_TS3_PLUGIN_HASH_TS3CLIENT="$(get_file_hash "$BOT_CONFIG_TS3PATH_DIRECTORY/plugins/libsoundbot_plugin.so")"
 			BOT_TS3_PLUGIN_HASH_BOTPLUGIN="$(get_file_hash "$BOT_PATH/plugin/libsoundbot_plugin.so")"
 			if [ "$BOT_TS3_PLUGIN_HASH_BOTPLUGIN" == "$BOT_TS3_PLUGIN_HASH_TS3CLIENT"  ]; then
 				BOT_TS3_PLUGIN_EXTENDED="(md5 hash match)"
@@ -1285,7 +1335,6 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 				BOT_TS3_PLUGIN_EXTENDED="(md5 hash mismatch!)"
 			fi
 		else
-			BOT_TS3_PLUGIN="installed"
 			BOT_TS3_PLUGIN_EXTENDED="(plugin in bot directory not found)"
 		fi
 	else
@@ -1338,9 +1387,9 @@ SYSTEM INFORMATION
  - DNS resolution check: $SYS_OS_DNS_CHECK_TEXT
  - CPU:
 $SYS_CPU_DATA
- - RAM: $(bytes_format $SYS_RAM_USAGE)/$(bytes_format $SYS_RAM_TOTAL) in use (${SYS_RAM_PERNT}%)
- - SWAP: $(bytes_format $SYS_SWAP_USAGE)/$(bytes_format $SYS_SWAP_TOTAL) in use (${SYS_SWAP_PERNT}%)
- - DISK: $(bytes_format $SYS_DISK_USAGE)/$(bytes_format $SYS_DISK_TOTAL) in use (${SYS_DISK_PERNT}%)
+ - RAM: $(bytes_format $SYS_RAM_USAGE)/$(bytes_format $SYS_RAM_TOTAL) in use (${SYS_RAM_PERNT}%) $SYS_RAM_EXTENDED
+ - SWAP: $(bytes_format $SYS_SWAP_USAGE)/$(bytes_format $SYS_SWAP_TOTAL) in use (${SYS_SWAP_PERNT}%) $SYS_SWAP_EXTENDED
+ - DISK: $(bytes_format $SYS_DISK_USAGE)/$(bytes_format $SYS_DISK_TOTAL) in use (${SYS_DISK_PERNT}%) $SYS_DISK_EXTENDED
  - Report date: $SYS_TIME (timezone: $SYS_TIME_ZONE)
 
 BOT INFORMATION

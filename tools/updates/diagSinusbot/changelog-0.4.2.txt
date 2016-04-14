@@ -1,0 +1,9 @@
+> This is just a bugfix release, fixing some issues on non-english operating system-setups.
+> Thanks for testing and letting me know about the issues, MaxS! [from the Sinusbot forum]
+Added connection timeout for outgoing web requests (e.g. for script update checks)
+Added some checks of RAM, SWAP and DISK parsing functions when any errors happens
+Reworked the way how RAM and SWAP information gets read from the system (not OS language-dependend anymore)
+Changed: Calculate md5 hash of installed TS3 plugin even if the bot plugin does not exist in the bot directory
+Fixed: Reading out RAM and SWAP-data was not possible when the operating system had any other language than english
+Fixed: Retrieving permissions of the sinusbot init.d script did not work on systems with any other language than english
+Known issue: Getting DISK data on OpenVZ machines and non-english systems may still not work. Not critical, fix may be released in the future.
