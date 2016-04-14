@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.4.2
+# Version: 0.4.3
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -112,22 +112,30 @@
 #           Some cosmetic and overall little improvements.
 #           Fixed LXC detection (finally).
 #  v0.4.1:  [21.03.2016 13:15]
-#           Added check if webinterface is listening either on IPv4 or IPv6 localhost
-#           Fixed detection if libglib2.0-0 package is installed properly (Thanks for testing iTaskmanager)
-#           Improved installed-package detection a bit
+#           Added check if webinterface is listening either on IPv4 or IPv6 localhost.
+#           Fixed detection if libglib2.0-0 package is installed properly. (Thanks for testing iTaskmanager)
+#           Improved installed-package detection a bit.
 #  v0.4.2:  [14.04.2016 13:15]
 #           > This is just a bugfix release, fixing some issues on non-english operating system-setups.
 #           > Thanks for testing and letting me know about the issues, MaxS! [from the Sinusbot forum]
-#           Added connection timeout for outgoing web requests (e.g. for script update checks)
-#           Added some checks of RAM, SWAP and DISK parsing functions when any errors happens
-#           Reworked the way how RAM and SWAP information gets read from the system (not OS language-dependend anymore)
-#           Changed: Calculate md5 hash of installed TS3 plugin even if the bot plugin does not exist in the bot directory
-#           Fixed: Reading out RAM and SWAP-data was not possible when the operating system had any other language than english
-#           Fixed: Retrieving permissions of the sinusbot init.d script did not work on systems with any other language than english
+#           Added connection timeout for outgoing web requests (e.g. for script update checks).
+#           Added some checks of RAM, SWAP and DISK parsing functions when any errors happens.
+#           Reworked the way how RAM and SWAP information gets read from the system (not OS language-dependend anymore).
+#           Changed: Calculate md5 hash of installed TS3 plugin even if the bot plugin does not exist in the bot directory.
+#           Fixed: Reading out RAM and SWAP-data was not possible when the operating system had any other language than english.
+#           Fixed: Retrieving permissions of the sinusbot init.d script did not work on systems with any other language than english.
 #           Known issue: Getting DISK data on OpenVZ machines and non-english systems may still not work. Not critical, fix may be released in the future.
+#  v0.4.3:  [14.04.2016 13:30]
+#           > This is just a very very small and silent micro-release making some non-mentionable improvements.
+#           Updated: Added simple warning/notice to SWAP output when SWAP is disabled.
+#           Updated: 'Known issues' section in script file itself.
 #
 ### Known issues:
+# Mostly this issues are non-critical and just kind of hard to fix or workaround.
+# If you have any ideas, feel free to tell me them.
+#
 # - Sometimes retrieving CPU information does fail and does just return empty text
+# - Getting DISK data on OpenVZ machines and non-english systems may still not work.
 #
 ### THANKS TO...
 # all people, who helped developing and testing
@@ -160,8 +168,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.4.2"
-SCRIPT_VERSION_DATE="14.04.2016 13:15"
+SCRIPT_VERSION_NUMBER="0.4.3"
+SCRIPT_VERSION_DATE="14.04.2016 13:30"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -1173,6 +1181,7 @@ else
 	SYS_SWAP_USAGE=$(($SYS_SWAP_TOTAL - $SYS_SWAP_FREE))
 	if [ $SYS_SWAP_TOTAL -eq 0 ]; then
 		SYS_SWAP_PERNT="0"
+		SYS_SWAP_EXTENDED="(SWAP disabled)"
 	else
 		SYS_SWAP_PERNT=$(($SYS_SWAP_USAGE * 10000 / $SYS_SWAP_TOTAL / 100))
 	fi
