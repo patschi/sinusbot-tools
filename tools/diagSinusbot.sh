@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.4.3
+# Version: 0.4.4
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -129,6 +129,12 @@
 #           > This is just a very very small and silent micro-release making some non-mentionable improvements.
 #           Updated: Added simple warning/notice to SWAP output when SWAP is disabled.
 #           Updated: 'Known issues' section in script file itself.
+#  v0.4.4:  [28.04.2016 20:26]
+#           > Some little improvements and new version check for recent 3.0.19 TS3 client and glibc library.
+#           Added glibc version check and output.
+#           Added warning for TS3 client 3.0.19 on Debian 8 and older.
+#           Added commands "sort" and "head" to required commands for this diagnostic script.
+#           Improved bot binary search functionality.
 #
 ### Known issues:
 # Mostly this issues are non-critical and just kind of hard to fix or workaround.
@@ -168,18 +174,18 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.4.3"
-SCRIPT_VERSION_DATE="14.04.2016 13:30"
+SCRIPT_VERSION_NUMBER="0.4.4"
+SCRIPT_VERSION_DATE="28.04.2016 20:26"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
-SCRIPT_PROJECT_SCDL="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/diagSinusbot.sh"
+SCRIPT_PROJECT_DLURL="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/diagSinusbot.sh"
 
 SCRIPT_VERSION_FILE="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/updates/diagSinusbot/version.txt"
 SCRIPT_CHANGELOG_FILE="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/updates/diagSinusbot/changelog-{VER}.txt"
 
 # script COMMANDS dependencies
-SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf netstat"
+SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf netstat sort head"
 # script PACKAGES dependencies
 SCRIPT_REQ_PKGS="bc binutils coreutils lsb-release util-linux"
 
@@ -198,26 +204,26 @@ say()
 	fi
 
 	# criteria
-	CRIT=$(echo $1 | tr '[:lower:]' '[:upper:]')
+	local CRIT=$(echo $1 | tr '[:lower:]' '[:upper:]')
 
 	# message
-	MSG="$2"
-	MSG="$(string_replace "$MSG" "\[b\]" "\x1b[1m")"
-	MSG="$(string_replace "$MSG" "\[\/b\]" "\x1b[0m")"
+	local MSG="$2"
+	local MSG="$(string_replace "$MSG" "\[b\]" "\x1b[1m")"
+	local MSG="$(string_replace "$MSG" "\[\/b\]" "\x1b[0m")"
 
 	# default prefix
-	PREFIX=""
+	local PREFIX=""
 
 	# modes for echo command
-	MODES="-e"
+	local MODES="-e"
 	if [ "$CRIT" == "WAIT" ] || [ "$CRIT" == "QUESTION" ]; then
-		MODES="$MODES -n"
+		local MODES="$MODES -n"
 	fi
 
 	# color for criterias
 	if [ ! -z "$CRIT" ]; then
 		# prefix
-		PREFIX="[$(date +"%Y-%m-%d %H:%M:%S")] "
+		local PREFIX="[$(date +"%Y-%m-%d %H:%M:%S")] "
 
 		case "$CRIT" in
 			ERROR)
@@ -286,28 +292,28 @@ show_welcome()
 	say "welcome" "================================================"
 	say "welcome" "= [b]HELLO![/b] Please invest some time to read this. ="
 	say "welcome" "=                                              ="
-	say "welcome" "=  Thanks for using this diagnostic script!    ="
-	say "welcome" "=  The more information you provide, the       ="
-	say "welcome" "=  better we can help to solve your problem.   ="
+	say "welcome" "=  Thanks  for  using  this diagnostic script! ="
+	say "welcome" "=  The  more  information  you   provide,  the ="
+	say "welcome" "=  better  we  can help to solve your problem. ="
 	say "welcome" "=                                              ="
-	say "welcome" "=  The execution may take some moments to      ="
-	say "welcome" "=  collection the most important information   ="
-	say "welcome" "=  of your system and your bot installation.   ="
+	say "welcome" "=  The  execution  may  take  some  moments to ="
+	say "welcome" "=  collection  the most  important information ="
+	say "welcome" "=  of your system  and  your bot installation. ="
 	say "welcome" "=                                              ="
-	say "welcome" "=  After everything is done, you will get a    ="
+	say "welcome" "=  After e verything  is  done, you will get a ="
 	say "welcome" "=  diagnostic output, ready for copy & pasting ="
 	say "welcome" "=  it within a CODE-tag in the Sinusbot forum. ="
 	say "welcome" "=  [Link: https://forum.sinusbot.com]          ="
 	say "welcome" "=                                              ="
-	say "welcome" "=  No private information will be collected    ="
-	say "welcome" "=  nor the data will be sent to anywhere.      ="
-	say "welcome" "=  This just generates an example forum post.  ="
+	say "welcome" "=  No  private  information  will be collected ="
+	say "welcome" "=  nor  the  data  will  be  sent to anywhere. ="
+	say "welcome" "=  This  just generates an example forum post. ="
 	say "welcome" "=                                              ="
-	say "welcome" "=  The script does perform a DNS resolution    ="
-	say "welcome" "=  of 'google.com' to determine if your DNS    ="
-	say "welcome" "=  settings are working as expected.           ="
+	say "welcome" "=  The script does perform a DNS resolution of ="
+	say "welcome" "=  the  domain 'google.com'  to  determine  if ="
+	say "welcome" "=  your  DNS settings are working as expected. ="
 	say "welcome" "================================================"
-	say "welcome" "= I am thankful for any feedback. Please also  ="
+	say "welcome" "= I am thankful for any feedback. Please  also ="
 	say "welcome" "= report any issues you may find either on the ="
 	say "welcome" "= Sinusbot forum or via Github issues. Thanks! ="
 	say "welcome" "=   -- $SCRIPT_AUTHOR_NAME. ="
@@ -336,7 +342,7 @@ show_version()
 	say "info" "(C) $SCRIPT_YEAR, $SCRIPT_AUTHOR_NAME ($SCRIPT_AUTHOR_WEBSITE)"
 	say "info" "$SCRIPT_NAME v$SCRIPT_VERSION_NUMBER [$SCRIPT_VERSION_DATE]"
 	say "info" "Project site: $SCRIPT_PROJECT_SITE"
-	say "info" "Script download: $SCRIPT_PROJECT_SCDL"
+	say "info" "Script download: $SCRIPT_PROJECT_DLURL"
 }
 
 ## Function to show credits (whooaaa!)
@@ -383,18 +389,20 @@ failed()
 bytes_format()
 {
 	# This separates the number from the text
-	SPACE=" "
+	local SPACE=" "
 	# Convert input parameter (number of bytes)
 	# to Human Readable form
-	SLIST="B,KB,MB,GB,TB,PB,EB,ZB,YB"
-	POWER=1
-	VAL=$(echo "scale=2; $1 * 1024" | bc)
-	VINT=$(echo $VAL / 1024 | bc )
+	local SLIST="B,KB,MB,GB,TB,PB,EB,ZB,YB"
+	local POWER=1
+	local VAL=$(echo "scale=2; $1 * 1024" | bc)
+	local VINT=$(echo $VAL / 1024 | bc )
+
 	while [ $VINT -gt 0 ]; do
 		let POWER=POWER+1
-		VAL=$(echo "scale=2; $VAL / 1024" | bc)
-		VINT=$(echo $VAL / 1024 | bc )
+		local VAL=$(echo "scale=2; $VAL / 1024" | bc)
+		local VINT=$(echo $VAL / 1024 | bc )
 	done
+
 	echo "$VAL$SPACE$(echo $SLIST | cut -f$POWER -d',')"
 }
 
@@ -464,6 +472,7 @@ is_supported_os()
 {
 	SYS_OS_LSBRELEASE_ID=$(lsb_release --id --short | tr '[:upper:]' '[:lower:]')
 	SYS_OS_LSBRELEASE_RELEASE=$(lsb_release --release --short | tr '[:upper:]' '[:lower:]')
+	SYS_OS_LSBRELEASE_RELEASE_MAJOR=$(echo "$SYS_OS_LSBRELEASE_RELEASE" | awk -F'.' '{ print $1 }')
 	SYS_OS_LSBRELEASE_DESCRIPTION=$(lsb_release --description --short)
 
 	# check if operating system supported
@@ -475,7 +484,7 @@ is_supported_os()
 	say "info" "Detected operating system: $SYS_OS_LSBRELEASE_DESCRIPTION"
 
 	# check version of operating system: debian
-	if [ "$SYS_OS_LSBRELEASE_ID" == "debian" ] && (( $(echo "$SYS_OS_LSBRELEASE_RELEASE <= 6" | bc -l) )); then
+	if [ "$SYS_OS_LSBRELEASE_ID" == "debian" ] && (( $(echo "$SYS_OS_LSBRELEASE_RELEASE_MAJOR <= 6" | bc -l) )); then
 		# is less or equal 6 = too old.
 		say "warning" "You are using a too old operating system! Debian Squeeze and before are not officially supported for Sinusbot. Please upgrade to a more recent system."
 		sleep 1
@@ -503,15 +512,15 @@ script_check_for_update()
 	#  0 = no update
 	#  1 = failed retrieving info
 	#  2 = update available
-	UPD_CHECK=$(load_webfile "$SCRIPT_VERSION_FILE")
+	local UPD_CHECK=$(load_webfile "$SCRIPT_VERSION_FILE")
 	if [ $? -ne 0 ]; then
 		return 1
 	else
-		UPD_CHECK_STATUS="$(echo $UPD_CHECK | grep -Po '(?<="status": ")[^"]*')"
+		local UPD_CHECK_STATUS="$(echo $UPD_CHECK | grep -Po '(?<="status": ")[^"]*')"
 		if [ "$UPD_CHECK_STATUS" != "true" ]; then
 			return 1
 		else
-			UPD_CHECK_VER="$(echo $UPD_CHECK | grep -Po '(?<="version": ")[^"]*')"
+			local UPD_CHECK_VER="$(echo $UPD_CHECK | grep -Po '(?<="version": ")[^"]*')"
 			if compare_version $SCRIPT_VERSION_NUMBER $UPD_CHECK_VER; then
 				return 2
 			else
@@ -527,7 +536,7 @@ script_check_for_changelog()
 	# Return codes:
 	#  1 = failed retrieving changelog
 	# ...else changelog may be returned.
-	UPD_CHANGELOG=$(load_webfile "$(script_get_changelog_url $1)")
+	local UPD_CHANGELOG=$(load_webfile "$(script_get_changelog_url $1)")
 	if [ $? -ne 0 ]; then
 		return 1
 	else
@@ -562,7 +571,7 @@ compare_version()
 check_bot_binary()
 {
 	BOT_BINARY=""
-	BINARIES="ts3bot sinusbot"
+	local BINARIES="ts3bot sinusbot"
 	for BINARY in $BINARIES; do
 		if [ -f "$BOT_PATH/$BINARY" ]; then
 			BOT_BINARY="$BINARY"
@@ -603,18 +612,18 @@ parse_bot_config()
 get_bot_version()
 {
 	say "debug" "Trying to get sinusbot version using version parameter..." > /proc/${PPID}/fd/0
-	BOT_VERSION_CMD=$($BOT_PATH/$BOT_BINARY --version 2>/dev/null)
+	local BOT_VERSION_CMD=$($BOT_PATH/$BOT_BINARY --version 2>/dev/null)
 	echo "$BOT_VERSION_CMD" | grep -q -P '^flag provided but not defined' >/dev/null
 	if [ $? -eq 0 ]; then
 		say "debug" "Error getting sinusbot version. Falling back to other method." > /proc/${PPID}/fd/0
-		BOT_VERSION_STRING=$(strings $BOT_PATH/$BOT_BINARY | grep "Version:" | cut -d ' ' -f2)
+		local BOT_VERSION_STRING=$(strings $BOT_PATH/$BOT_BINARY | grep "Version:" | cut -d ' ' -f2)
 		if [ "$BOT_VERSION_STRING" != "" ]; then
 			echo "$BOT_VERSION_STRING"
 		else
 			echo "unknown"
 		fi
 	else
-		BOT_VERSION_CMD=$(echo -e "$BOT_VERSION_CMD" | egrep "^SinusBot" | awk '{ print $2 }')
+		local BOT_VERSION_CMD=$(echo -e "$BOT_VERSION_CMD" | egrep "^SinusBot" | awk '{ print $2 }')
 		echo "$BOT_VERSION_CMD"
 	fi
 }
@@ -627,6 +636,17 @@ is_os_package_installed()
 		return 0
 	else
 		return 1
+	fi
+}
+
+## Function to get the current installed version for a given package
+get_installed_version_package()
+{
+	local PKG_VERSION="$(dpkg-query -W -f='${Version}' $1 2>&1)"
+	if [ $? -eq 0 ]; then
+		echo "$PKG_VERSION"
+	else
+		echo "unknown"
 	fi
 }
 
@@ -647,11 +667,11 @@ is_os_package_installed_check()
 ## Function to get missing packages from a list
 get_missing_os_packages()
 {
-	OS_PACKAGES_MISSING=""
+	local OS_PACKAGES_MISSING=""
 	for PACKAGE in $1; do
 		is_os_package_installed "$PACKAGE"
 		if [ $? -ne 0 ]; then
-			OS_PACKAGES_MISSING="$OS_PACKAGES_MISSING $PACKAGE"
+			local OS_PACKAGES_MISSING="$OS_PACKAGES_MISSING $PACKAGE"
 		fi
 	done
 	echo $(trim_spaces "$OS_PACKAGES_MISSING")
@@ -660,13 +680,13 @@ get_missing_os_packages()
 ## Function to get installed scripts
 get_installed_bot_scripts()
 {
-	INSTALLED_SCRIPTS=""
+	local INSTALLED_SCRIPTS=""
 	if [ -d "$BOT_PATH/scripts/" ]; then
 		for SCRIPT_FILE in $BOT_PATH/scripts/*; do
 			if [ "$INSTALLED_SCRIPTS" == "" ]; then
-				INSTALLED_SCRIPTS="$(basename $SCRIPT_FILE)"
+				local INSTALLED_SCRIPTS="$(basename $SCRIPT_FILE)"
 			else
-				INSTALLED_SCRIPTS="$INSTALLED_SCRIPTS; $(basename $SCRIPT_FILE)"
+				local INSTALLED_SCRIPTS="$INSTALLED_SCRIPTS; $(basename $SCRIPT_FILE)"
 			fi
 		done
 		echo $(trim_spaces "$INSTALLED_SCRIPTS")
@@ -730,7 +750,7 @@ await_answer()
 	# is in a function. When not given, the script may not wait
 	# for an entered answer.
 	read -p "" prompt < /proc/${PPID}/fd/0
-	echo $prompt
+	echo "$prompt"
 }
 
 ################
@@ -811,6 +831,9 @@ for SMCMD in $SCRIPT_REQ_CMDS; do
 	fi
 done
 
+# running what...?
+say "info" "Starting $SCRIPT_NAME v$SCRIPT_VERSION_NUMBER [$SCRIPT_VERSION_DATE]..."
+
 # check if any commands are missing
 if [ $REQ_CMDS -ne 0 ]; then
 	say "error" "Missing commands... Install and try again please."
@@ -851,7 +874,7 @@ if [ "$NO_UPD_CHECK" == "yes" ] && [ "$ONLY_SCRIPT_UPDATE_CHECK" != "yes" ]; the
 
 	say "warning" "Please at least check manually if there is any new update available."
 	say "warning" "You are currently using script version: $SCRIPT_VERSION_NUMBER from $SCRIPT_VERSION_DATE."
-	say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+	say "warning" "The latest script can be found at: $SCRIPT_PROJECT_DLURL"
 
 else
 	DISPLAY_CHANGELOG="yes"
@@ -897,13 +920,13 @@ else
 
 				say "warning" "Please at least update the diagnostic script manually before continuing using this script."
 				say "warning" "You are currently using version: $SCRIPT_VERSION_NUMBER from $SCRIPT_VERSION_DATE, but v$UPD_CHECK_VER is already available."
-				say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+				say "warning" "The latest script can be found at: $SCRIPT_PROJECT_DLURL"
 				sleep 1
 
 				pause
 			else
 				say "info" "Downloading new script version..."
-				say "debug" "Download script URL: '$SCRIPT_PROJECT_SCDL'."
+				say "debug" "Download script URL: '$SCRIPT_PROJECT_DLURL'."
 				CUR_SCRIPT_PATH="$SCRIPT_PATH/$(basename $0)"
 
 				# check if tmp file of this script does already exist. if so, we delete it.
@@ -912,18 +935,18 @@ else
 				fi
 
 				# downloading new script...
-				curl -o $CUR_SCRIPT_PATH.tmp "$SCRIPT_PROJECT_SCDL"
+				curl -o $CUR_SCRIPT_PATH.tmp "$SCRIPT_PROJECT_DLURL"
 				if [ $? -ne 0 ]; then
 					say "error" "Error when downloading the new script! Please investigate issues and try again. Skipping update for now."
 					say "warning" "Please at least update the diagnostic script manually before continuing using this script."
-					say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+					say "warning" "The latest script can be found at: $SCRIPT_PROJECT_DLURL"
 					pause
 				else
 
 					if [ ! -f "$CUR_SCRIPT_PATH.tmp" ]; then
 						say "error" "Strange issue here: Even after successful download according to the exit status, the new script file is missing. Please investigate."
 						say "warning" "Please at least update the diagnostic script manually before continuing using this script."
-						say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+						say "warning" "The latest script can be found at: $SCRIPT_PROJECT_DLURL"
 						pause
 					else
 
@@ -936,7 +959,7 @@ else
 
 							say "warning" "Please at least update the diagnostic script manually before continuing using this script."
 							say "warning" "You are currently using version: $SCRIPT_VERSION_NUMBER from $SCRIPT_VERSION_DATE, but v$UPD_CHECK_VER is already available."
-							say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+							say "warning" "The latest script can be found at: $SCRIPT_PROJECT_DLURL"
 							pause
 
 						else
@@ -946,7 +969,7 @@ else
 							if [ $? -ne 0 ] || [ ! -f "$CUR_SCRIPT_PATH.bak" ]; then
 								say "error" "Strange issue here: Renaming script file to backup file did failed. Skipping update. Please investigate."
 								say "warning" "Please at least update the diagnostic script manually before continuing using this script."
-								say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+								say "warning" "The latest script can be found at: $SCRIPT_PROJECT_DLURL"
 								pause
 							else
 
@@ -955,7 +978,7 @@ else
 								if [ $? -ne 0 ] || [ ! -f "$CUR_SCRIPT_PATH.bak" ]; then
 									say "error" "Strange issue here: Renaming the new script file to the original file name failed. Skipping update. Please investigate."
 									say "warning" "Please at least update the diagnostic script manually before continuing using this script."
-									say "warning" "The latest script can be found at: $SCRIPT_PROJECT_SCDL"
+									say "warning" "The latest script can be found at: $SCRIPT_PROJECT_DLURL"
 									pause
 								else
 
@@ -1028,29 +1051,31 @@ else
 	SYS_PACKAGES_MISSING="Missing packages: $PACKAGES_MISSING"
 fi
 
-# set bot path by default to current path of script
-BOT_PATH=$(pwd)
-
 # bot binary searching
-say "debug" "Searching in directory '$BOT_PATH'..."
+say "info" "Searching bot binary..."
 
 # checking for bot binary file
-check_bot_binary
-if [ $? -ne 0 ]; then
-	BOT_PATH="/opt/ts3bot/"
-	say "warning" "Binary not found in current path. Fallback to default directory."
-	say "debug" "Set bot path to directory '$BOT_PATH'..."
+BOT_PATH=""
 
-	if [ ! -d "$BOT_PATH" ]; then
-		say "error" "Bot binary not found in default directory!"
-		failed "bot binary not found"
-	else
+# possible bot paths
+BOT_PATHS=("$(pwd)" "/opt/ts3bot/" "/home/sinusbot/" "/home/sinusbot/sinusbot/")
+
+for BOT_PATH in "${BOT_PATHS[@]}"; do
+	say "debug" "Searching in directory '$BOT_PATH'..."
+		if [ -d "$BOT_PATH" ]; then
 		check_bot_binary
-		if [ $? -ne 0 ]; then
-			say "error" "Bot binary not found! Execute this script in the sinusbot directory!"
-			failed "bot binary not found"
+		if [ $? -eq 0 ]; then
+			say "info" "Binary found."
+			break
+		else
+			BOT_PATH=""
 		fi
 	fi
+done
+
+if [ "$BOT_PATH" == "" ]; then
+	say "error" "Bot binary not found! Execute this script in the sinusbot directory!"
+	failed "bot binary not found"
 fi
 
 # if bot dir was found, check config file now
@@ -1106,12 +1131,18 @@ SYS_OS_KERNEL=$(uname -srm)
 
 # check if x64 bit os
 SYS_OS_ARCH=`getconf LONG_BIT`
-if [ "$SYS_OS_ARCH" = "64" ]; then
+if [ "$SYS_OS_ARCH" == "64" ]; then
 	SYS_OS_ARCH_X64="Y"
 	SYS_OS_ARCH_X64_TEXT="OK"
 else
 	SYS_OS_ARCH_X64="N"
 	SYS_OS_ARCH_X64_TEXT="FAIL: Not x64 OS. [$SYS_OS_ARCH]"
+fi
+
+# get package versions of important packages
+PKG_VERSION_GLIBC="$(get_installed_version_package "libglib2.0-0")"
+if [ "$PKG_VERSION_GLIBC" == "unknown" ]; then
+	PKG_VERSION_GLIBC="unknown"
 fi
 
 # check dns resolution
@@ -1311,11 +1342,12 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 
 		# check ts3 client version
 		if [ "$BOT_CONFIG_TS3PATH_VERSION" != "" ]; then
+			# check for vulnerable old 3.0.18.2 and before version
 			if compare_version $BOT_CONFIG_TS3PATH_VERSION 3.0.18.2; then
 				BOT_CONFIG_TS3PATH_VERSION_EXTENDED="(vulnerable! outdated!)"
 				say "warning" "*************************** ATTENTION ***************************"
 				say "warning" "[b]IMPORTANT! YOUR SYSTEM IS VULNERABLE DUE TO OUTDATED TS3CLIENT![/b]"
-				say "warning" "You are still using an outdated TS3Client version 3.0.18.2 or later, which has very serious security vulnerabilities!"
+				say "warning" "You are still using an outdated TS3Client version 3.0.18.2 or older, which has very serious security vulnerabilities!"
 				say "warning" "This security defects allows Remote Code Executions and Remote Code Inclusions! With this vulnerabilities it is possible"
 				say "warning" "to infect your system or even to take control over your whole system. This can lead to very dangerous situations."
 				say "warning" "[b]Update as soon as possible![/b] Download the latest TeamSpeak 3 Linux amd64 client from here: http://www.teamspeak.com/downloads"
@@ -1324,6 +1356,15 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 				sleep 5
 				pause
 			fi
+
+			# check for compatibility of client 3.0.19 and newer on Debian 8 and older
+			if [ "$BOT_CONFIG_TS3PATH_VERSION" == "3.0.19" ] || compare_version 3.0.19 $BOT_CONFIG_TS3PATH_VERSION; then
+				if [ "$SYS_OS_LSBRELEASE_ID" == "debian" ] && (( $(echo "$SYS_OS_LSBRELEASE_RELEASE_MAJOR <= 8" | bc -l) )); then
+					say "warning" "The TeamSpeak 3 client 3.0.19 and newer is not compatible with Debian 8 and older. Please switch back to an older TeamSpeak 3 version (for example 3.0.18.2) or upgrade to a newer operating system which has newer dependencies."
+					sleep 3
+				fi
+			fi
+
 		fi
 
 	else
@@ -1400,6 +1441,8 @@ $SYS_CPU_DATA
  - SWAP: $(bytes_format $SYS_SWAP_USAGE)/$(bytes_format $SYS_SWAP_TOTAL) in use (${SYS_SWAP_PERNT}%) $SYS_SWAP_EXTENDED
  - DISK: $(bytes_format $SYS_DISK_USAGE)/$(bytes_format $SYS_DISK_TOTAL) in use (${SYS_DISK_PERNT}%) $SYS_DISK_EXTENDED
  - Report date: $SYS_TIME (timezone: $SYS_TIME_ZONE)
+ - Package versions:
+   > libglib: $PKG_VERSION_GLIBC
 
 BOT INFORMATION
  - Status: $BOT_STATUS $BOT_STATUS_EXTENDED

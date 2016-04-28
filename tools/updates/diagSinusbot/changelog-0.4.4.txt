@@ -1,0 +1,6 @@
+> Some little improvements and new version check for recent 3.0.19 TS3 client and glibc library.
+> As usual: Please report any issues you may find! This helps improving the script. Thanks!
+Added glibc version check and output.
+Added warning for TS3 client 3.0.19 on Debian 8 and older.
+Added commands "sort" and "head" to required commands for this diagnostic script.
+Improved bot binary search functionality.
