@@ -5,14 +5,14 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.4.4
+# Version: 0.4.5
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
 #  the operating system and the bot installation.
 #  When finished it returns informative information,
 #  ready to copy and paste it in the right section
-#  in the sinusbot forum to your post.
+#  in the sinusbot forum to your forum post.
 #
 # Important links:
 #  Development of this script: https://github.com/patschi/sinusbot-tools
@@ -135,6 +135,8 @@
 #           Added warning for TS3 client 3.0.19 on Debian 8 and older.
 #           Added commands "sort" and "head" to required commands for this diagnostic script.
 #           Improved bot binary search functionality.
+#  v0.4.5:  [28.04.2016 22:25]
+#           Fixed wrong calculation of RAM usage.
 #
 ### Known issues:
 # Mostly this issues are non-critical and just kind of hard to fix or workaround.
@@ -174,8 +176,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.4.4"
-SCRIPT_VERSION_DATE="28.04.2016 20:26"
+SCRIPT_VERSION_NUMBER="0.4.5"
+SCRIPT_VERSION_DATE="28.04.2016 22:25"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -1198,7 +1200,7 @@ else
 	SYS_RAM_TOTAL=$(echo "$MEMINFO" | grep MemTotal | awk '{ print $2 }')
 	SYS_RAM_CACHED=$(echo "$MEMINFO" | grep "^Cached" | awk '{ print $2 }')
 	SYS_RAM_FREE=$(echo "$MEMINFO" | grep MemAvailable | awk '{ print $2 }')
-	SYS_RAM_USAGE=$(($SYS_RAM_TOTAL - $SYS_RAM_CACHED))
+	SYS_RAM_USAGE=$(($SYS_RAM_TOTAL - $SYS_RAM_FREE))
 	if [ $SYS_RAM_TOTAL -eq 0 ]; then
 		SYS_RAM_PERNT="0"
 	else
@@ -1399,6 +1401,7 @@ fi
 # checking for youtube-dl
 say "debug" "Checking for 'youtube-dl'..."
 BOT_CONFIG_YTDLPATH=$(parse_bot_config "YoutubeDLPath")
+YTDL_VERSION="unknown"
 if [ "$BOT_CONFIG_YTDLPATH" == "" ]; then
 	BOT_CONFIG_YTDLPATH="not set"
 	BOT_CONFIG_YTDLPATH_EXTENDED=""
@@ -1440,7 +1443,6 @@ $SYS_CPU_DATA
  - RAM: $(bytes_format $SYS_RAM_USAGE)/$(bytes_format $SYS_RAM_TOTAL) in use (${SYS_RAM_PERNT}%) $SYS_RAM_EXTENDED
  - SWAP: $(bytes_format $SYS_SWAP_USAGE)/$(bytes_format $SYS_SWAP_TOTAL) in use (${SYS_SWAP_PERNT}%) $SYS_SWAP_EXTENDED
  - DISK: $(bytes_format $SYS_DISK_USAGE)/$(bytes_format $SYS_DISK_TOTAL) in use (${SYS_DISK_PERNT}%) $SYS_DISK_EXTENDED
- - Report date: $SYS_TIME (timezone: $SYS_TIME_ZONE)
  - Package versions:
    > libglib: $PKG_VERSION_GLIBC
 
@@ -1459,8 +1461,10 @@ BOT INFORMATION
  - Installed scripts: $BOT_INSTALLED_SCRIPTS
 
 OTHER INFORMATION
+ - Report date: $SYS_TIME (timezone: $SYS_TIME_ZONE)
  - TeamSpeak 3 Version: $BOT_CONFIG_TS3PATH_VERSION $BOT_CONFIG_TS3PATH_VERSION_EXTENDED
- - DiagScript version: v$SCRIPT_VERSION_NUMBER
+ - youtube-dl Version: $YTDL_VERSION
+ - DiagScript version: $SCRIPT_VERSION_NUMBER
 ==========================================================
 EOF
 )
