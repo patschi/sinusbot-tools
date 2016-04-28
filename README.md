@@ -6,15 +6,16 @@ Any feedback, suggestions, ideas and - ofcourse - pull requests are welcome.
 
 ## diagSinusbot
 
-[diagSinusbot.sh](https://github.com/patschi/sinusbot-tools/blob/master/tools/diagSinusbot.sh) collects some important diagnostic data about the operating system and the bot installation. When finished it returns informative information, ready to copy and paste it in the right section in the sinusbot forum. The main purpose of this script is to solve bugs and any other issues easier and faster with more details about the situation - easily collected with this script.
+[diagSinusbot.sh](https://github.com/patschi/sinusbot-tools/blob/master/tools/diagSinusbot.sh) collects some important diagnostic data about the operating system and the bot installation. When finished it returns informative information, ready to copy and paste it in the right section in the sinusbot forum. The main purpose of this script is to solve bugs and any other issues easier and faster by giving a overview about the environment - easily collected with this script. Additionally some pre-checks are built-in, which may give you some ideas what could be possibily wrong or not best-practise - like a outdated TS3 client.
 
-**Remember**: This script does not send any data to anywhere. It is only collecting some details offline about the system and the bot. Then it generates a text output, which can be copied and pasted in the forum. This tool is not officially developed from the Sinusbot team.
+**Remember**: This script does not send any data to anywhere. It is only collecting some details offline about the system and the bot. Then it generates a text output, which can be copied and pasted in the forum. (This tool is not officially developed from the Sinusbot team.)
 
 **Links:**
+ * [Sinusbot forum](https://forum.sinusbot.com)
  * [Sinusbot english forum thread](https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostic-script.831/#post-4418)
  * [Sinusbot german forum thread](https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostik-script.832/#post-4419)
 
-**Some information which may be scanned:**
+**Some information which will be scanned:**
  * System
   - Operating system
   - Kernel
@@ -31,14 +32,16 @@ Any feedback, suggestions, ideas and - ofcourse - pull requests are welcome.
   - Version
   - Performs ts3client checks
   - Some configuration pre-checks
-  - Checks if bot plugin is installed to ts3client
+  - Autostart script checks
+  - Checks if bot plugin is installed in ts3client
   - Checks LogLevel
-  - Checks youtube-dl and installed version
+  - Checks youtube-dl and the installed version
   - Installed bot scripts (filenames only)
   - Checks if all required OS packages got installed
 
 **Requirements:**
  * Operating Systems: Debian, Ubuntu
+   - (Any other OS are not supported yet. Feel free to contribute.)
  * Installed Packages: `bc binutils coreutils lsb-release util-linux`
    - Install: `apt-get install bc binutils coreutils lsb-release util-linux`
    - (Most packages are already pre-installed by default on the most systems.)
@@ -46,7 +49,7 @@ Any feedback, suggestions, ideas and - ofcourse - pull requests are welcome.
 **Usage:**
 ```
 $ cd /path/to/sinusbot/ # usually /opt/ts3bot/
-$ wget https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh
+$ curl -O https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh
 $ bash diagSinusbot.sh
 ```
 
@@ -55,45 +58,52 @@ $ bash diagSinusbot.sh
 ==========================================================
 SINUSBOT RELATED
 SYSTEM INFORMATION
- - Operating System: Debian GNU/Linux 8.1 (jessie)
+ - Operating System: Debian GNU/Linux 8.3 (jessie)
  - OS x64 check: OK
  - Kernel: Linux 3.16.0-4-amd64 x86_64
- - Load Average: 0.24 0.32 0.32
- - Uptime: 58 days, 23 hours, 44 minutes, 32 seconds
+ - Load Average: 0.29 0.36 0.35
+ - Uptime: 3 days, 21 hours, 12 minutes, 39 seconds
  - OS Updates: 0 (well done!)
  - OS Missing Packages: None (v1)
- - OS APT Last Update: 23.08.2015 00:41:12 CEST +02:00:00
- - Bot Start Script: found at /etc/init.d/sinusbot [perms: 0644]
+ - OS APT Last Update: 21.02.2016 00:49:02 CET +01:00:00
+ - Bot Start Script: found at /etc/init.d/sinusbot [perms: 644]
  - DNS resolution check: google.com -> OK
  - CPU:
     Architecture:          x86_64
-    CPU(s):                2
+    CPU(s):                4
     Thread(s) per core:    1
     Core(s) per socket:    1
-    Socket(s):             2
+    Socket(s):             4
     Model name:            Intel(R) Xeon(R) CPU E5-1650 v2 @ 3.50GHz
     CPU MHz:               3499.999
     Hypervisor vendor:     VMware
     Virtualization type:   full
- - RAM: 449.76 MB/1000.32 MB in use (44%)
+ - RAM: 654.02 MB/1.96 GB in use (32%)
  - SWAP: 0 B/871.99 MB in use (0%)
- - DISK: 2.01 GB/15.73 GB in use (12%)
- - Report date: 26.11.2015 21:13:47 CET +01:00:00 (timezone: Europe/Berlin)
+ - DISK: 4.75 GB/12.98 GB in use (36%)
+ - Package versions:
+   > libglib: 2.42.1-1
 
 BOT INFORMATION
- - Status: running (PIDs: 23012 23011, User: sinusbot)
+ - Status: running (PIDs: 537 534, User: sinusbot)
  - Webinterface: port locally reachable (Port: 8087)
- - Binary: /home/sinusbot/sinusbot/sinusbot (Hash: dfaa2dae26ee80b782b8b4b6cbf9fa5e)
- - Version: 0.9.9-4965f0f
+ - Binary: /home/sinusbot/sinusbot/sinusbot (Hash: a48069da6b637c88fceb92244e8df116)
+ - Version: 0.9.11-6e331b1
  - TS3 Plugin: installed (md5 hash match)
-   - Bot Plugin: 4f888043455d865231047616da069ed8
-   - TS3 Client: 4f888043455d865231047616da069ed8
+   - Bot Plugin: d1ddcca9fd7ace3caf85821656b425c2
+   - TS3 Client: d1ddcca9fd7ace3caf85821656b425c2
  - Config:
    - LogLevel = 10 (debug log active)
    - TS3Path = /home/sinusbot/ts3/TeamSpeak3-Client-linux_amd64/ts3client_linux_amd64 (Version 3.0.18.2)
-   - YoutubeDLPath = /usr/local/bin/youtube-dl (does exist, version: 2015.08.16.1)
- - Installed Scripts: advertising.js; aloneMode.js; badchan.js; bookmark.js; covatar.js; dev.js; followme.js; idle.js; metadata.js; norecording.js; showcase.js; welcometext.js
+   - YoutubeDLPath = /usr/local/bin/youtube-dl (does exist, version: 2016.02.13)
+ - Installed scripts: advertising.js; aloneMode.js; badchan.js; bookmark.js; clock.js; come.js; covatar.js; dev.js; followme.js; greeting-on-join.js; idle.js; metadata.js; musicList.js; norecording.js; playOnJoin.js; rememberChannel.js; showcase.js; sound.js; speech.js; twitch_status.js; welcometext.js
+
+OTHER INFORMATION
+ - Report date: 28.04.2016 20:25:36 CEST +02:00:00 (timezone: Europe/Berlin)
+ - TeamSpeak 3 Version: 3.0.18.2
+ - youtube-dl Version: 2016.04.24
+ - DiagScript version: 0.4.5
 ==========================================================
 ```
 
-**Notice**: Because this script does also collect information like CPU, RAM, SWAP, DISK usage and more, this script needs to be executed with root privileges. The script is not installing any dependencies of the script or bot without asking.
+**Notice**: Because this script does also collect information like CPU, RAM, SWAP, DISK usage and more, this script needs to be executed with root privileges. The script is not installing or changing any files without explicit asking before.
