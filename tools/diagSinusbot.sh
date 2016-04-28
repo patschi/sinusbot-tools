@@ -300,7 +300,7 @@ show_welcome()
 	say "welcome" "=  collection  the most  important information ="
 	say "welcome" "=  of your system  and  your bot installation. ="
 	say "welcome" "=                                              ="
-	say "welcome" "=  After e verything  is  done, you will get a ="
+	say "welcome" "=  After  everything  is  done, you will get a ="
 	say "welcome" "=  diagnostic output, ready for copy & pasting ="
 	say "welcome" "=  it within a CODE-tag in the Sinusbot forum. ="
 	say "welcome" "=  [Link: https://forum.sinusbot.com]          ="
@@ -315,7 +315,7 @@ show_welcome()
 	say "welcome" "================================================"
 	say "welcome" "= I am thankful for any feedback. Please  also ="
 	say "welcome" "= report any issues you may find either on the ="
-	say "welcome" "= Sinusbot forum or via Github issues. Thanks! ="
+	say "welcome" "= Sinusbot forum or via GitHub issues. Thanks! ="
 	say "welcome" "=   -- $SCRIPT_AUTHOR_NAME. ="
 	say "welcome" "================================================"
 	say
