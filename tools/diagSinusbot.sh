@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.4.5
+# Version: 0.4.6
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -137,6 +137,15 @@
 #           Improved bot binary search functionality.
 #  v0.4.5:  [28.04.2016 22:25]
 #           Fixed wrong calculation of RAM usage.
+#  v0.4.6:  [04.09.2016 16:30]
+#           Added: Additionally search the bot binary in /opt/ts3soundboard/
+#           Added: Additionally search the bot binary in /opt/sinusbot/
+#           Added messages when not using x64 arch or DNS resolution is broken.
+#           Updated some messages and various text output
+#           Moved TS3 client version functionality into own seperate function.
+#           Disabled "TS3 v3.0.19-outdated"-warning on Debian 8 systems. (Does work on this OS)
+#           Improved overall syntax.
+#           Cleaned up script.
 #
 ### Known issues:
 # Mostly this issues are non-critical and just kind of hard to fix or workaround.
@@ -171,13 +180,13 @@
 
 # general settings
 # SCRIPT
-SCRIPT_AUTHOR_NAME="Patrik Kernstock"
+SCRIPT_AUTHOR_NAME="Patrik Kernstock aka. Patschi"
 SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2016"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.4.5"
-SCRIPT_VERSION_DATE="28.04.2016 22:25"
+SCRIPT_VERSION_NUMBER="0.4.6"
+SCRIPT_VERSION_DATE="04.09.2016 16:30"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -206,7 +215,7 @@ say()
 	fi
 
 	# criteria
-	local CRIT=$(echo $1 | tr '[:lower:]' '[:upper:]')
+	local CRIT=$(echo "$1" | tr '[:lower:]' '[:upper:]')
 
 	# message
 	local MSG="$2"
@@ -291,35 +300,35 @@ pause()
 show_welcome()
 {
 	say
-	say "welcome" "================================================"
-	say "welcome" "= [b]HELLO![/b] Please invest some time to read this. ="
-	say "welcome" "=                                              ="
-	say "welcome" "=  Thanks  for  using  this diagnostic script! ="
-	say "welcome" "=  The  more  information  you   provide,  the ="
-	say "welcome" "=  better  we  can help to solve your problem. ="
-	say "welcome" "=                                              ="
-	say "welcome" "=  The  execution  may  take  some  moments to ="
-	say "welcome" "=  collection  the most  important information ="
-	say "welcome" "=  of your system  and  your bot installation. ="
-	say "welcome" "=                                              ="
-	say "welcome" "=  After  everything  is  done, you will get a ="
-	say "welcome" "=  diagnostic output, ready for copy & pasting ="
-	say "welcome" "=  it within a CODE-tag in the Sinusbot forum. ="
-	say "welcome" "=  [Link: https://forum.sinusbot.com]          ="
-	say "welcome" "=                                              ="
-	say "welcome" "=  No  private  information  will be collected ="
-	say "welcome" "=  nor  the  data  will  be  sent to anywhere. ="
-	say "welcome" "=  This  just generates an example forum post. ="
-	say "welcome" "=                                              ="
-	say "welcome" "=  The script does perform a DNS resolution of ="
-	say "welcome" "=  the  domain 'google.com'  to  determine  if ="
-	say "welcome" "=  your  DNS settings are working as expected. ="
-	say "welcome" "================================================"
-	say "welcome" "= I am thankful for any feedback. Please  also ="
-	say "welcome" "= report any issues you may find either on the ="
-	say "welcome" "= Sinusbot forum or via GitHub issues. Thanks! ="
-	say "welcome" "=   -- $SCRIPT_AUTHOR_NAME. ="
-	say "welcome" "================================================"
+	say "welcome" "================================================="
+	say "welcome" "= [b]HELLO![/b] Please invest some time to read this.  ="
+	say "welcome" "=                                               ="
+	say "welcome" "=  Thanks  for  using  this diagnostic script!  ="
+	say "welcome" "=  The  more  information  you   provide,  the  ="
+	say "welcome" "=  better  we  can help to solve your problem.  ="
+	say "welcome" "=                                               ="
+	say "welcome" "=  The  execution  may  take  some  moments to  ="
+	say "welcome" "=  collection  the most  important information  ="
+	say "welcome" "=  of your system  and  your bot installation.  ="
+	say "welcome" "=                                               ="
+	say "welcome" "=  After  everything  is  done, you will get a  ="
+	say "welcome" "=  diagnostic output, ready for copy & pasting  ="
+	say "welcome" "=  it within a CODE-tag in the Sinusbot forum.  ="
+	say "welcome" "=  [Link: https://forum.sinusbot.com]           ="
+	say "welcome" "=                                               ="
+	say "welcome" "=  No  private  information  will be collected  ="
+	say "welcome" "=  nor  the  data  will  be  sent to anywhere.  ="
+	say "welcome" "=  This  just generates an example forum post.  ="
+	say "welcome" "=                                               ="
+	say "welcome" "=  The script does perform a DNS resolution of  ="
+	say "welcome" "=  the  domain 'google.com'  to  determine  if  ="
+	say "welcome" "=  your  DNS settings are working as expected.  ="
+	say "welcome" "================================================="
+	say "welcome" "= I am thankful for any feedback. Please  also  ="
+	say "welcome" "= report any issues you may find either on the  ="
+	say "welcome" "= Sinusbot forum or via GitHub issues. Thanks!  ="
+	say "welcome" "=   -- $SCRIPT_AUTHOR_NAME.           ="
+	say "welcome" "================================================="
 	say
 	pause
 }
@@ -353,10 +362,10 @@ show_credits()
 	say "info" "THANKS TO..."
 	say "info" ""
 	say "info" "  [b]flyth[/b]            Michael F.     for developing sinusbot, testing this script and ideas"
-	say "info" "  [b]Xuxe[/b]             Julian H.      for testing and supporting development"
+	say "info" "  [b]Xuxe[/b]             Julian H.      for testing, ideas and supporting development"
 	say "info" "  [b]GetMeOutOfHere[/b]   -              for testing and ideas"
 	say "info" "  [b]JANNIX[/b]           Jan            for testing"
-	say "info" "  [b]MaxS[/b]             Max            for testing and finding bugs"
+	say "info" "  [b]maxibanki[/b]        Max            for testing and finding bugs"
 	say "info" ""
 	say "info" "...if u see 'em somewhere, give 'em some chocolate cookieees!"
 }
@@ -437,7 +446,7 @@ check_command()
 			return 1
 		else
 			say "error" "Missing command '$1'. Please install package '$2': apt-get install $2"
-			confirm_package_install $2
+			confirm_package_install "$2"
 			if [ $? -ne 0 ]; then
 				return 1
 			else
@@ -463,8 +472,11 @@ is_command_available()
 ## Function to check root privileges
 is_user_root()
 {
-	if [ $(id -u) -ne 0 ]; then
-		say "error" "This diagnostic script must be run as root!"
+	if [ "$(id -u)" -ne 0 ]; then
+		say "error" "This diagnostic script must be run with root privileges!"
+		say "info"  "[b]Reason[/b]: This script does perform many different checks and some of them"
+		say "info"  "does requires root privileges to do so - example: apt-get calls, port checks,"
+		say "info"  "or to even be able to operate, if any permissions are set wrong."
 		failed "no root privileges"
 	fi
 }
@@ -504,7 +516,7 @@ is_supported_os()
 load_webfile()
 {
 	# timeout are 10 seconds, because maybe slower internet connections or slow DNS resolutions.
-	echo "$(curl --fail --connect-timeout 10 --silent $1)"
+	curl --fail --connect-timeout 10 --silent "$1"
 }
 
 ## Function to check if a new update is available
@@ -518,11 +530,11 @@ script_check_for_update()
 	if [ $? -ne 0 ]; then
 		return 1
 	else
-		local UPD_CHECK_STATUS="$(echo $UPD_CHECK | grep -Po '(?<="status": ")[^"]*')"
+		local UPD_CHECK_STATUS="$(echo "$UPD_CHECK" | grep -Po '(?<="status": ")[^"]*')"
 		if [ "$UPD_CHECK_STATUS" != "true" ]; then
 			return 1
 		else
-			local UPD_CHECK_VER="$(echo $UPD_CHECK | grep -Po '(?<="version": ")[^"]*')"
+			local UPD_CHECK_VER="$(echo "$UPD_CHECK" | grep -Po '(?<="version": ")[^"]*')"
 			if compare_version $SCRIPT_VERSION_NUMBER $UPD_CHECK_VER; then
 				return 2
 			else
@@ -538,7 +550,7 @@ script_check_for_changelog()
 	# Return codes:
 	#  1 = failed retrieving changelog
 	# ...else changelog may be returned.
-	local UPD_CHANGELOG=$(load_webfile "$(script_get_changelog_url $1)")
+	local UPD_CHANGELOG=$(load_webfile "$(script_get_changelog_url "$1")")
 	if [ $? -ne 0 ]; then
 		return 1
 	else
@@ -549,7 +561,7 @@ script_check_for_changelog()
 ## Function to get actual changelog url file of the given version number
 script_get_changelog_url()
 {
-	echo "$(string_replace "$SCRIPT_CHANGELOG_FILE" "\{VER\}" "$1")"
+	string_replace "$SCRIPT_CHANGELOG_FILE" "\{VER\}" "$1"
 }
 
 ## Function to compare version numbers
@@ -601,24 +613,24 @@ check_bot_config()
 ## Function to check available updates via apt-get
 check_available_updates()
 {
-	echo "$(apt-get -s dist-upgrade | awk '/^Inst/ { print $2 }' | wc -l)"
+	apt-get -s dist-upgrade | awk '/^Inst/ { print $2 }' | wc -l
 }
 
 ## Function to parse bot configuration file
 parse_bot_config()
 {
-	echo $(echo "$BOT_CONFIG" | grep "$1" | cut -d '=' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e 's/^[\"]*//' -e 's/[\"]*$//')
+	echo "$BOT_CONFIG" | grep "$1" | cut -d '=' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e 's/^[\"]*//' -e 's/[\"]*$//'
 }
 
 ## Function to get version of sinusbot
 get_bot_version()
 {
 	say "debug" "Trying to get sinusbot version using version parameter..." > /proc/${PPID}/fd/0
-	local BOT_VERSION_CMD=$($BOT_PATH/$BOT_BINARY --version 2>/dev/null)
+	local BOT_VERSION_CMD=$("$BOT_PATH/$BOT_BINARY" --version 2>/dev/null)
 	echo "$BOT_VERSION_CMD" | grep -q -P '^flag provided but not defined' >/dev/null
 	if [ $? -eq 0 ]; then
 		say "debug" "Error getting sinusbot version. Falling back to other method." > /proc/${PPID}/fd/0
-		local BOT_VERSION_STRING=$(strings $BOT_PATH/$BOT_BINARY | grep "Version:" | cut -d ' ' -f2)
+		local BOT_VERSION_STRING=$(strings "$BOT_PATH/$BOT_BINARY" | grep "Version:" | cut -d ' ' -f2)
 		if [ "$BOT_VERSION_STRING" != "" ]; then
 			echo "$BOT_VERSION_STRING"
 		else
@@ -630,10 +642,20 @@ get_bot_version()
 	fi
 }
 
+## Function to get version of the ts3 client
+get_ts3_client_version()
+{
+	local TS3_VER=$(awk 'match($0, /Client Release (.*)/) { print $4 };' "$1" | awk 'NR==1')
+	if [ $? -ne 0 ]; then
+		TS3_VER="unknown"
+	fi
+	echo "$TS3_VER"
+}
+
 ## Function to check if package is installed
 is_os_package_installed()
 {
-	dpkg-query -W -f='${Status}' $1 2>&1 | grep -q -P 'install ok installed' 2>&1
+	dpkg-query -W -f='${Status}' "$1" 2>&1 | grep -q -P 'install ok installed' 2>&1
 	if [ $? -eq 0 ]; then
 		return 0
 	else
@@ -644,7 +666,7 @@ is_os_package_installed()
 ## Function to get the current installed version for a given package
 get_installed_version_package()
 {
-	local PKG_VERSION="$(dpkg-query -W -f='${Version}' $1 2>&1)"
+	local PKG_VERSION="$(dpkg-query -W -f='${Version}' "$1" 2>&1)"
 	if [ $? -eq 0 ]; then
 		echo "$PKG_VERSION"
 	else
@@ -655,9 +677,9 @@ get_installed_version_package()
 ## Function to check if package is installed
 is_os_package_installed_check()
 {
-	if ! is_os_package_installed $1; then
+	if ! is_os_package_installed "$1"; then
 		say "error" "Missing package '$1'. Please install package '$2': apt-get install $2"
-		confirm_package_install $2
+		confirm_package_install "$2"
 		if [ $? -eq 0 ]; then
 			return 0
 		else
@@ -676,7 +698,7 @@ get_missing_os_packages()
 			local OS_PACKAGES_MISSING="$OS_PACKAGES_MISSING $PACKAGE"
 		fi
 	done
-	echo $(trim_spaces "$OS_PACKAGES_MISSING")
+	trim_spaces "$OS_PACKAGES_MISSING"
 }
 
 ## Function to get installed scripts
@@ -686,12 +708,12 @@ get_installed_bot_scripts()
 	if [ -d "$BOT_PATH/scripts/" ]; then
 		for SCRIPT_FILE in $BOT_PATH/scripts/*; do
 			if [ "$INSTALLED_SCRIPTS" == "" ]; then
-				local INSTALLED_SCRIPTS="$(basename $SCRIPT_FILE)"
+				local INSTALLED_SCRIPTS="$(basename "$SCRIPT_FILE")"
 			else
-				local INSTALLED_SCRIPTS="$INSTALLED_SCRIPTS; $(basename $SCRIPT_FILE)"
+				local INSTALLED_SCRIPTS="$INSTALLED_SCRIPTS; $(basename "$SCRIPT_FILE")"
 			fi
 		done
-		echo $(trim_spaces "$INSTALLED_SCRIPTS")
+		trim_spaces "$INSTALLED_SCRIPTS"
 	else
 		echo "scripts folder not found (using < v0.9.9?)"
 	fi
@@ -706,7 +728,7 @@ trim_spaces()
 ## Function to get a md5 hash of a file
 get_file_hash()
 {
-	echo "$(md5sum "$1" | awk '{print $1}')"
+	md5sum "$1" | awk '{print $1}'
 }
 
 ## Function to check if port is in use
@@ -720,13 +742,13 @@ port_in_use()
 ## Function to get user id from a running process id
 get_userid_from_pid()
 {
-	echo "$(grep -r '^Uid:' /proc/$1/status | cut -f2)"
+	grep -r '^Uid:' /proc/$1/status | cut -f2
 }
 
 ## Function to get username by id (linux os)
 get_user_name_by_uid()
 {
-	echo "$(awk -F: "/:$1:/{print \$1}" /etc/passwd)"
+	awk -F: "/:$1:/{print \$1}" /etc/passwd
 }
 
 ## Function which exites the script with a successful exit code
@@ -738,7 +760,7 @@ script_done()
 ## Function to check DNS resolution
 check_dns_resolution()
 {
-	if [ "$(getent hosts $1 | head -n 1 | cut -d ' ' -f 1)" != "" ]; then
+	if [ "$(getent hosts "$1" | head -n 1 | cut -d ' ' -f 1)" != "" ]; then
 		return 0
 	else
 		return 1
@@ -909,7 +931,7 @@ else
 					done <<< "$CHANGELOG"
 				else
 					say "warning" "Failed getting update changelog."
-					say "debug" "Tried getting changelog from '$(script_get_changelog_url $UPD_CHECK_VER)'..."
+					say "debug" "Tried getting changelog from '$(script_get_changelog_url "$UPD_CHECK_VER")'..."
 				fi
 			fi
 
@@ -929,15 +951,15 @@ else
 			else
 				say "info" "Downloading new script version..."
 				say "debug" "Download script URL: '$SCRIPT_PROJECT_DLURL'."
-				CUR_SCRIPT_PATH="$SCRIPT_PATH/$(basename $0)"
+				CUR_SCRIPT_PATH="$SCRIPT_PATH/$(basename "$0")"
 
 				# check if tmp file of this script does already exist. if so, we delete it.
 				if [ -f "$CUR_SCRIPT_PATH.tmp" ]; then
-					rm $CUR_SCRIPT_PATH.tmp
+					rm "$CUR_SCRIPT_PATH.tmp"
 				fi
 
 				# downloading new script...
-				curl -o $CUR_SCRIPT_PATH.tmp "$SCRIPT_PROJECT_DLURL"
+				curl -o "$CUR_SCRIPT_PATH.tmp" "$SCRIPT_PROJECT_DLURL"
 				if [ $? -ne 0 ]; then
 					say "error" "Error when downloading the new script! Please investigate issues and try again. Skipping update for now."
 					say "warning" "Please at least update the diagnostic script manually before continuing using this script."
@@ -953,7 +975,7 @@ else
 					else
 
 						# check syntax of new script (should be enough to detect non-bash script files, when something got wrong when downloading)
-						bash -n $CUR_SCRIPT_PATH.tmp &>/dev/null
+						bash -n "$CUR_SCRIPT_PATH.tmp" &>/dev/null
 						if [ $? -ne 0 ]; then
 							say "error" "Something went wrong while downloading the script. Either the download failed or the syntax of the script is faulty."
 							say "warning" "Skipping automated update..."
@@ -967,7 +989,7 @@ else
 						else
 
 							# make backup of old script
-							mv $CUR_SCRIPT_PATH $CUR_SCRIPT_PATH.bak
+							mv "$CUR_SCRIPT_PATH" "$CUR_SCRIPT_PATH.bak"
 							if [ $? -ne 0 ] || [ ! -f "$CUR_SCRIPT_PATH.bak" ]; then
 								say "error" "Strange issue here: Renaming script file to backup file did failed. Skipping update. Please investigate."
 								say "warning" "Please at least update the diagnostic script manually before continuing using this script."
@@ -976,7 +998,7 @@ else
 							else
 
 								# rename temp update script to the filename of before
-								mv $CUR_SCRIPT_PATH.tmp $CUR_SCRIPT_PATH
+								mv "$CUR_SCRIPT_PATH.tmp" "$CUR_SCRIPT_PATH"
 								if [ $? -ne 0 ] || [ ! -f "$CUR_SCRIPT_PATH.bak" ]; then
 									say "error" "Strange issue here: Renaming the new script file to the original file name failed. Skipping update. Please investigate."
 									say "warning" "Please at least update the diagnostic script manually before continuing using this script."
@@ -1060,7 +1082,7 @@ say "info" "Searching bot binary..."
 BOT_PATH=""
 
 # possible bot paths
-BOT_PATHS=("$(pwd)" "/opt/ts3bot/" "/home/sinusbot/" "/home/sinusbot/sinusbot/")
+BOT_PATHS=("$(pwd)" "/opt/sinusbot/" "/opt/ts3bot/" "/opt/ts3soundboard/" "/home/sinusbot/" "/home/sinusbot/sinusbot/")
 
 for BOT_PATH in "${BOT_PATHS[@]}"; do
 	say "debug" "Searching in directory '$BOT_PATH'..."
@@ -1085,7 +1107,7 @@ check_bot_config
 
 BOT_FULL_PATH="$(echo "$BOT_PATH/$BOT_BINARY" | sed -e 's|//|/|g')"
 BOT_BINARY_HASH=$(get_file_hash "$BOT_PATH/$BOT_BINARY")
-BOT_BINARY_HASH_TEXT="(Hash: $BOT_BINARY_HASH)"
+BOT_BINARY_HASH_TEXT="(MD5 Hash: $BOT_BINARY_HASH)"
 
 # collecting information
 say "debug" "Collecting information..."
@@ -1100,7 +1122,7 @@ if [ -f "/proc/user_beancounters" ]; then
 	SYS_OS_EXTENDED="(OpenVZ)"
 
 elif [ -f "/proc/1/cgroup" ]; then
-	cat /proc/1/cgroup | grep -Pq 'lxc'
+	grep -Pq 'lxc' /proc/1/cgroup
 	if [ $? -eq 0 ]; then
 		SYS_OS_EXTENDED="(LXC)"
 	fi
@@ -1122,23 +1144,27 @@ SYS_TIME_ZONE=$(cat /etc/timezone)
 # get uptime
 SYS_UPTIME=$(</proc/uptime)
 SYS_UPTIME=${SYS_UPTIME%%.*}
-SYS_UP_SECONDS=$(($SYS_UPTIME%60))
-SYS_UP_MINUTES=$(($SYS_UPTIME/60%60))
-SYS_UP_HOURS=$(($SYS_UPTIME/60/60%24))
-SYS_UP_DAYS=$(($SYS_UPTIME/60/60/24))
+SYS_UP_SECONDS=$(($SYS_UPTIME % 60))
+SYS_UP_MINUTES=$(($SYS_UPTIME / 60 % 60))
+SYS_UP_HOURS=$(($SYS_UPTIME / 60 / 60 % 24))
+SYS_UP_DAYS=$(($SYS_UPTIME / 60 / 60 / 24))
 SYS_UPTIME_TEXT="$SYS_UP_DAYS days, $SYS_UP_HOURS hours, $SYS_UP_MINUTES minutes, $SYS_UP_SECONDS seconds"
 
 # get kernel
 SYS_OS_KERNEL=$(uname -srm)
 
 # check if x64 bit os
-SYS_OS_ARCH=`getconf LONG_BIT`
+SYS_OS_ARCH=$(getconf LONG_BIT)
 if [ "$SYS_OS_ARCH" == "64" ]; then
 	SYS_OS_ARCH_X64="Y"
 	SYS_OS_ARCH_X64_TEXT="OK"
 else
 	SYS_OS_ARCH_X64="N"
 	SYS_OS_ARCH_X64_TEXT="FAIL: Not x64 OS. [$SYS_OS_ARCH]"
+fi
+
+if [ "$SYS_OS_ARCH_X64" == "N" ]; then
+	say "error" "This system is not an 64-bit operating system! The bot requires an 64-bit operating system to operate, x86/x32 and other architectures are not supported. Please re-install your system with an 64-bit compatible operating system."
 fi
 
 # get package versions of important packages
@@ -1155,6 +1181,10 @@ if [ $? -eq 0 ]; then
 else
 	SYS_OS_DNS_CHECK="N"
 	SYS_OS_DNS_CHECK_TEXT="google.com -> FAIL"
+fi
+
+if [ "$SYS_OS_DNS_CHECK" == "N" ]; then
+	say "error" "Strange. DNS resolution of domain 'google.com' failed. Please verify your DNS server settings of your system and fix this issue for the best bot experience."
 fi
 
 # get CPU info
@@ -1178,7 +1208,7 @@ fi
 
 # get ram/memory info
 say "debug" "Getting RAM information..."
-MEMINFO=$(cat /proc/meminfo)
+MEMINFO="$(cat /proc/meminfo)"
 
 if [ $? -ne 0 ]; then
 	SYS_RAM_TOTAL="0"
@@ -1194,14 +1224,14 @@ if [ $? -ne 0 ]; then
 	SYS_SWAP_PERNT="0"
 	SYS_SWAP_EXTENDED="(error when reading file)"
 
-	say "error" "Error when reading /proc/meminfo! [continuing]"
+	say "error" "Error when reading /proc/meminfo! [ignoring]"
 
 else
 	SYS_RAM_TOTAL=$(echo "$MEMINFO" | grep MemTotal | awk '{ print $2 }')
 	SYS_RAM_CACHED=$(echo "$MEMINFO" | grep "^Cached" | awk '{ print $2 }')
 	SYS_RAM_FREE=$(echo "$MEMINFO" | grep MemAvailable | awk '{ print $2 }')
 	SYS_RAM_USAGE=$(($SYS_RAM_TOTAL - $SYS_RAM_FREE))
-	if [ $SYS_RAM_TOTAL -eq 0 ]; then
+	if [ "$SYS_RAM_TOTAL" -eq 0 ]; then
 		SYS_RAM_PERNT="0"
 	else
 		SYS_RAM_PERNT=$(($SYS_RAM_USAGE * 10000 / $SYS_RAM_TOTAL / 100))
@@ -1212,7 +1242,7 @@ else
 	SYS_SWAP_TOTAL=$(echo "$MEMINFO" | grep "SwapTotal" | awk '{ print $2 }')
 	SYS_SWAP_FREE=$(echo "$MEMINFO" | grep "SwapFree" | awk '{ print $2 }')
 	SYS_SWAP_USAGE=$(($SYS_SWAP_TOTAL - $SYS_SWAP_FREE))
-	if [ $SYS_SWAP_TOTAL -eq 0 ]; then
+	if [ "$SYS_SWAP_TOTAL" -eq 0 ]; then
 		SYS_SWAP_PERNT="0"
 		SYS_SWAP_EXTENDED="(SWAP disabled)"
 	else
@@ -1231,7 +1261,10 @@ else
 	SYS_DISK_PARMS="-t ext4 -t ext3 -t ext2 -t reiserfs -t jfs -t ntfs -t fat32 -t btrfs -t fuseblk"
 fi
 
-SYS_DISK_DATA=$(df -Tl --total $SYS_DISK_PARMS)
+SYS_DISK_CMD="df -Tl --total $SYS_DISK_PARMS"
+say "debug" "Getting disk info by using command:"
+say "debug" " $ $SYS_DISK_CMD"
+SYS_DISK_DATA=$($SYS_DISK_CMD)
 if [ $? -eq 0 ]; then
 	SYS_DISK_FIELD=$(echo "$SYS_DISK_DATA" | grep total | sed 's/ \+/ /g')
 	SYS_DISK_TOTAL=$(echo "$SYS_DISK_FIELD" | cut -d " " -f5)
@@ -1243,7 +1276,7 @@ else
 	SYS_DISK_PERNT="0"
 	SYS_DISK_EXTENDED="(error when getting disk data)"
 
-	say "error" "Error when reading >df< output! [continuing]"
+	say "error" "Error when reading >df< output! [ignoring]"
 fi
 
 # collecting bot info
@@ -1297,7 +1330,7 @@ for SYS_BOT_AUTOSTART_PATH in $SYS_BOT_AUTOSTART_PATHS; do
 	if [ -f "$SYS_BOT_AUTOSTART_PATH" ]; then
 		SYS_BOT_AUTOSTART="found at $SYS_BOT_AUTOSTART_PATH"
 		SYS_BOT_AUTOSTART_PERMS="$(stat -c %a "$SYS_BOT_AUTOSTART_PATH")"
-		if [ $SYS_BOT_AUTOSTART_PERMS -ne 755 ]; then
+		if [ "$SYS_BOT_AUTOSTART_PERMS" -ne 755 ]; then
 			say "warning" "Please set the permissions of your autostart script at '$SYS_BOT_AUTOSTART_PATH' from $SYS_BOT_AUTOSTART_PERMS to 755, using: chmod 755 $SYS_BOT_AUTOSTART_PATH"
 		fi
 		SYS_BOT_AUTOSTART_EXTENDED="[perms: $SYS_BOT_AUTOSTART_PERMS]"
@@ -1339,7 +1372,7 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 	# trying to get ts3client version
 	say "debug" "Trying to get ts3client version..."
 	if [ -f "$BOT_CONFIG_TS3PATH_DIRECTORY/CHANGELOG" ]; then
-		BOT_CONFIG_TS3PATH_VERSION=$(cat "$BOT_CONFIG_TS3PATH_DIRECTORY/CHANGELOG" | awk 'match($0, /Client Release (.*)/) { print $4 };' | awk 'NR==1')
+		BOT_CONFIG_TS3PATH_VERSION=$(get_ts3_client_version "$BOT_CONFIG_TS3PATH_DIRECTORY/CHANGELOG")
 		BOT_CONFIG_TS3PATH_EXTENDED="(Version $BOT_CONFIG_TS3PATH_VERSION)"
 
 		# check ts3 client version
@@ -1347,22 +1380,31 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 			# check for vulnerable old 3.0.18.2 and before version
 			if compare_version $BOT_CONFIG_TS3PATH_VERSION 3.0.18.2; then
 				BOT_CONFIG_TS3PATH_VERSION_EXTENDED="(vulnerable! outdated!)"
-				say "warning" "*************************** ATTENTION ***************************"
-				say "warning" "[b]IMPORTANT! YOUR SYSTEM IS VULNERABLE DUE TO OUTDATED TS3CLIENT![/b]"
-				say "warning" "You are still using an outdated TS3Client version 3.0.18.2 or older, which has very serious security vulnerabilities!"
-				say "warning" "This security defects allows Remote Code Executions and Remote Code Inclusions! With this vulnerabilities it is possible"
-				say "warning" "to infect your system or even to take control over your whole system. This can lead to very dangerous situations."
-				say "warning" "[b]Update as soon as possible![/b] Download the latest TeamSpeak 3 Linux amd64 client from here: http://www.teamspeak.com/downloads"
-				say "warning" "*************************** ATTENTION ***************************"
-				say "info" "READ THE MESSAGE ABOVE! This is really important. Seriously. (Script will continue in five seconds...)"
+				say
+				say "warning" "******************************* ATTENTION *******************************"
+				say "warning" "[b]IMPORTANT! YOUR SYSTEM IS VULNERABLE DUE TO AN OUTDATED TS3CLIENT![/b]"
+				say "warning" "You  are  still  using  an  outdated TS3Client version 3.0.18.2 or older,"
+				say "warning" "which  has  very serious security vulnerabilities!  This security defects"
+				say "warning" "allows   Remote Code Executions  and  Remote Code Inclusions!   With this"
+				say "warning" "vulnerabilities it is possible to infect your system or even to take over"
+				say "warning" "control  of  your  machine. This  may  lead to very dangerous situations."
+				say "warning" ""
+				say "warning" "        [b]Strongly recommended: Update as soon as possible![/b]         "
+				say "warning" ""
+				say "warning" "Download the latest TeamSpeak 3 Linux amd64 client from here:"
+				say "warning" " => http://www.teamspeak.com/downloads"
+				say "warning" "******************************* ATTENTION *******************************"
+				say
+				say "info"    "READ THE MESSAGE ABOVE! This message should warn you, do not ignore it."
+				say "info"    "It is really important. Seriously. (Script will continue in five seconds...)"
 				sleep 5
 				pause
 			fi
 
-			# check for compatibility of client 3.0.19 and newer on Debian 8 and older
+			# check for compatibility of client 3.0.19 and newer on Debian 7 and older
 			if [ "$BOT_CONFIG_TS3PATH_VERSION" == "3.0.19" ] || compare_version 3.0.19 $BOT_CONFIG_TS3PATH_VERSION; then
-				if [ "$SYS_OS_LSBRELEASE_ID" == "debian" ] && (( $(echo "$SYS_OS_LSBRELEASE_RELEASE_MAJOR <= 8" | bc -l) )); then
-					say "warning" "The TeamSpeak 3 client 3.0.19 and newer is not compatible with Debian 8 and older. Please switch back to an older TeamSpeak 3 version (for example 3.0.18.2) or upgrade to a newer operating system which has newer dependencies."
+				if [ "$SYS_OS_LSBRELEASE_ID" == "debian" ] && (( $(echo "$SYS_OS_LSBRELEASE_RELEASE_MAJOR <= 7" | bc -l) )); then
+					say "warning" "The TeamSpeak 3 client 3.0.19 and newer is not compatible with Debian 7 and older. Please switch back to an older TeamSpeak 3 version (for example 3.0.18.2) [[b]NOT[/b] recommended!] or upgrade to a newer operating system which has newer dependencies."
 					sleep 3
 				fi
 			fi

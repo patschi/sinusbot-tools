@@ -1,0 +1,6 @@
+> Maintenance release. As always: Thanks for any bug reports and ideas!
+Added: Now additionally search the bot binary in /opt/ts3soundboard/.
+Added: Now additionally search the bot binary in /opt/sinusbot/.
+Added messages when not using x64 arch or DNS resolution is broken.
+Updated some messages and various text output
+Disabled "TS3 v3.0.19-outdated"-warning on Debian 8 systems. (Does work on this OS)
