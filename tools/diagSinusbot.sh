@@ -1060,7 +1060,7 @@ say "info" "Searching bot binary..."
 BOT_PATH=""
 
 # possible bot paths
-BOT_PATHS=("$(pwd)" "/opt/ts3bot/" "/home/sinusbot/" "/home/sinusbot/sinusbot/")
+BOT_PATHS=("$(pwd)" "/opt/ts3bot/" "/opt/sinusbot/" "/home/sinusbot/" "/home/sinusbot/sinusbot/")
 
 for BOT_PATH in "${BOT_PATHS[@]}"; do
 	say "debug" "Searching in directory '$BOT_PATH'..."
