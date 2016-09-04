@@ -534,7 +534,7 @@ script_check_for_update()
 		if [ "$UPD_CHECK_STATUS" != "true" ]; then
 			return 1
 		else
-			local UPD_CHECK_VER="$(echo "$UPD_CHECK" | grep -Po '(?<="version": ")[^"]*')"
+			UPD_CHECK_VER="$(echo "$UPD_CHECK" | grep -Po '(?<="version": ")[^"]*')"
 			if compare_version $SCRIPT_VERSION_NUMBER $UPD_CHECK_VER; then
 				return 2
 			else
