@@ -475,7 +475,7 @@ is_user_root()
 	if [ "$(id -u)" -ne 0 ]; then
 		say "error" "This diagnostic script must be run with root privileges!"
 		say "info"  "[b]Reason[/b]: This script does perform many different checks and some of them"
-		say "info"  "does requires root privileges to do so - example: apt-get calls, port checks,"
+		say "info"  "do require root privileges to do so - example: apt-get calls, port checks,"
 		say "info"  "or to even be able to operate, if any permissions are set wrong."
 		failed "no root privileges"
 	fi
