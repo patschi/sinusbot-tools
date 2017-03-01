@@ -706,7 +706,7 @@ get_installed_bot_scripts()
 {
 	local INSTALLED_SCRIPTS=""
 	if [ -d "$BOT_PATH/scripts/" ]; then
-		for SCRIPT_FILE in $BOT_PATH/scripts/*; do
+		for SCRIPT_FILE in $BOT_PATH/scripts/*.js; do
 			if [ "$INSTALLED_SCRIPTS" == "" ]; then
 				local INSTALLED_SCRIPTS="$(basename "$SCRIPT_FILE")"
 			else
