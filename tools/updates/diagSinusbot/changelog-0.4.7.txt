@@ -1,0 +1,4 @@
+> Maintenance release. As always: Thanks for any bug reports, ideas and contributions!
+Restricted scripts listening to files with *.js extension (Thanks @maxibanki, GH-PR#4)
+Fixed detection of local reachable webinterface port
+Updated copyright to 2017 (and a bit delayed: Happy new year!)

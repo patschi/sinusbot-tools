@@ -146,6 +146,10 @@
 #           Disabled "TS3 v3.0.19-outdated"-warning on Debian 8 systems. (Does work on this OS)
 #           Improved overall syntax.
 #           Cleaned up script.
+#  v0.4.7:  [01.03.2017 15:10]
+#           Restricted scripts listening to files with *.js extension (Thanks @maxibanki, PR#4)
+#           Fixed detection of local reachable webinterface port (finally! Issue was that passing the var to awk failed)
+#           Updated copyright
 #
 ### Known issues:
 # Mostly this issues are non-critical and just kind of hard to fix or workaround.
@@ -182,11 +186,11 @@
 # SCRIPT
 SCRIPT_AUTHOR_NAME="Patrik Kernstock aka. Patschi"
 SCRIPT_AUTHOR_WEBSITE="pkern.at"
-SCRIPT_YEAR="2015-2016"
+SCRIPT_YEAR="2015-2017"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.4.6"
-SCRIPT_VERSION_DATE="04.09.2016 16:30"
+SCRIPT_VERSION_NUMBER="0.4.7"
+SCRIPT_VERSION_DATE="01.03.2017 15:10"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -359,13 +363,14 @@ show_version()
 ## Function to show credits (whooaaa!)
 show_credits()
 {
-	say "info" "THANKS TO..."
+	say "info" "THANKS TO EVERYONE WHO HAVE HELPED IN ANY WAY!"
+	say "info" "Special thanks goes to..."
 	say "info" ""
 	say "info" "  [b]flyth[/b]            Michael F.     for developing sinusbot, testing this script and ideas"
-	say "info" "  [b]Xuxe[/b]             Julian H.      for testing, ideas and supporting development"
+	say "info" "  [b]Xuxe[/b]             Julian H.      for testing, ideas and contributing code"
 	say "info" "  [b]GetMeOutOfHere[/b]   -              for testing and ideas"
 	say "info" "  [b]JANNIX[/b]           Jan            for testing"
-	say "info" "  [b]maxibanki[/b]        Max            for testing and finding bugs"
+	say "info" "  [b]maxibanki[/b]        Max S.         for testing, finding bugs and contributing code"
 	say "info" ""
 	say "info" "...if u see 'em somewhere, give 'em some chocolate cookieees!"
 }
@@ -734,8 +739,9 @@ get_file_hash()
 ## Function to check if port is in use
 port_in_use()
 {
+	PORT=$1
 	# check if port $1 is in use.
-	netstat -lnt | awk '$4 ~ ".${1}"' | grep -i 'LISTEN' &>/dev/null
+	netstat -lnt | awk -v port="$PORT" '$4 ~ "."port' | grep -i 'LISTEN' &>/dev/null
 	return $?
 }
 
@@ -1377,7 +1383,7 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 
 		# check ts3 client version
 		if [ "$BOT_CONFIG_TS3PATH_VERSION" != "" ]; then
-			# check for vulnerable old 3.0.18.2 and before version
+			# check for the old vulnerable client version 3.0.18.2 and before
 			if compare_version $BOT_CONFIG_TS3PATH_VERSION 3.0.18.2; then
 				BOT_CONFIG_TS3PATH_VERSION_EXTENDED="(vulnerable! outdated!)"
 				say
