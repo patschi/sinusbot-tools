@@ -16,7 +16,7 @@
 #
 # Important links:
 #  Development of this script: https://github.com/patschi/sinusbot-tools
-#  TeamSpeak: http://www.teamspeak.com
+#  TeamSpeak: https://www.teamspeak.com
 #  Sinusbot forum: https://forum.sinusbot.com
 #  Sinusbot forum thread [english]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostic-script.831/#post-4418
 #  Sinusbot forum thread [german]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostik-script.832/#post-4419
@@ -147,9 +147,17 @@
 #           Improved overall syntax.
 #           Cleaned up script.
 #  v0.4.7:  [01.03.2017 15:10]
-#           Restricted scripts listening to files with *.js extension (Thanks @maxibanki, PR#4)
-#           Fixed detection of local reachable webinterface port (finally! Issue was that passing the var to awk failed)
-#           Updated copyright
+#           Restricted scripts listening to files with *.js extension. (Thanks @maxibanki, PR#4)
+#           Fixed detection of local reachable webinterface port. (finally! Issue was that passing the var to awk failed)
+#           Updated copyright.
+#  v0.5.0:  [01.03.2017 22:15]
+#           Added check mechanism if using TS3 client 3.1 and later with Sinusbot 0.9.18 and older, which is not working due to TS3 client API changes.
+#           Added outgoing HTTPS access checks, IPv4- and IPv6-only modes.
+#           Additionally searching for initd-script at /etc/init.d/ts3bot.
+#           Now checking DNS resolution of sinusbot.com instead of Google.com.
+#           Now displaying the URL where all changelogs can be found when viewing the latest changelog during the script update process.
+#           Improved version compare handling.
+#           Fixed some typos.
 #
 ### Known issues:
 # Mostly this issues are non-critical and just kind of hard to fix or workaround.
@@ -189,20 +197,25 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2017"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.4.7"
-SCRIPT_VERSION_DATE="01.03.2017 15:10"
+SCRIPT_VERSION_NUMBER="0.5.0"
+SCRIPT_VERSION_DATE="01.03.2017 22:15"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
 SCRIPT_PROJECT_DLURL="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/diagSinusbot.sh"
 
 SCRIPT_VERSION_FILE="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/updates/diagSinusbot/version.txt"
+SCRIPT_CHANGELOG_LIST="https://github.com/patschi/sinusbot-tools/tree/master/tools/updates/diagSinusbot"
 SCRIPT_CHANGELOG_FILE="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/updates/diagSinusbot/changelog-{VER}.txt"
 
 # script COMMANDS dependencies
 SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf netstat sort head"
 # script PACKAGES dependencies
 SCRIPT_REQ_PKGS="bc binutils coreutils lsb-release util-linux"
+
+# which domain to check for accessibility
+CHECK_DOMAIN_ACCESS="sinusbot.com"
+CHECK_WEB_URL="https://$CHECK_DOMAIN_ACCESS/diag"
 
 # BOT
 # bot PACKAGES dependencies
@@ -303,6 +316,9 @@ pause()
 ## Function for welcome header
 show_welcome()
 {
+	# do not forget to manually replace the domain name
+	# below here with the domain behind $CHECK_DOMAIN_ACCESS!
+	# AND keep the format that style! (justify the text)
 	say
 	say "welcome" "================================================="
 	say "welcome" "= [b]HELLO![/b] Please invest some time to read this.  ="
@@ -325,7 +341,7 @@ show_welcome()
 	say "welcome" "=  This  just generates an example forum post.  ="
 	say "welcome" "=                                               ="
 	say "welcome" "=  The script does perform a DNS resolution of  ="
-	say "welcome" "=  the  domain 'google.com'  to  determine  if  ="
+	say "welcome" "=  the domain 'sinusbot.com' to  determine  if  ="
 	say "welcome" "=  your  DNS settings are working as expected.  ="
 	say "welcome" "================================================="
 	say "welcome" "= I am thankful for any feedback. Please  also  ="
@@ -520,8 +536,24 @@ is_supported_os()
 ## Function to crawl given URL
 load_webfile()
 {
-	# timeout are 10 seconds, because maybe slower internet connections or slow DNS resolutions.
-	curl --fail --connect-timeout 10 --silent "$1"
+	# timeout is 10 seconds, because maybe slower internet connections or slow DNS resolutions.
+	curl -q --fail --connect-timeout 10 --silent "$1"
+}
+
+## Function to check outgoing IPv4 connections
+check_web_ipv4()
+{
+	# timeout is 10 seconds, because maybe slower internet connections or slow DNS resolutions.
+	curl -q --fail --insecure --ipv4 --silent --connect-timeout 10 "$1" &>/dev/null
+	return $?
+}
+
+## Function to check outgoing IPv6 connections
+check_web_ipv6()
+{
+	# timeout is 10 seconds, because maybe slower internet connections or slow DNS resolutions.
+	curl -q --fail --insecure --ipv6 --silent --connect-timeout 10 "$1" &>/dev/null
+	return $?
 }
 
 ## Function to check if a new update is available
@@ -763,10 +795,16 @@ script_done()
 	exit 0
 }
 
+## Function to resolve hostname to IP
+resolve_hostname()
+{
+	echo $(getent hosts "$1" | head -n 1 | cut -d ' ' -f 1)
+}
+
 ## Function to check DNS resolution
 check_dns_resolution()
 {
-	if [ "$(getent hosts "$1" | head -n 1 | cut -d ' ' -f 1)" != "" ]; then
+	if [ "$(resolve_hostname "$1")" != "" ]; then
 		return 0
 	else
 		return 1
@@ -927,14 +965,21 @@ else
 
 			# load and show it!
 			if [ "$DISPLAY_CHANGELOG" == "yes" ]; then
+				# hint for complete changelog.
+				say "info" "######################################################################################"
+				say "info" " The complete detailed history of every release you may find under the following URL:"
+				say "info" " > $SCRIPT_CHANGELOG_LIST"
+				say "info" "######################################################################################"
 				# trying to get changelog
 				say "debug" "Trying to get script update changelog..."
 				CHANGELOG="$(script_check_for_changelog "$UPD_CHECK_VER")"
 				if [ "$CHANGELOG" != "" ]; then
 					say "info" "Displaying CHANGELOG for diagSinusbot v$UPD_CHECK_VER:"
+					say "info" "######################################################################################"
 					while IFS= read -r line; do
 						say "info" " $line"
 					done <<< "$CHANGELOG"
+					say "info" "######################################################################################"
 				else
 					say "warning" "Failed getting update changelog."
 					say "debug" "Tried getting changelog from '$(script_get_changelog_url "$UPD_CHECK_VER")'..."
@@ -1122,6 +1167,8 @@ say "info" "(Scan may take some moments...)"
 # system
 say "info" "Collecting system information..."
 say "debug" "Getting operating system version..."
+
+# get OS details
 SYS_OS=$(lsb_release --short --description)
 SYS_OS_EXTENDED=""
 if [ -f "/proc/user_beancounters" ]; then
@@ -1169,7 +1216,7 @@ else
 	SYS_OS_ARCH_X64_TEXT="FAIL: Not x64 OS. [$SYS_OS_ARCH]"
 fi
 
-if [ "$SYS_OS_ARCH_X64" == "N" ]; then
+if [ "$SYS_OS_ARCH_X64" != "Y" ]; then
 	say "error" "This system is not an 64-bit operating system! The bot requires an 64-bit operating system to operate, x86/x32 and other architectures are not supported. Please re-install your system with an 64-bit compatible operating system."
 fi
 
@@ -1180,17 +1227,51 @@ if [ "$PKG_VERSION_GLIBC" == "unknown" ]; then
 fi
 
 # check dns resolution
-check_dns_resolution "google.com"
-if [ $? -eq 0 ]; then
+say "debug" "Checking DNS resolution..."
+RESOLVED_IP="$(resolve_hostname "$CHECK_DOMAIN_ACCESS")"
+if [ "$RESOLVED_IP" != "" ]; then
 	SYS_OS_DNS_CHECK="Y"
-	SYS_OS_DNS_CHECK_TEXT="google.com -> OK"
+	SYS_OS_DNS_CHECK_TEXT="$CHECK_DOMAIN_ACCESS resolved to $RESOLVED_IP -> OK"
 else
 	SYS_OS_DNS_CHECK="N"
-	SYS_OS_DNS_CHECK_TEXT="google.com -> FAIL"
+	SYS_OS_DNS_CHECK_TEXT="$CHECK_DOMAIN_ACCESS resolution failed -> ERROR"
 fi
 
-if [ "$SYS_OS_DNS_CHECK" == "N" ]; then
-	say "error" "Strange. DNS resolution of domain 'google.com' failed. Please verify your DNS server settings of your system and fix this issue for the best bot experience."
+# messages for DNS check
+if [ "$SYS_OS_DNS_CHECK" != "Y" ]; then
+	say "error" "Strange. DNS resolution of domain '$CHECK_DOMAIN_ACCESS' failed. Please verify your DNS server settings of your system and fix this issue for the best bot experience."
+fi
+
+# check http access
+# force using IPv4
+say "debug" "Checking web IPv4 access..."
+check_web_ipv4 "$CHECK_WEB_URL"
+if [ $? -eq 0 ]; then
+	CHECK_WEB_IPV4="Y"
+	CHECK_WEB_IPV4_TEXT="SUCCESS [Connection was established to $CHECK_DOMAIN_ACCESS]"
+else
+	CHECK_WEB_IPV4="N"
+	CHECK_WEB_IPV4_TEXT="FAILED [Failed establishing connection to $CHECK_DOMAIN_ACCESS]"
+fi
+
+# force using IPv6
+say "debug" "Checking web IPv6 access..."
+check_web_ipv6 "$CHECK_WEB_URL"
+if [ $? -eq 0 ]; then
+	CHECK_WEB_IPV6="Y"
+	CHECK_WEB_IPV6_TEXT="SUCCESS [Connection established to $CHECK_DOMAIN_ACCESS]"
+else
+	CHECK_WEB_IPV6="N"
+	CHECK_WEB_IPV6_TEXT="FAILED [Failed connecting to $CHECK_DOMAIN_ACCESS]"
+fi
+
+# messages of http access
+if [ "$CHECK_WEB_IPV4" != "Y" ]; then
+	say "error" "Contacting '$CHECK_DOMAIN_ACCESS' using IPv4-only mode failed. Please check for any DNS resolution issues or possible firewall restrictions."
+fi
+
+if [ "$CHECK_WEB_IPV6" != "Y" ]; then
+	say "error" "Contacting '$CHECK_DOMAIN_ACCESS' using IPv6-only mode failed. Please check for any DNS resolution issues or possible firewall restrictions."
 fi
 
 # get CPU info
@@ -1331,7 +1412,7 @@ fi
 SYS_BOT_AUTOSTART="unknown"
 SYS_BOT_AUTOSTART_EXTENDED=""
 
-SYS_BOT_AUTOSTART_PATHS="/etc/init.d/sinusbot"
+SYS_BOT_AUTOSTART_PATHS="/etc/init.d/sinusbot /etc/init.d/ts3bot"
 for SYS_BOT_AUTOSTART_PATH in $SYS_BOT_AUTOSTART_PATHS; do
 	if [ -f "$SYS_BOT_AUTOSTART_PATH" ]; then
 		SYS_BOT_AUTOSTART="found at $SYS_BOT_AUTOSTART_PATH"
@@ -1384,7 +1465,7 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 		# check ts3 client version
 		if [ "$BOT_CONFIG_TS3PATH_VERSION" != "" ]; then
 			# check for the old vulnerable client version 3.0.18.2 and before
-			if compare_version $BOT_CONFIG_TS3PATH_VERSION 3.0.18.2; then
+			if compare_version $BOT_CONFIG_TS3PATH_VERSION 3.0.18.2 || [ $BOT_CONFIG_TS3PATH_VERSION == "3.0.18.2" ]; then
 				BOT_CONFIG_TS3PATH_VERSION_EXTENDED="(vulnerable! outdated!)"
 				say
 				say "warning" "******************************* ATTENTION *******************************"
@@ -1398,11 +1479,28 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 				say "warning" "        [b]Strongly recommended: Update as soon as possible![/b]         "
 				say "warning" ""
 				say "warning" "Download the latest TeamSpeak 3 Linux amd64 client from here:"
-				say "warning" " => http://www.teamspeak.com/downloads"
+				say "warning" " => https://www.teamspeak.com/downloads"
 				say "warning" "******************************* ATTENTION *******************************"
 				say
 				say "info"    "READ THE MESSAGE ABOVE! This message should warn you, do not ignore it."
 				say "info"    "It is really important. Seriously. (Script will continue in five seconds...)"
+				sleep 5
+				pause
+
+			# now check if running TS3Client and newer with Sinusbot 0.9.16 and older
+			elif ( compare_version 3.1 $BOT_CONFIG_TS3PATH_VERSION || [ "$BOT_CONFIG_TS3PATH_VERSION" == "3.1" ] ) && ( compare_version $BOT_VERSION 0.9.18 || [ "$BOT_VERSION" == "0.9.18" ] ); then
+				BOT_CONFIG_TS3PATH_VERSION_EXTENDED="(not supported!)"
+				say
+				say "warning" "***************************** NOT SUPPORTED *****************************"
+				say "warning" "[b]THIS TS3 CLIENT VERSION IS NOT SUPPORTED AND NOT WORKING![/b]"
+				say "warning" "TeamSpeak 3 Client with version 3.1+ and later is currently not supported"
+				say "warning" "with Sinusbot version 0.9.16 and older."
+				say "warning" "You may solve this issue by:"
+				say "warning" "  1. Downgrade your TS3 client to a supported TS3 client version."
+				say "warning" "  2. Upgrade to a supported Sinusbot version which supports this client."
+				say "warning" "      (as long as an newer version is available)"
+				say "warning" "***************************** NOT SUPPORTED *****************************"
+				say
 				sleep 5
 				pause
 			fi
@@ -1486,6 +1584,8 @@ SYSTEM INFORMATION
  - OS APT Last Update: $SYS_APT_LASTUPDATE
  - Bot Start Script: $SYS_BOT_AUTOSTART $SYS_BOT_AUTOSTART_EXTENDED
  - DNS resolution check: $SYS_OS_DNS_CHECK_TEXT
+ - HTTPS check with IPv4 mode: $CHECK_WEB_IPV4_TEXT
+ - HTTPS check with IPv6 mode: $CHECK_WEB_IPV6_TEXT
  - CPU:
 $SYS_CPU_DATA
  - RAM: $(bytes_format $SYS_RAM_USAGE)/$(bytes_format $SYS_RAM_TOTAL) in use (${SYS_RAM_PERNT}%) $SYS_RAM_EXTENDED
