@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.4.6
+# Version: 0.5.0
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
