@@ -153,7 +153,7 @@
 #  v0.5.0:  [01.03.2017 22:15]
 #           Added check mechanism if using TS3 client 3.1 and later with Sinusbot 0.9.18 and older, which is not working due to TS3 client API changes.
 #           Added outgoing HTTPS access checks, IPv4- and IPv6-only modes.
-#           Additionally searching for initd-script at /etc/init.d/ts3bot.
+#           Additionally searching for initd-script at /etc/init.d/ts3bot, and systemd config at /etc/systemd/system/sinusbot.service.
 #           Now checking DNS resolution of sinusbot.com instead of Google.com.
 #           Now displaying the URL where all changelogs can be found when viewing the latest changelog during the script update process.
 #           Improved version compare handling.
@@ -1412,7 +1412,7 @@ fi
 SYS_BOT_AUTOSTART="unknown"
 SYS_BOT_AUTOSTART_EXTENDED=""
 
-SYS_BOT_AUTOSTART_PATHS="/etc/init.d/sinusbot /etc/init.d/ts3bot"
+SYS_BOT_AUTOSTART_PATHS="/etc/init.d/sinusbot /etc/init.d/ts3bot /etc/systemd/system/sinusbot.service"
 for SYS_BOT_AUTOSTART_PATH in $SYS_BOT_AUTOSTART_PATHS; do
 	if [ -f "$SYS_BOT_AUTOSTART_PATH" ]; then
 		SYS_BOT_AUTOSTART="found at $SYS_BOT_AUTOSTART_PATH"
