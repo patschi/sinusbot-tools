@@ -1,0 +1,14 @@
+[Version 0.5.0]: Feature- and bugfix-release.
+Added check mechanism if using TS3 client 3.1 and later with Sinusbot 0.9.18 and older, which is not working due to TS3 client API changes.
+Added outgoing HTTPS access checks, IPv4- and IPv6-only modes.
+Additionally searching for initd-script at /etc/init.d/ts3bot.
+Now checking DNS resolution of sinusbot.com instead of Google.com.
+Improved version compare handling.
+Fixed some typos.
+General improvements.
+
+[Version 0.5.1]: Maintenance release.
+Added some required dependencies for the script to execute.
+Clarify warn messages of HTTPS access checks.
+Fixed docker integration.
+Some under-the-hood improvements.

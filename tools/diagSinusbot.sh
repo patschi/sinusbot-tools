@@ -5,7 +5,7 @@
 #  Website: pkern.at
 #
 ### SCRIPT INFO
-# Version: 0.5.0
+# Version: see in changelog
 # Licence: GNU GPL v2
 # Description:
 #  Collects some important diagnostic data about
@@ -158,12 +158,16 @@
 #           Now displaying the URL where all changelogs can be found when viewing the latest changelog during the script update process.
 #           Improved version compare handling.
 #           Fixed some typos.
+#  v0.5.1:  [14.03.2017 20:30]
+#           Added some required dependencies for the script to execute.
+#           Clarify warn messages of HTTPS access checks.
+#           Fixed docker integration.
+#           Some under-the-hood improvements.
 #
 ### Known issues:
 # Mostly this issues are non-critical and just kind of hard to fix or workaround.
 # If you have any ideas, feel free to tell me them.
 #
-# - Sometimes retrieving CPU information does fail and does just return empty text
 # - Getting DISK data on OpenVZ machines and non-english systems may still not work.
 #
 ### THANKS TO...
@@ -172,10 +176,14 @@
 # see with parameter: '-c' or '--credits'.
 #
 ### USAGE
-# To download and execute you can use:
+# To download and execute this script you can use:
 #  $ cd /path/to/sinusbot/ # usually /opt/ts3bot/
 #  $ curl -O https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh
 #  $ bash diagSinusbot.sh
+#  $ rm diagSinusbot.sh # optionally to cleanup
+#
+# Simple One-liner:
+#  $ curl https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh | bash
 #
 ### DISCLAIMER
 # No warranty, execute on your own risk.
@@ -197,8 +205,8 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2017"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.5.0"
-SCRIPT_VERSION_DATE="01.03.2017 22:15"
+SCRIPT_VERSION_NUMBER="0.5.1"
+SCRIPT_VERSION_DATE="14.03.2017 20:30"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -209,13 +217,13 @@ SCRIPT_CHANGELOG_LIST="https://github.com/patschi/sinusbot-tools/tree/master/too
 SCRIPT_CHANGELOG_FILE="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/updates/diagSinusbot/changelog-{VER}.txt"
 
 # script COMMANDS dependencies
-SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf netstat sort head"
+SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf netstat sort head curl"
 # script PACKAGES dependencies
-SCRIPT_REQ_PKGS="bc binutils coreutils lsb-release util-linux"
+SCRIPT_REQ_PKGS="bc binutils coreutils lsb-release util-linux net-tools curl"
 
 # which domain to check for accessibility
-CHECK_DOMAIN_ACCESS="sinusbot.com"
-CHECK_WEB_URL="https://$CHECK_DOMAIN_ACCESS/diag"
+CHECK_WEB_URL="https://sinusbot.com/diag"
+CHECK_DOMAIN_ACCESS="auto"
 
 # BOT
 # bot PACKAGES dependencies
@@ -298,12 +306,17 @@ say()
 	echo -ne "\e[0m"
 }
 
-## Function for string replacing
-# Usage: string_replace "string" "pattern" "replacement"
+## Function for string replacing (Usage: string_replace "string" "pattern" "replacement")
 string_replace()
 {
 	# (the missing $ of "$1" is correct!)
 	echo "${1/$2/$3}"
+}
+
+## Function to parse comments from the script file
+parse_version_comment_line()
+{
+	echo $(echo "$1" | awk 'match($0, /# Version: (.*)/) { print $3 };')
 }
 
 ## Function to pause till input
@@ -364,6 +377,7 @@ show_help()
 	say "info" "  -u|--only-update-check     Only check for script update. (overrides update skip)"
 	say "info" "  -c|--credits               Show credits."
 	say "info" "  -v|--version               Show version."
+	say "info" "  moo                        The cow says."
 	say "info" "This tool has Super Cow Powers."
 }
 
@@ -372,23 +386,25 @@ show_version()
 {
 	say "info" "(C) $SCRIPT_YEAR, $SCRIPT_AUTHOR_NAME ($SCRIPT_AUTHOR_WEBSITE)"
 	say "info" "$SCRIPT_NAME v$SCRIPT_VERSION_NUMBER [$SCRIPT_VERSION_DATE]"
-	say "info" "Project site: $SCRIPT_PROJECT_SITE"
+	say "info" "Project site...: $SCRIPT_PROJECT_SITE"
 	say "info" "Script download: $SCRIPT_PROJECT_DLURL"
 }
 
 ## Function to show credits (whooaaa!)
 show_credits()
 {
-	say "info" "THANKS TO EVERYONE WHO HAVE HELPED IN ANY WAY!"
-	say "info" "Special thanks goes to..."
+	say "info" ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+	say "info" " THANKS TO EVERYONE WHO HAVE HELPED IN ANY WAY!"
+	say "info" " Special thanks goes to..."
 	say "info" ""
-	say "info" "  [b]flyth[/b]            Michael F.     for developing sinusbot, testing this script and ideas"
-	say "info" "  [b]Xuxe[/b]             Julian H.      for testing, ideas and contributing code"
-	say "info" "  [b]GetMeOutOfHere[/b]   -              for testing and ideas"
-	say "info" "  [b]JANNIX[/b]           Jan            for testing"
-	say "info" "  [b]maxibanki[/b]        Max S.         for testing, finding bugs and contributing code"
+	say "info" "   [b]flyth[/b]            Michael F.     for developing sinusbot, testing this script and ideas"
+	say "info" "   [b]Xuxe[/b]             Julian H.      for testing, ideas and contributing code"
+	say "info" "   [b]GetMeOutOfHere[/b]   -              for testing and ideas"
+	say "info" "   [b]JANNIX[/b]           Jan H.         for testing"
+	say "info" "   [b]maxibanki[/b]        Max S.         for testing, finding bugs and contributing code"
 	say "info" ""
-	say "info" "...if u see 'em somewhere, give 'em some chocolate cookieees!"
+	say "info" " ...if u see 'em somewhere, give 'em some chocolate cookieees!"
+	say "info" "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
 }
 
 ## Function t000 m0o0o0o0o0o0oo t000d4y
@@ -554,6 +570,12 @@ check_web_ipv6()
 	# timeout is 10 seconds, because maybe slower internet connections or slow DNS resolutions.
 	curl -q --fail --insecure --ipv6 --silent --connect-timeout 10 "$1" &>/dev/null
 	return $?
+}
+
+## Function to parse host from a given URL
+parse_host_of_url()
+{
+	echo "$(echo "$1" | awk -F/ '{ print $3 }')"
 }
 
 ## Function to check if a new update is available
@@ -765,7 +787,11 @@ trim_spaces()
 ## Function to get a md5 hash of a file
 get_file_hash()
 {
-	md5sum "$1" | awk '{print $1}'
+	if [ -f "$1" ]; then
+		md5sum "$1" | awk '{print $1}'
+	else
+		echo "unknown"
+	fi
 }
 
 ## Function to check if port is in use
@@ -901,6 +927,11 @@ done
 
 # running what...?
 say "info" "Starting $SCRIPT_NAME v$SCRIPT_VERSION_NUMBER [$SCRIPT_VERSION_DATE]..."
+
+# Check if we want to automatically set the domain access
+if [ "$CHECK_DOMAIN_ACCESS" = "auto" ]; then
+	CHECK_DOMAIN_ACCESS="$(parse_host_of_url "$CHECK_WEB_URL")"
+fi
 
 # check if any commands are missing
 if [ $REQ_CMDS -ne 0 ]; then
@@ -1077,7 +1108,8 @@ else
 
 		else
 			say "error" "There was an error while checking for an update. Check your internet connection."
-			say "info" "Make sure that the version check file at '$SCRIPT_VERSION_FILE' is accessible by the server."
+			say "info" "Make sure that the version check file is accessible by the server:"
+			say "info" "> URL: $SCRIPT_VERSION_FILE"
 			pause
 		fi
 	fi
@@ -1171,17 +1203,21 @@ say "debug" "Getting operating system version..."
 # get OS details
 SYS_OS=$(lsb_release --short --description)
 SYS_OS_EXTENDED=""
+
 if [ -f "/proc/user_beancounters" ]; then
 	SYS_OS_EXTENDED="(OpenVZ)"
 
-elif [ -f "/proc/1/cgroup" ]; then
+elif [ -f "/proc/1/cgroup" ] && [ ! -f "/.dockerenv" ]; then
 	grep -Pq 'lxc' /proc/1/cgroup
 	if [ $? -eq 0 ]; then
 		SYS_OS_EXTENDED="(LXC)"
 	fi
 
-elif [ -f "/.dockerinit" ]; then
-	SYS_OS_EXTENDED="(Docker)"
+elif [ -f "/proc/1/cgroup" ] && [ -f "/.dockerenv" ]; then
+	grep -Pq 'docker' /proc/1/cgroup
+	if [ $? -eq 0 ]; then
+		SYS_OS_EXTENDED="(Docker)"
+	fi
 fi
 
 # get load avg
@@ -1245,33 +1281,45 @@ fi
 # check http access
 # force using IPv4
 say "debug" "Checking web IPv4 access..."
-check_web_ipv4 "$CHECK_WEB_URL"
+
+# set v4 URL
+CHECK_WEB_URL_V4="$CHECK_WEB_URL"
+CHECK_DOMAIN_ACCESS_V4="$(parse_host_of_url "$CHECK_WEB_URL_V4")"
+
+# perform check
+check_web_ipv4 "$CHECK_WEB_URL_V4"
 if [ $? -eq 0 ]; then
 	CHECK_WEB_IPV4="Y"
-	CHECK_WEB_IPV4_TEXT="SUCCESS [Connection was established to $CHECK_DOMAIN_ACCESS]"
+	CHECK_WEB_IPV4_TEXT="SUCCESS [Connection was established to $CHECK_DOMAIN_ACCESS_V4]"
 else
 	CHECK_WEB_IPV4="N"
-	CHECK_WEB_IPV4_TEXT="FAILED [Failed establishing connection to $CHECK_DOMAIN_ACCESS]"
+	CHECK_WEB_IPV4_TEXT="FAILED  [Failed establishing connection to $CHECK_DOMAIN_ACCESS_V4]"
 fi
 
 # force using IPv6
 say "debug" "Checking web IPv6 access..."
-check_web_ipv6 "$CHECK_WEB_URL"
+
+# set v6 URL
+CHECK_WEB_URL_V6="$CHECK_WEB_URL"
+CHECK_DOMAIN_ACCESS_V6="$(parse_host_of_url "$CHECK_WEB_URL_V6")"
+
+# perform check
+check_web_ipv6 "$CHECK_WEB_URL_V6"
 if [ $? -eq 0 ]; then
 	CHECK_WEB_IPV6="Y"
-	CHECK_WEB_IPV6_TEXT="SUCCESS [Connection established to $CHECK_DOMAIN_ACCESS]"
+	CHECK_WEB_IPV6_TEXT="SUCCESS [Connection established to $CHECK_DOMAIN_ACCESS_V6]"
 else
 	CHECK_WEB_IPV6="N"
-	CHECK_WEB_IPV6_TEXT="FAILED [Failed connecting to $CHECK_DOMAIN_ACCESS]"
+	CHECK_WEB_IPV6_TEXT="FAILED  [Failed connecting to $CHECK_DOMAIN_ACCESS_V6]"
 fi
 
 # messages of http access
 if [ "$CHECK_WEB_IPV4" != "Y" ]; then
-	say "error" "Contacting '$CHECK_DOMAIN_ACCESS' using IPv4-only mode failed. Please check for any DNS resolution issues or possible firewall restrictions."
+	say "error" "Contacting '$CHECK_DOMAIN_ACCESS_V4' using IPv4-only mode failed: Please check for IPv4 connectivity, for any DNS resolution issues or possible firewall restrictions."
 fi
 
 if [ "$CHECK_WEB_IPV6" != "Y" ]; then
-	say "error" "Contacting '$CHECK_DOMAIN_ACCESS' using IPv6-only mode failed. Please check for any DNS resolution issues or possible firewall restrictions."
+	say "error" "Contacting '$CHECK_DOMAIN_ACCESS_V6' using IPv6-only mode failed: Please check for IPv6 connectivity, for any DNS resolution issues or possible firewall restrictions. Usually IPv6 is not supported from many internet service providers. As long as IPv4 is working, everything is fine."
 fi
 
 # get CPU info
@@ -1369,10 +1417,15 @@ fi
 # collecting bot info
 say "info" "Collecting bot information..."
 BOT_VERSION=$(get_bot_version)
+
 BOT_CONFIG=""
 if [ -z "$BOT_CONFIG" ]; then
 	say "debug" "Loading bot config file..."
-	BOT_CONFIG=$(cat "$BOT_PATH/config.ini")
+	if [ -f "$BOT_PATH/config.ini" ]; then
+		BOT_CONFIG=$(cat "$BOT_PATH/config.ini")
+	else
+		BOT_CONFIG=""
+	fi
 fi
 
 # get bot status
