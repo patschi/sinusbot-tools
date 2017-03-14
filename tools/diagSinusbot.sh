@@ -316,7 +316,7 @@ string_replace()
 ## Function to parse comments from the script file
 parse_version_comment_line()
 {
-	echo $(echo "$1" | awk 'match($0, /# Version: (.*)/) { print $3 };')
+	echo "$1" | awk 'match($0, /# Version: (.*)/) { print $3 };'
 }
 
 ## Function to pause till input
@@ -575,7 +575,7 @@ check_web_ipv6()
 ## Function to parse host from a given URL
 parse_host_of_url()
 {
-	echo "$(echo "$1" | awk -F/ '{ print $3 }')"
+	echo "$1" | awk -F/ '{ print $3 }'
 }
 
 ## Function to check if a new update is available
@@ -824,7 +824,7 @@ script_done()
 ## Function to resolve hostname to IP
 resolve_hostname()
 {
-	echo $(getent hosts "$1" | head -n 1 | cut -d ' ' -f 1)
+	getent hosts "$1" | head -n 1 | cut -d ' ' -f 1
 }
 
 ## Function to check DNS resolution
