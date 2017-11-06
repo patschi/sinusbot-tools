@@ -22,10 +22,10 @@
 #  Sinusbot forum thread [german]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostik-script.832/#post-4419
 #
 ### CHANGELOG
-#  v0.1.0:  [25.11.2015 12:00]
+#  v0.1.0:  [2015-11-25 12:00]
 #           Release: Alpha.
 #           New: Basic functionality.
-#  v0.2.0:  [25.11.2015 14:00]
+#  v0.2.0:  [2015-11-25 14:00]
 #           New: OpenVZ checks
 #           New: YouTubeDL support
 #           New: welcome header
@@ -35,11 +35,11 @@
 #           New: parameter support
 #           New: parameter: '-w|--no-welcome' to hide welcome text
 #           New: parameter: '-u|--no-os-update-check' to skip OS update check
-#  v0.2.1:  [25.11.2015 18:00]
+#  v0.2.1:  [2015-11-25 18:00]
 #           Fixed: Corrected calculating RAM usage (now without cached RAM)
 #           New: Added time as prefix to log messages
 #           New: Added report date including timezone to output
-#  v0.2.5:  [25.11.2015 21:00]
+#  v0.2.5:  [2015-11-25 21:00]
 #           New: Added help with '-h|--help' parameter
 #           New: More colorful output (everyone likes colors... and cookies.)
 #           Fixed: TS3Path check if exists
@@ -49,7 +49,7 @@
 #           New: Added '-v|--version' parameter
 #           New: Added '-c|--credits' parameter
 #           Improved: own function for trimming whitespaces
-#  v0.3.0:  [26.11.2015 19:00]
+#  v0.3.0:  [2015-11-26 19:00]
 #           Release: Beta.
 #           New: Added TS3Client version to output.
 #           New: Added support to retrieve sinusbot version by 'sinusbot --version' parameter (including fallback to old method)
@@ -63,39 +63,39 @@
 #           New: Added bot running checks (and under which user it is running)
 #           New: Added bot webinterface port checks
 #           Improved: Supported operating system checks.
-#  v0.3.1:  [26.11.2015 21:00]
+#  v0.3.1:  [2015-11-26 21:00]
 #           Changed: Using 'lscpu' for determining CPU data now
 #           New: Check for bot autostart script (/etc/init.d/sinusbot)
-#  v0.3.2:  [26.11.2015 21:20]
+#  v0.3.2:  [2015-11-26 21:20]
 #           New: Added advanced permissions checks for the autostart script
-#  v0.3.3:  [02.12.2015 10:00]
+#  v0.3.3:  [2015-12-02 10:00]
 #           New: Check if x64 bit operating system
 #           New: Added DNS resolution check of google.com
-#  v0.3.4:  [04.12.2015 18:15]
+#  v0.3.4:  [2015-12-04 18:15]
 #           Changed: Switched from 'nc' to 'netstat' to determine if webinterface port is up
 #           Improved: Some text changes
-#  v0.3.5:  [01.01.2016 04:00]
+#  v0.3.5:  [2016-01-01 04:00]
 #           Happy new year!
 #           Changed: Added CODE-tags for forum to output
 #           Changed copyright year
-#  v0.3.6:  [16.01.2016 13:55]
+#  v0.3.6:  [2016-01-16 13:55]
 #           Fixed some bugs in operating system package detection function
 #           Fixed lsb_release errors when checking OS support before checking package installation of lsb-release
 #           Fixed dpkg-query errors when package was never installed before (when package detection)
-#  v0.3.7:  [29.01.2016 00:45]
+#  v0.3.7:  [2016-01-29 00:45]
 #           Fixed retrieving of youtube-dl version when binary exists and is set in the bot configuration (Thanks Xuxe!, see PR #1 on Github)
-#  v0.3.8:  [30.01.2016 12:55]
+#  v0.3.8:  [2016-01-30 12:55]
 #           Added detection for LXC & Docker (Thanks Xuxe!, see PR #2 on Github)
-#  v0.3.9:  [03.02.2016 20:30]
+#  v0.3.9:  [2016-02-03 20:30]
 #           Mostly a bug fix release.
 #           Added check if the scripts-folder does exist. (which hopefully fixes the issue of displaying files of a wrong folder)
 #           Fixed issue with detecting Sinusbot version with "--version" parameter on some pre-release Sinusbot versions.
 #           Changed the uppercase "S" in "Installed Scripts" to lowercase. Whyever I mention this here in the changelog.
-#  v0.3.10: [03.02.2016 20:35]
+#  v0.3.10: [2016-02-03 20:35]
 #           Fixed a little issue with collecting installed scripts
-#  v0.3.11: [03.02.2016 20:45]
+#  v0.3.11: [2016-02-03 20:45]
 #           Fixed LXC-detection bug
-#  v0.4.0:  [08.02.2016 16:40]
+#  v0.4.0:  [2016-02-08 16:40]
 #           Added 'known issues' section to the top of the script.
 #           Added version check for this script.
 #           Added automated updater for this script.
@@ -111,11 +111,11 @@
 #           Changed: Optimized say-function to be able to output bold text.
 #           Some cosmetic and overall little improvements.
 #           Fixed LXC detection (finally).
-#  v0.4.1:  [21.03.2016 13:15]
+#  v0.4.1:  [2016-03-21 13:15]
 #           Added check if webinterface is listening either on IPv4 or IPv6 localhost.
 #           Fixed detection if libglib2.0-0 package is installed properly. (Thanks for testing iTaskmanager)
 #           Improved installed-package detection a bit.
-#  v0.4.2:  [14.04.2016 13:15]
+#  v0.4.2:  [2016-04-14 13:15]
 #           > This is just a bugfix release, fixing some issues on non-english operating system-setups.
 #           > Thanks for testing and letting me know about the issues, MaxS! [from the Sinusbot forum]
 #           Added connection timeout for outgoing web requests (e.g. for script update checks).
@@ -125,19 +125,19 @@
 #           Fixed: Reading out RAM and SWAP-data was not possible when the operating system had any other language than english.
 #           Fixed: Retrieving permissions of the sinusbot init.d script did not work on systems with any other language than english.
 #           Known issue: Getting DISK data on OpenVZ machines and non-english systems may still not work. Not critical, fix may be released in the future.
-#  v0.4.3:  [14.04.2016 13:30]
+#  v0.4.3:  [2016-04-14 13:30]
 #           > This is just a very very small and silent micro-release making some non-mentionable improvements.
 #           Updated: Added simple warning/notice to SWAP output when SWAP is disabled.
 #           Updated: 'Known issues' section in script file itself.
-#  v0.4.4:  [28.04.2016 20:26]
+#  v0.4.4:  [2016-04-28 20:26]
 #           > Some little improvements and new version check for recent 3.0.19 TS3 client and glibc library.
 #           Added glibc version check and output.
 #           Added warning for TS3 client 3.0.19 on Debian 8 and older.
 #           Added commands "sort" and "head" to required commands for this diagnostic script.
 #           Improved bot binary search functionality.
-#  v0.4.5:  [28.04.2016 22:25]
+#  v0.4.5:  [2016-04-28 22:25]
 #           Fixed wrong calculation of RAM usage.
-#  v0.4.6:  [04.09.2016 16:30]
+#  v0.4.6:  [2016-09-04 16:30]
 #           Added: Additionally search the bot binary in /opt/ts3soundboard/
 #           Added: Additionally search the bot binary in /opt/sinusbot/
 #           Added messages when not using x64 arch or DNS resolution is broken.
@@ -146,11 +146,11 @@
 #           Disabled "TS3 v3.0.19-outdated"-warning on Debian 8 systems. (Does work on this OS)
 #           Improved overall syntax.
 #           Cleaned up script.
-#  v0.4.7:  [01.03.2017 15:10]
+#  v0.4.7:  [2017-03-01 15:10]
 #           Restricted scripts listening to files with *.js extension. (Thanks @maxibanki, PR#4)
 #           Fixed detection of local reachable webinterface port. (finally! Issue was that passing the var to awk failed)
 #           Updated copyright.
-#  v0.5.0:  [01.03.2017 22:15]
+#  v0.5.0:  [2017-03-01 22:15]
 #           Added check mechanism if using TS3 client 3.1 and later with Sinusbot 0.9.18 and older, which is not working due to TS3 client API changes.
 #           Added outgoing HTTPS access checks, IPv4- and IPv6-only modes.
 #           Additionally searching for initd-script at /etc/init.d/ts3bot, and systemd config at /etc/systemd/system/sinusbot.service.
@@ -158,11 +158,20 @@
 #           Now displaying the URL where all changelogs can be found when viewing the latest changelog during the script update process.
 #           Improved version compare handling.
 #           Fixed some typos.
-#  v0.5.1:  [14.03.2017 20:30]
+#  v0.5.1:  [2017-03-14 20:30]
 #           Added some required dependencies for the script to execute.
 #           Clarify warn messages of HTTPS access checks.
 #           Fixed docker integration.
 #           Some under-the-hood improvements.
+#  v0.6.0:  [2017-11-06 20:45]
+#           Added internal flag to change if HTTPS access using IPv6 check should be performed
+#           Added locales info output
+#           Added few checks if data was correctly retrieved
+#           Added time checking and check for time difference
+#           Improved CURL checks and also added error code support
+#           Increased waiting time for important messages
+#           Now using YYYY-mm-dd as date format for changelog
+#           Some few fixes and improvements
 #
 ### Known issues:
 # Mostly this issues are non-critical and just kind of hard to fix or workaround.
@@ -197,6 +206,10 @@
 
 ### SCRIPT CONFIGURATION VARIABLES
 # setting important variables
+# NOTICE: Sadly this is not working when the script file is being piped to bash binary.
+#SCRIPT_FILE_DETAILS="$(awk 'match($0, /v([0-9.]*)\:((\s)*)\[(.*)\]/) { print substr($0, RSTART, RLENGTH) };' "$(basename "$0")" | awk 'END{ print }')"
+#SCRIPT_VERSION_NUMBER="$(echo $SCRIPT_FILE_DETAILS | awk -F":" '{ print $1 }')"
+#SCRIPT_VERSION_DATE="$(echo $SCRIPT_FILE_DETAILS | awk -F"[" '{ print substr($2, 1, length($2)-1) }')"
 
 # general settings
 # SCRIPT
@@ -205,8 +218,9 @@ SCRIPT_AUTHOR_WEBSITE="pkern.at"
 SCRIPT_YEAR="2015-2017"
 
 SCRIPT_NAME="diagSinusbot"
-SCRIPT_VERSION_NUMBER="0.5.1"
-SCRIPT_VERSION_DATE="14.03.2017 20:30"
+# get version number and date automatically from changelog
+SCRIPT_VERSION_NUMBER="0.6.0"
+SCRIPT_VERSION_DATE="2017-11-06 20:45"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -222,13 +236,20 @@ SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf nets
 SCRIPT_REQ_PKGS="bc binutils coreutils lsb-release util-linux net-tools curl"
 
 # which domain to check for accessibility
-CHECK_WEB_URL="https://sinusbot.com/diag"
+CHECK_WEB_URL="https://www.sinusbot.com/diag"
 CHECK_DOMAIN_ACCESS="auto"
 
 # BOT
 # bot PACKAGES dependencies
 BOT_REQ_PACKAGES="ca-certificates bzip2 libglib2.0-0 sudo screen python"
 BOT_REQ_PACKAGES_VER="1"
+
+## SCRIPT SETTINGS
+# IPv6 HTTPS check, 0 = off, 1 = on
+CHECK_CURL_IPV6=0
+
+## EXECUTION VARIABLES
+EXEC_CURL="curl -q --user-agent "$SCRIPT_NAME/v$SCRIPT_VERSION_NUMBER""
 
 ### FUNCTIONS
 ## Function for text output
@@ -402,6 +423,7 @@ show_credits()
 	say "info" "   [b]GetMeOutOfHere[/b]   -              for testing and ideas"
 	say "info" "   [b]JANNIX[/b]           Jan H.         for testing"
 	say "info" "   [b]maxibanki[/b]        Max S.         for testing, finding bugs and contributing code"
+	say "info" "   [b]irgendwer[/b]        Jonas          for testing and ideas"
 	say "info" ""
 	say "info" " ...if u see 'em somewhere, give 'em some chocolate cookieees!"
 	say "info" "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
@@ -553,23 +575,23 @@ is_supported_os()
 load_webfile()
 {
 	# timeout is 10 seconds, because maybe slower internet connections or slow DNS resolutions.
-	curl -q --fail --connect-timeout 10 --silent "$1"
+	$EXEC_CURL --fail --insecure --connect-timeout 10 --silent "$1"
 }
 
 ## Function to check outgoing IPv4 connections
 check_web_ipv4()
 {
+	local URL=$1
 	# timeout is 10 seconds, because maybe slower internet connections or slow DNS resolutions.
-	curl -q --fail --insecure --ipv4 --silent --connect-timeout 10 "$1" &>/dev/null
-	return $?
+	$EXEC_CURL --head --write-out "%{http_code}" --fail --insecure --ipv4 --silent --connect-timeout 10 -o /dev/null "$URL"
 }
 
 ## Function to check outgoing IPv6 connections
 check_web_ipv6()
 {
+	local URL=$1
 	# timeout is 10 seconds, because maybe slower internet connections or slow DNS resolutions.
-	curl -q --fail --insecure --ipv6 --silent --connect-timeout 10 "$1" &>/dev/null
-	return $?
+	$EXEC_CURL --head --write-out "%{http_code}" --fail --insecure --ipv6 --silent --connect-timeout 10 -o /dev/null "$URL"
 }
 
 ## Function to parse host from a given URL
@@ -847,6 +869,12 @@ await_answer()
 	echo "$prompt"
 }
 
+## Function to get current locale
+get_locale_current()
+{
+	echo $LANG
+}
+
 ################
 ## MAIN CODE! ##
 ################
@@ -900,6 +928,16 @@ while [ $# -gt 0 ]; do
 shift
 done
 
+# check values.
+if [ "$SCRIPT_VERSION_NUMBER" == "" ]; then
+	say "error" "Important variable empty: SCRIPT_VERSION_NUMBER. Aborting."
+	failed "Version number incorrectly set."
+fi
+if [ "$SCRIPT_VERSION_DATE" == "" ]; then
+	say "error" "Important variable empty: SCRIPT_VERSION_DATE. Aborting."
+	failed "Version date incorrectly set."
+fi
+
 # further checks.
 is_user_root
 
@@ -908,35 +946,12 @@ if [ "$NO_WELCOME" != "yes" ]; then
 	show_welcome
 fi
 
-# check if commands are available for the script
-REQ_CMDS=0
-for SMCMD in $SCRIPT_REQ_CMDS; do
-	check_command "$SMCMD"
-	if [ $? -ne 0 ]; then
-		REQ_CMDS=1
-	fi
-done
-
-# checking scripts
-for SMCMD in $SCRIPT_REQ_CMDS; do
-	check_command "$SMCMD"
-	if [ $? -ne 0 ]; then
-		REQ_CMDS=1
-	fi
-done
-
 # running what...?
 say "info" "Starting $SCRIPT_NAME v$SCRIPT_VERSION_NUMBER [$SCRIPT_VERSION_DATE]..."
 
 # Check if we want to automatically set the domain access
 if [ "$CHECK_DOMAIN_ACCESS" = "auto" ]; then
 	CHECK_DOMAIN_ACCESS="$(parse_host_of_url "$CHECK_WEB_URL")"
-fi
-
-# check if any commands are missing
-if [ $REQ_CMDS -ne 0 ]; then
-	say "error" "Missing commands... Install and try again please."
-	failed "missing commands"
 fi
 
 # checking script dependencies
@@ -964,6 +979,21 @@ if [ "$PACKAGES_MISSING" != "" ]; then
 		say "warning" "Installation aborted. Please install the packages yourself before re-starting this script."
 		failed "automated script installation aborted"
 	fi
+fi
+
+# check if commands are available for the script
+REQ_CMDS=0
+for SMCMD in $SCRIPT_REQ_CMDS; do
+	check_command "$SMCMD"
+	if [ $? -ne 0 ]; then
+		REQ_CMDS=1
+	fi
+done
+
+# check if any commands are missing
+if [ $REQ_CMDS -ne 0 ]; then
+	say "error" "Missing commands... Install and try again please."
+	failed "missing commands"
 fi
 
 # check for script update... maybe there are important changes, or something like that.
@@ -1226,10 +1256,6 @@ SYS_LOAD_AVG=$(cat /proc/loadavg | cut -d " " -f -3)
 # get package manager last modified date
 SYS_APT_LASTUPDATE=$(date --date="@$(stat -c %Y '/var/lib/apt/lists')" +"%d.%m.%Y %H:%M:%S %Z %::z")
 
-# get current operating system date
-SYS_TIME=$(date +"%d.%m.%Y %H:%M:%S %Z %::z")
-SYS_TIME_ZONE=$(cat /etc/timezone)
-
 # get uptime
 SYS_UPTIME=$(</proc/uptime)
 SYS_UPTIME=${SYS_UPTIME%%.*}
@@ -1279,38 +1305,44 @@ if [ "$SYS_OS_DNS_CHECK" != "Y" ]; then
 fi
 
 # check http access
+# set URLs
+CHECK_WEB_URL_V4="$CHECK_WEB_URL"
+CHECK_WEB_URL_V6="$CHECK_WEB_URL"
+
 # force using IPv4
 say "debug" "Checking web IPv4 access..."
 
-# set v4 URL
-CHECK_WEB_URL_V4="$CHECK_WEB_URL"
 CHECK_DOMAIN_ACCESS_V4="$(parse_host_of_url "$CHECK_WEB_URL_V4")"
 
 # perform check
-check_web_ipv4 "$CHECK_WEB_URL_V4"
-if [ $? -eq 0 ]; then
+CHECK_WEB_IPV4_CODE=$(check_web_ipv4 "$CHECK_WEB_URL_V4")
+if [ "$CHECK_WEB_IPV4_CODE" -eq "200" ]; then
 	CHECK_WEB_IPV4="Y"
-	CHECK_WEB_IPV4_TEXT="SUCCESS [Connection was established to $CHECK_DOMAIN_ACCESS_V4]"
+	CHECK_WEB_IPV4_TEXT="SUCCESS [Connection was established to $CHECK_DOMAIN_ACCESS_V4, CODE #$CHECK_WEB_IPV4_CODE]"
 else
 	CHECK_WEB_IPV4="N"
-	CHECK_WEB_IPV4_TEXT="FAILED  [Failed establishing connection to $CHECK_DOMAIN_ACCESS_V4]"
+	CHECK_WEB_IPV4_TEXT="FAILED  [Failed establishing connection to $CHECK_DOMAIN_ACCESS_V4, CODE #$CHECK_WEB_IPV4_CODE]"
 fi
 
-# force using IPv6
-say "debug" "Checking web IPv6 access..."
+if [ $CHECK_CURL_IPV6 -eq 1 ]; then
+	# force using IPv6
+	say "debug" "Checking web IPv6 access..."
 
-# set v6 URL
-CHECK_WEB_URL_V6="$CHECK_WEB_URL"
-CHECK_DOMAIN_ACCESS_V6="$(parse_host_of_url "$CHECK_WEB_URL_V6")"
+	# set v6 URL
+	CHECK_WEB_URL_V6="$CHECK_WEB_URL_V6"
+	CHECK_DOMAIN_ACCESS_V6="$(parse_host_of_url "$CHECK_WEB_URL_V6")"
 
-# perform check
-check_web_ipv6 "$CHECK_WEB_URL_V6"
-if [ $? -eq 0 ]; then
-	CHECK_WEB_IPV6="Y"
-	CHECK_WEB_IPV6_TEXT="SUCCESS [Connection established to $CHECK_DOMAIN_ACCESS_V6]"
+	# perform check
+	CHECK_WEB_IPV6_CODE=$(check_web_ipv6 "$CHECK_WEB_URL_V6")
+	if [ "$CHECK_WEB_IPV6_CODE" -eq "200" ]; then
+		CHECK_WEB_IPV6="Y"
+		CHECK_WEB_IPV6_TEXT="SUCCESS [Connection established to $CHECK_DOMAIN_ACCESS_V6, CODE #$CHECK_WEB_IPV6_CODE]"
+	else
+		CHECK_WEB_IPV6="N"
+		CHECK_WEB_IPV6_TEXT="FAILED  [Failed connecting to $CHECK_DOMAIN_ACCESS_V6, CODE #$CHECK_WEB_IPV6_CODE]"
+	fi
 else
-	CHECK_WEB_IPV6="N"
-	CHECK_WEB_IPV6_TEXT="FAILED  [Failed connecting to $CHECK_DOMAIN_ACCESS_V6]"
+	CHECK_WEB_IPV6_TEXT="IGNORE"
 fi
 
 # messages of http access
@@ -1318,13 +1350,27 @@ if [ "$CHECK_WEB_IPV4" != "Y" ]; then
 	say "error" "Contacting '$CHECK_DOMAIN_ACCESS_V4' using IPv4-only mode failed: Please check for IPv4 connectivity, for any DNS resolution issues or possible firewall restrictions."
 fi
 
-if [ "$CHECK_WEB_IPV6" != "Y" ]; then
-	say "error" "Contacting '$CHECK_DOMAIN_ACCESS_V6' using IPv6-only mode failed: Please check for IPv6 connectivity, for any DNS resolution issues or possible firewall restrictions. Usually IPv6 is not supported from many internet service providers. As long as IPv4 is working, everything is fine."
+if [ $CHECK_CURL_IPV6 -eq 1 ]; then
+	if [ "$CHECK_WEB_IPV6" != "Y" ]; then
+		say "error" "Contacting '$CHECK_DOMAIN_ACCESS_V6' using IPv6-only mode failed: Please check for IPv6 connectivity, for any DNS resolution issues or possible firewall restrictions. Usually IPv6 is not supported from many internet service providers. As long as IPv4 is working, everything is fine."
+	fi
 fi
+
+# special error codes
+if [ "$CHECK_WEB_IPV4_CODE" == "403" ] || [ "$CHECK_WEB_IPV6_CODE" == "403" ]; then
+	say "warning" "Error Code 403: This possibly means that Cloudflare has classified the connection as suspicious and therefor blocked it. So this could be probably a false-positive."
+fi
+
+# check locales
+say "debug" "Checking for locales..."
+LOCALE_LANG=$(get_locale_current)
 
 # get CPU info
 say "debug" "Getting processor information..."
 SYS_CPU_DATA=$(lscpu | egrep "^(Architecture|CPU\(s\)|Thread\(s\) per core|Core\(s\) per socket:|Socket\(s\)|Model name|CPU MHz|Hypervisor|Virtualization)")
+if [ "$SYS_CPU_DATA" == "" ]; then
+	SYS_CPU_DATA="(failed retrieving information)"
+fi
 SYS_CPU_DATA=$(echo "$SYS_CPU_DATA" | sed 's/^/    /')
 
 # get os updatesinfo
@@ -1345,19 +1391,19 @@ fi
 say "debug" "Getting RAM information..."
 MEMINFO="$(cat /proc/meminfo)"
 
-if [ $? -ne 0 ]; then
+if [ $? -ne 0 ] || [ "$MEMINFO" == "" ]; then
 	SYS_RAM_TOTAL="0"
 	SYS_RAM_CACHED="0"
 	SYS_RAM_FREE="0"
 	SYS_RAM_USAGE="0"
 	SYS_RAM_PERNT="0"
-	SYS_RAM_EXTENDED="(error when reading file)"
+	SYS_RAM_EXTENDED="(error when reading data)"
 
 	SYS_SWAP_TOTAL="0"
 	SYS_SWAP_FREE="0"
 	SYS_SWAP_USAGE="0"
 	SYS_SWAP_PERNT="0"
-	SYS_SWAP_EXTENDED="(error when reading file)"
+	SYS_SWAP_EXTENDED="(error when reading data)"
 
 	say "error" "Error when reading /proc/meminfo! [ignoring]"
 
@@ -1453,7 +1499,7 @@ if [ "$BOT_CONFIG_WEB_PORT" == "" ]; then
 	BOT_WEB_STATUS_EXTENDED="(Port not set?)"
 else
 	# check if port is listening either on IPv4 or IPv6 localhost
-	if port_in_use "127.0.0.1" "$BOT_CONFIG_WEB_PORT" || port_in_use "::1" "$BOT_CONFIG_WEB_PORT"; then
+	if port_in_use "$BOT_CONFIG_WEB_PORT"; then
 		BOT_WEB_STATUS="port locally reachable"
 	else
 		BOT_WEB_STATUS="port locally not reachable"
@@ -1536,8 +1582,8 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 				say "warning" "******************************* ATTENTION *******************************"
 				say
 				say "info"    "READ THE MESSAGE ABOVE! This message should warn you, do not ignore it."
-				say "info"    "It is really important. Seriously. (Script will continue in five seconds...)"
-				sleep 5
+				say "info"    "It is really important. Seriously. (Script will continue in seven seconds...)"
+				sleep 7
 				pause
 
 			# now check if running TS3Client and newer with Sinusbot 0.9.16 and older
@@ -1554,7 +1600,7 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 				say "warning" "      (as long as an newer version is available)"
 				say "warning" "***************************** NOT SUPPORTED *****************************"
 				say
-				sleep 5
+				sleep 7
 				pause
 			fi
 
@@ -1620,6 +1666,32 @@ else
 	fi
 fi
 
+# get current operating system date
+SYS_TIME_ZONE=$(cat /etc/timezone)
+SYS_TIME_TS_LOCAL=$(date +%s)
+
+# get current external date by NTP (Credits: http://seriot.ch/ntp.php)
+SYS_TIME_TS_REMOTE=$((0x`printf c%47s|nc -uw1 time.google.com 123|xxd -s40 -l4 -p`-64#23GDW0))
+
+# get human-readable dates
+SYS_TIME_LOCAL=$(date --date @$SYS_TIME_TS_LOCAL +"%d.%m.%Y %H:%M:%S %Z %::z")
+SYS_TIME_REMOTE=$(date --date @$SYS_TIME_TS_REMOTE +"%d.%m.%Y %H:%M:%S %Z %::z")
+
+SYS_TIME_DIFF_MAX=30
+SYS_TIME_DIFF=$(($SYS_TIME_TS_REMOTE - $SYS_TIME_TS_LOCAL))
+SYS_TIME_DIFF_EXTENDED=""
+if [ $SYS_TIME_DIFF -le 5 ]; then
+	SYS_TIME_DIFF_EXTENDED="(Time diff less than 5 secs. Aceptable.)"
+
+elif [ $SYS_TIME_DIFF -le $SYS_TIME_DIFF_MAX ]; then
+	say "warning" "Time difference of local and remote time is less than $SYS_TIME_DIFF_MAX seconds, but greater than 5 seconds! Please update your local time using NTP or so to prevent any server or SinusBot-specific issues! A correct server time is always strongly recommended!"
+	SYS_TIME_DIFF_EXTENDED="(Time diff between 5 and $SYS_TIME_DIFF_MAX secs! Critical!)"
+
+elif [ $SYS_TIME_DIFF -ge $SYS_TIME_DIFF_MAX ]; then
+	say "warning" "Time difference of local and remote time is greater than $SYS_TIME_DIFF_MAX seconds! Please update your local time using NTP or so to prevent any server or SinusBot-specific issues! A correct server time is always strongly recommended!"
+	SYS_TIME_DIFF_EXTENDED="(Time diff greater than $SYS_TIME_DIFF_MAX secs!)"
+fi
+
 # generate output
 say "debug" "Generating output..."
 
@@ -1628,13 +1700,14 @@ OUTPUT=$(cat << EOF
 SINUSBOT RELATED
 SYSTEM INFORMATION
  - Operating System: $SYS_OS $SYS_OS_EXTENDED
- - OS x64 check: $SYS_OS_ARCH_X64_TEXT
  - Kernel: $SYS_OS_KERNEL
  - Load Average: $SYS_LOAD_AVG
  - Uptime: $SYS_UPTIME_TEXT
+ - OS x64 check: $SYS_OS_ARCH_X64_TEXT
  - OS Updates: $SYS_AVAIL_UPDS $SYS_AVAIL_UPDS_TEXT
  - OS Missing Packages: $SYS_PACKAGES_MISSING
  - OS APT Last Update: $SYS_APT_LASTUPDATE
+ - LOCALE LANG: $LOCALE_LANG
  - Bot Start Script: $SYS_BOT_AUTOSTART $SYS_BOT_AUTOSTART_EXTENDED
  - DNS resolution check: $SYS_OS_DNS_CHECK_TEXT
  - HTTPS check with IPv4 mode: $CHECK_WEB_IPV4_TEXT
@@ -1645,7 +1718,7 @@ $SYS_CPU_DATA
  - SWAP: $(bytes_format $SYS_SWAP_USAGE)/$(bytes_format $SYS_SWAP_TOTAL) in use (${SYS_SWAP_PERNT}%) $SYS_SWAP_EXTENDED
  - DISK: $(bytes_format $SYS_DISK_USAGE)/$(bytes_format $SYS_DISK_TOTAL) in use (${SYS_DISK_PERNT}%) $SYS_DISK_EXTENDED
  - Package versions:
-   > libglib: $PKG_VERSION_GLIBC
+   + libglib: $PKG_VERSION_GLIBC
 
 BOT INFORMATION
  - Status: $BOT_STATUS $BOT_STATUS_EXTENDED
@@ -1661,11 +1734,16 @@ BOT INFORMATION
    - YoutubeDLPath = $BOT_CONFIG_YTDLPATH $BOT_CONFIG_YTDLPATH_EXTENDED
  - Installed scripts: $BOT_INSTALLED_SCRIPTS
 
+TIME INFORMATION
+ - Time (local): $SYS_TIME_LOCAL
+ - Time (remote): $SYS_TIME_REMOTE
+ - Time (difference): $SYS_TIME_DIFF secs $SYS_TIME_DIFF_EXTENDED
+ - Timezone: $SYS_TIME_ZONE
+
 OTHER INFORMATION
- - Report date: $SYS_TIME (timezone: $SYS_TIME_ZONE)
  - TeamSpeak 3 Version: $BOT_CONFIG_TS3PATH_VERSION $BOT_CONFIG_TS3PATH_VERSION_EXTENDED
  - youtube-dl Version: $YTDL_VERSION
- - DiagScript version: $SCRIPT_VERSION_NUMBER
+ - DiagScript Version: $SCRIPT_VERSION_NUMBER
 ==========================================================
 EOF
 )

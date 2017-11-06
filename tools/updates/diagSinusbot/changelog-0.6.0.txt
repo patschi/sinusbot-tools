@@ -1,0 +1,10 @@
+[Version 0.6.0]: 2017-11-06 20:45
+> Feature- and bugfix-release.
+Added internal flag to change if HTTPS access using IPv6 check should be performed
+Added locales info output
+Added few checks if data was correctly retrieved
+Added time checking and check for time difference
+Improved CURL checks and also added error code support
+Increased waiting time for important messages
+Now using YYYY-mm-dd as date format for changelog
+Some few fixes and improvements
