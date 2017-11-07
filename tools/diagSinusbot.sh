@@ -17,9 +17,9 @@
 # Important links:
 #  Development of this script: https://github.com/patschi/sinusbot-tools
 #  TeamSpeak: https://www.teamspeak.com
-#  Sinusbot forum: https://forum.sinusbot.com
-#  Sinusbot forum thread [english]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostic-script.831/#post-4418
-#  Sinusbot forum thread [german]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostik-script.832/#post-4419
+#  SinusBot forum: https://forum.sinusbot.com
+#  SinusBot forum thread [english]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostic-script.831/#post-4418
+#  SinusBot forum thread [german]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostik-script.832/#post-4419
 #
 ### CHANGELOG
 #  v0.1.0:  [2015-11-25 12:00]
@@ -52,7 +52,7 @@
 #  v0.3.0:  [2015-11-26 19:00]
 #           Release: Beta.
 #           New: Added TS3Client version to output.
-#           New: Added support to retrieve sinusbot version by 'sinusbot --version' parameter (including fallback to old method)
+#           New: Added support to retrieve SinusBot version by 'sinusbot --version' parameter (including fallback to old method)
 #           New: Added SWAP info display
 #           New: Added DISK info display
 #           New: Added KERNEL info display
@@ -89,7 +89,7 @@
 #  v0.3.9:  [2016-02-03 20:30]
 #           Mostly a bug fix release.
 #           Added check if the scripts-folder does exist. (which hopefully fixes the issue of displaying files of a wrong folder)
-#           Fixed issue with detecting Sinusbot version with "--version" parameter on some pre-release Sinusbot versions.
+#           Fixed issue with detecting SinusBot version with "--version" parameter on some pre-release SinusBot versions.
 #           Changed the uppercase "S" in "Installed Scripts" to lowercase. Whyever I mention this here in the changelog.
 #  v0.3.10: [2016-02-03 20:35]
 #           Fixed a little issue with collecting installed scripts
@@ -100,7 +100,7 @@
 #           Added version check for this script.
 #           Added automated updater for this script.
 #           (The script is checking for a newer version of the diagnostic script on every start.)
-#           Added diagSinusbot script version to code output.
+#           Added diagSinusBot script version to code output.
 #           Added check for vulnerable and outdated ts3client versions.
 #           Added optional display of changelog for every update (if changelog file does exist).
 #           New: New parameter '-o|--skip-update-check' to skip script update check.
@@ -117,13 +117,13 @@
 #           Improved installed-package detection a bit.
 #  v0.4.2:  [2016-04-14 13:15]
 #           > This is just a bugfix release, fixing some issues on non-english operating system-setups.
-#           > Thanks for testing and letting me know about the issues, MaxS! [from the Sinusbot forum]
+#           > Thanks for testing and letting me know about the issues, MaxS! [from the SinusBot forum]
 #           Added connection timeout for outgoing web requests (e.g. for script update checks).
 #           Added some checks of RAM, SWAP and DISK parsing functions when any errors happens.
 #           Reworked the way how RAM and SWAP information gets read from the system (not OS language-dependend anymore).
 #           Changed: Calculate md5 hash of installed TS3 plugin even if the bot plugin does not exist in the bot directory.
 #           Fixed: Reading out RAM and SWAP-data was not possible when the operating system had any other language than english.
-#           Fixed: Retrieving permissions of the sinusbot init.d script did not work on systems with any other language than english.
+#           Fixed: Retrieving permissions of the SinusBot init.d script did not work on systems with any other language than english.
 #           Known issue: Getting DISK data on OpenVZ machines and non-english systems may still not work. Not critical, fix may be released in the future.
 #  v0.4.3:  [2016-04-14 13:30]
 #           > This is just a very very small and silent micro-release making some non-mentionable improvements.
@@ -172,6 +172,11 @@
 #           Increased waiting time for important messages
 #           Now using YYYY-mm-dd as date format for changelog
 #           Some few fixes and improvements
+#  v0.6.1:  [2017-11-07 01:30]
+#           Added binary info like permission and file owner
+#           Changed critical time difference range from 5-30 to 10-30 secs
+#           Removed `screen` package as dependency
+#           Some output text improvements
 #
 ### Known issues:
 # Mostly this issues are non-critical and just kind of hard to fix or workaround.
@@ -219,8 +224,8 @@ SCRIPT_YEAR="2015-2017"
 
 SCRIPT_NAME="diagSinusbot"
 # get version number and date automatically from changelog
-SCRIPT_VERSION_NUMBER="0.6.0"
-SCRIPT_VERSION_DATE="2017-11-06 20:45"
+SCRIPT_VERSION_NUMBER="0.6.1"
+SCRIPT_VERSION_DATE="2017-11-07 01:30"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -241,7 +246,7 @@ CHECK_DOMAIN_ACCESS="auto"
 
 # BOT
 # bot PACKAGES dependencies
-BOT_REQ_PACKAGES="ca-certificates bzip2 libglib2.0-0 sudo screen python"
+BOT_REQ_PACKAGES="ca-certificates bzip2 libglib2.0-0 sudo python"
 BOT_REQ_PACKAGES_VER="1"
 
 ## SCRIPT SETTINGS
@@ -367,7 +372,7 @@ show_welcome()
 	say "welcome" "=                                               ="
 	say "welcome" "=  After  everything  is  done, you will get a  ="
 	say "welcome" "=  diagnostic output, ready for copy & pasting  ="
-	say "welcome" "=  it within a CODE-tag in the Sinusbot forum.  ="
+	say "welcome" "=  it within a CODE-tag in the SinusBot forum.  ="
 	say "welcome" "=  [Link: https://forum.sinusbot.com]           ="
 	say "welcome" "=                                               ="
 	say "welcome" "=  No  private  information  will be collected  ="
@@ -375,12 +380,12 @@ show_welcome()
 	say "welcome" "=  This  just generates an example forum post.  ="
 	say "welcome" "=                                               ="
 	say "welcome" "=  The script does perform a DNS resolution of  ="
-	say "welcome" "=  the domain 'sinusbot.com' to  determine  if  ="
+	say "welcome" "=  domain 'www.sinusbot.com' to  determine  if  ="
 	say "welcome" "=  your  DNS settings are working as expected.  ="
 	say "welcome" "================================================="
 	say "welcome" "= I am thankful for any feedback. Please  also  ="
 	say "welcome" "= report any issues you may find either on the  ="
-	say "welcome" "= Sinusbot forum or via GitHub issues. Thanks!  ="
+	say "welcome" "= SinusBot forum or via GitHub issues. Thanks!  ="
 	say "welcome" "=   -- $SCRIPT_AUTHOR_NAME.           ="
 	say "welcome" "================================================="
 	say
@@ -418,7 +423,7 @@ show_credits()
 	say "info" " THANKS TO EVERYONE WHO HAVE HELPED IN ANY WAY!"
 	say "info" " Special thanks goes to..."
 	say "info" ""
-	say "info" "   [b]flyth[/b]            Michael F.     for developing sinusbot, testing this script and ideas"
+	say "info" "   [b]flyth[/b]            Michael F.     for developing SinusBot, testing this script and ideas"
 	say "info" "   [b]Xuxe[/b]             Julian H.      for testing, ideas and contributing code"
 	say "info" "   [b]GetMeOutOfHere[/b]   -              for testing and ideas"
 	say "info" "   [b]JANNIX[/b]           Jan H.         for testing"
@@ -559,14 +564,14 @@ is_supported_os()
 	# check version of operating system: debian
 	if [ "$SYS_OS_LSBRELEASE_ID" == "debian" ] && (( $(echo "$SYS_OS_LSBRELEASE_RELEASE_MAJOR <= 6" | bc -l) )); then
 		# is less or equal 6 = too old.
-		say "warning" "You are using a too old operating system! Debian Squeeze and before are not officially supported for Sinusbot. Please upgrade to a more recent system."
+		say "warning" "You are using a too old operating system! Debian Squeeze and before are not officially supported for SinusBot. Please upgrade to a more recent system."
 		sleep 1
 	fi
 
 	# check version of operating system: ubuntu
 	if [ "$SYS_OS_LSBRELEASE_ID" == "ubuntu" ] && (( $(echo "$SYS_OS_LSBRELEASE_RELEASE <= 12.04" | bc -l) )); then
 		# is less or equal 12.04 = too old.
-		say "warning" "You are using a too old operating system! Ubuntu 12.04 and before are not officially supported for Sinusbot. Please upgrade to a more recent system."
+		say "warning" "You are using a too old operating system! Ubuntu 12.04 and before are not officially supported for SinusBot. Please upgrade to a more recent system."
 		sleep 1
 	fi
 }
@@ -703,14 +708,14 @@ parse_bot_config()
 	echo "$BOT_CONFIG" | grep "$1" | cut -d '=' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | sed -e 's/^[\"]*//' -e 's/[\"]*$//'
 }
 
-## Function to get version of sinusbot
+## Function to get version of SinusBot
 get_bot_version()
 {
-	say "debug" "Trying to get sinusbot version using version parameter..." > /proc/${PPID}/fd/0
+	say "debug" "Trying to get SinusBot version using version parameter..." > /proc/${PPID}/fd/0
 	local BOT_VERSION_CMD=$("$BOT_PATH/$BOT_BINARY" --version 2>/dev/null)
 	echo "$BOT_VERSION_CMD" | grep -q -P '^flag provided but not defined' >/dev/null
 	if [ $? -eq 0 ]; then
-		say "debug" "Error getting sinusbot version. Falling back to other method." > /proc/${PPID}/fd/0
+		say "debug" "Error getting SinusBot version. Falling back to other method." > /proc/${PPID}/fd/0
 		local BOT_VERSION_STRING=$(strings "$BOT_PATH/$BOT_BINARY" | grep "Version:" | cut -d ' ' -f2)
 		if [ "$BOT_VERSION_STRING" != "" ]; then
 			echo "$BOT_VERSION_STRING"
@@ -796,7 +801,7 @@ get_installed_bot_scripts()
 		done
 		trim_spaces "$INSTALLED_SCRIPTS"
 	else
-		echo "scripts folder not found (using < v0.9.9?)"
+		say "warning" "Scripts folder not found! (are you using v0.9.9 or prior?)"
 	fi
 }
 
@@ -1035,7 +1040,7 @@ else
 				say "debug" "Trying to get script update changelog..."
 				CHANGELOG="$(script_check_for_changelog "$UPD_CHECK_VER")"
 				if [ "$CHANGELOG" != "" ]; then
-					say "info" "Displaying CHANGELOG for diagSinusbot v$UPD_CHECK_VER:"
+					say "info" "Displaying CHANGELOG for diagSinusBot v$UPD_CHECK_VER:"
 					say "info" "######################################################################################"
 					while IFS= read -r line; do
 						say "info" " $line"
@@ -1194,10 +1199,9 @@ say "info" "Searching bot binary..."
 # checking for bot binary file
 BOT_PATH=""
 
-# possible bot paths
-BOT_PATHS=("$(pwd)" "/opt/sinusbot/" "/opt/ts3bot/" "/opt/ts3soundboard/" "/home/sinusbot/" "/home/sinusbot/sinusbot/")
-
-for BOT_PATH in "${BOT_PATHS[@]}"; do
+# possible bot search paths
+BOT_SEARCH_PATHS=("$(pwd)" "/opt/sinusbot/" "/opt/ts3bot/" "/opt/ts3soundboard/" "/home/sinusbot/" "/home/sinusbot/sinusbot/")
+for BOT_PATH in "${BOT_SEARCH_PATHS[@]}"; do
 	say "debug" "Searching in directory '$BOT_PATH'..."
 		if [ -d "$BOT_PATH" ]; then
 		check_bot_binary
@@ -1211,7 +1215,7 @@ for BOT_PATH in "${BOT_PATHS[@]}"; do
 done
 
 if [ "$BOT_PATH" == "" ]; then
-	say "error" "Bot binary not found! Execute this script in the sinusbot directory!"
+	say "error" "Bot binary not found! Execute this script in the SinusBot directory!"
 	failed "bot binary not found"
 fi
 
@@ -1219,8 +1223,12 @@ fi
 check_bot_config
 
 BOT_FULL_PATH="$(echo "$BOT_PATH/$BOT_BINARY" | sed -e 's|//|/|g')"
-BOT_BINARY_HASH=$(get_file_hash "$BOT_PATH/$BOT_BINARY")
-BOT_BINARY_HASH_TEXT="(MD5 Hash: $BOT_BINARY_HASH)"
+BOT_FULL_PATH_FILE="$BOT_PATH/$BOT_BINARY"
+
+BOT_BINARY_HASH=$(get_file_hash "$BOT_FULL_PATH_FILE")
+BOT_BINARY_FILE_INFO_PERMS=$(stat -c %a $BOT_FULL_PATH_FILE)
+BOT_BINARY_FILE_INFO_USER=$(stat -c %U $BOT_FULL_PATH_FILE)
+BOT_BINARY_PATH_EXTENDED="MD5 Hash: $BOT_BINARY_HASH, Perms: $BOT_BINARY_FILE_INFO_PERMS, User: $BOT_BINARY_FILE_INFO_USER"
 
 # collecting information
 say "debug" "Collecting information..."
@@ -1586,17 +1594,17 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 				sleep 7
 				pause
 
-			# now check if running TS3Client and newer with Sinusbot 0.9.16 and older
+			# now check if running TS3Client and newer with SinusBot 0.9.16 and older
 			elif ( compare_version 3.1 $BOT_CONFIG_TS3PATH_VERSION || [ "$BOT_CONFIG_TS3PATH_VERSION" == "3.1" ] ) && ( compare_version $BOT_VERSION 0.9.18 || [ "$BOT_VERSION" == "0.9.18" ] ); then
 				BOT_CONFIG_TS3PATH_VERSION_EXTENDED="(not supported!)"
 				say
 				say "warning" "***************************** NOT SUPPORTED *****************************"
 				say "warning" "[b]THIS TS3 CLIENT VERSION IS NOT SUPPORTED AND NOT WORKING![/b]"
 				say "warning" "TeamSpeak 3 Client with version 3.1+ and later is currently not supported"
-				say "warning" "with Sinusbot version 0.9.16 and older."
+				say "warning" "with SinusBot version 0.9.16 and older."
 				say "warning" "You may solve this issue by:"
 				say "warning" "  1. Downgrade your TS3 client to a supported TS3 client version."
-				say "warning" "  2. Upgrade to a supported Sinusbot version which supports this client."
+				say "warning" "  2. Upgrade to a supported SinusBot version which supports this client."
 				say "warning" "      (as long as an newer version is available)"
 				say "warning" "***************************** NOT SUPPORTED *****************************"
 				say
@@ -1680,12 +1688,12 @@ SYS_TIME_REMOTE=$(date --date @$SYS_TIME_TS_REMOTE +"%d.%m.%Y %H:%M:%S %Z %::z")
 SYS_TIME_DIFF_MAX=30
 SYS_TIME_DIFF=$(($SYS_TIME_TS_REMOTE - $SYS_TIME_TS_LOCAL))
 SYS_TIME_DIFF_EXTENDED=""
-if [ $SYS_TIME_DIFF -le 5 ]; then
-	SYS_TIME_DIFF_EXTENDED="(Time diff less than 5 secs. Aceptable.)"
+if [ $SYS_TIME_DIFF -le 10 ]; then
+	SYS_TIME_DIFF_EXTENDED="(Time diff less than 10 secs. Aceptable.)"
 
 elif [ $SYS_TIME_DIFF -le $SYS_TIME_DIFF_MAX ]; then
-	say "warning" "Time difference of local and remote time is less than $SYS_TIME_DIFF_MAX seconds, but greater than 5 seconds! Please update your local time using NTP or so to prevent any server or SinusBot-specific issues! A correct server time is always strongly recommended!"
-	SYS_TIME_DIFF_EXTENDED="(Time diff between 5 and $SYS_TIME_DIFF_MAX secs! Critical!)"
+	say "warning" "Time difference of local and remote time is less than $SYS_TIME_DIFF_MAX seconds, but greater than 10 seconds! Please update your local time using NTP or so to prevent any server or SinusBot-specific issues! A correct server time is always strongly recommended!"
+	SYS_TIME_DIFF_EXTENDED="(Time diff between 10 and $SYS_TIME_DIFF_MAX secs! Critical!)"
 
 elif [ $SYS_TIME_DIFF -ge $SYS_TIME_DIFF_MAX ]; then
 	say "warning" "Time difference of local and remote time is greater than $SYS_TIME_DIFF_MAX seconds! Please update your local time using NTP or so to prevent any server or SinusBot-specific issues! A correct server time is always strongly recommended!"
@@ -1707,7 +1715,7 @@ SYSTEM INFORMATION
  - OS Updates: $SYS_AVAIL_UPDS $SYS_AVAIL_UPDS_TEXT
  - OS Missing Packages: $SYS_PACKAGES_MISSING
  - OS APT Last Update: $SYS_APT_LASTUPDATE
- - LOCALE LANG: $LOCALE_LANG
+ - SHELL LOCALE LANG: $LOCALE_LANG
  - Bot Start Script: $SYS_BOT_AUTOSTART $SYS_BOT_AUTOSTART_EXTENDED
  - DNS resolution check: $SYS_OS_DNS_CHECK_TEXT
  - HTTPS check with IPv4 mode: $CHECK_WEB_IPV4_TEXT
@@ -1723,7 +1731,8 @@ $SYS_CPU_DATA
 BOT INFORMATION
  - Status: $BOT_STATUS $BOT_STATUS_EXTENDED
  - Webinterface: $BOT_WEB_STATUS $BOT_WEB_STATUS_EXTENDED
- - Binary: $BOT_FULL_PATH $BOT_BINARY_HASH_TEXT
+ - Binary: $BOT_FULL_PATH
+ - Binary Info: $BOT_BINARY_PATH_EXTENDED
  - Version: $BOT_VERSION
  - TS3 Plugin: $BOT_TS3_PLUGIN $BOT_TS3_PLUGIN_EXTENDED
    - Bot Plugin: $BOT_TS3_PLUGIN_HASH_BOTPLUGIN

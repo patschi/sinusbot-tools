@@ -1,0 +1,16 @@
+[Version 0.6.0]: 2017-11-06 20:45
+> Feature- and bugfix-release.
+Added internal flag to change if HTTPS access using IPv6 check should be performed
+Added locales info output
+Added few checks if data was correctly retrieved
+Added time checking and check for time difference
+Improved CURL checks and also added error code support
+Increased waiting time for important messages
+Some few fixes and improvements
+
+[Version 0.6.1]: 2017-11-07 01:30
+> Small maintenance release.
+Added binary info like permission and file owner
+Changed critical time difference range from 5-30 to 10-30 secs
+Removed `screen` package as dependency
+Some output text improvements
