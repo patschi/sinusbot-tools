@@ -1,4 +1,4 @@
-# SinusBot tools
+# SinusBot Tools
 
 This repository contains some various tools or scripts for TeamSpeak 3 music bot named "SinusBot". For more information about the bot, please visit [sinusbot.com](https://www.sinusbot.com). The forum is available at [forum.sinusbot.com](https://forum.sinusbot.com).
 
@@ -17,7 +17,7 @@ Any feedback, suggestions, ideas and - of course - pull requests are welcome.
 
 **Some information which will be scanned:**
 
-**System**:
+- System:
   - Operating system
   - Kernel
   - Load average
@@ -29,7 +29,7 @@ Any feedback, suggestions, ideas and - of course - pull requests are welcome.
   - Bot autostart script checks
   - Check if DNS resolution is working
   
-**Bot**:
+- Bot:
   - Status of bot and webinterface
   - Version
   - Performs ts3client checks
