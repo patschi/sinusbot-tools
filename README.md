@@ -1,22 +1,23 @@
-# sinusbot-tools
+# SinusBot Tools
 
-This repository contains some various tools or scripts for TeamSpeak 3 music bot named "Sinusbot". For more information about the bot, please visit [sinusbot.com](https://sinusbot.com). The forum is available at [forum.sinusbot.com](https://forum.sinusbot.com).
+This repository contains some various tools or scripts for TeamSpeak 3 music bot named "SinusBot". For more information about the bot, please visit [sinusbot.com](https://www.sinusbot.com). The forum is available at [forum.sinusbot.com](https://forum.sinusbot.com).
 
-Any feedback, suggestions, ideas and - ofcourse - pull requests are welcome.
+Any feedback, suggestions, ideas and - of course - pull requests are welcome.
 
 ## diagSinusbot
 
-[diagSinusbot.sh](https://github.com/patschi/sinusbot-tools/blob/master/tools/diagSinusbot.sh) collects some important diagnostic data about the operating system and the bot installation. When finished it returns informative information, ready to copy and paste it in the right section in the sinusbot forum. The main purpose of this script is to solve bugs and any other issues easier and faster by giving a overview about the environment - easily collected with this script. Additionally some pre-checks are built-in, which may give you some ideas what could be possibily wrong or not best-practise - like a outdated TS3 client.
+[diagSinusbot.sh](https://github.com/patschi/sinusbot-tools/blob/master/tools/diagSinusbot.sh) collects some important diagnostic data about the operating system and the bot installation. When finished it returns informative information, ready to copy and paste it in the right section in the SinusBot forum. The main purpose of this script is to solve bugs and any other issues easier and faster by giving a overview about the environment - easily collected with this script. Additionally some pre-checks are built-in, which may give you some ideas what could be possibly wrong or not best-practise - like a outdated TS3 client.
 
 **Remember**: This script does not send any data to anywhere. It is only collecting some details offline about the system and the bot. Then it generates a text output, which can be copied and pasted in the forum. (This tool is not officially developed from the Sinusbot team.)
 
 **Links:**
- * [Sinusbot forum](https://forum.sinusbot.com)
- * [Sinusbot english forum thread](https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostic-script.831/#post-4418)
- * [Sinusbot german forum thread](https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostik-script.832/#post-4419)
+ * [SinusBot forums](https://forum.sinusbot.com)
+ * [SinusBot english forum thread](https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostic-script.831/#post-4418)
+ * [SinusBot german forum thread](https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostik-script.832/#post-4419)
 
 **Some information which will be scanned:**
- * System
+
+- System:
   - Operating system
   - Kernel
   - Load average
@@ -27,7 +28,8 @@ Any feedback, suggestions, ideas and - ofcourse - pull requests are welcome.
   - DISK usage
   - Bot autostart script checks
   - Check if DNS resolution is working
- * Bot
+  
+- Bot:
   - Status of bot and webinterface
   - Version
   - Performs ts3client checks
@@ -47,7 +49,7 @@ Any feedback, suggestions, ideas and - ofcourse - pull requests are welcome.
    - (Most packages are already pre-installed by default on the most systems.)
 
 **Usage:**
-```
+```bash
 $ cd /path/to/sinusbot/ # usually /opt/ts3bot/
 $ curl -O https://raw.githubusercontent.com/patschi/sinusbot-tools/master/tools/diagSinusbot.sh
 $ bash diagSinusbot.sh
