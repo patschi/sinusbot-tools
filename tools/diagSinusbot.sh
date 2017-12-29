@@ -246,7 +246,7 @@ CHECK_DOMAIN_ACCESS="auto"
 
 # BOT
 # bot PACKAGES dependencies
-BOT_REQ_PACKAGES="ca-certificates bzip2 libglib2.0-0 sudo python"
+BOT_REQ_PACKAGES="ca-certificates bzip2 libglib2.0-0 python"
 BOT_REQ_PACKAGES_VER="1"
 
 ## SCRIPT SETTINGS
