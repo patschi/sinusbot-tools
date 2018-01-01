@@ -220,7 +220,7 @@
 # SCRIPT
 SCRIPT_AUTHOR_NAME="Patrik Kernstock aka. Patschi"
 SCRIPT_AUTHOR_WEBSITE="pkern.at"
-SCRIPT_YEAR="2015-2017"
+SCRIPT_YEAR="2015-2018"
 
 SCRIPT_NAME="diagSinusbot"
 # get version number and date automatically from changelog
