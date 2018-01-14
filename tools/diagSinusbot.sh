@@ -21,163 +21,6 @@
 #  SinusBot forum thread [english]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostic-script.831/#post-4418
 #  SinusBot forum thread [german]: https://forum.sinusbot.com/threads/diagsinusbot-sh-sinusbot-diagnostik-script.832/#post-4419
 #
-### CHANGELOG
-#  v0.1.0:  [2015-11-25 12:00]
-#           Release: Alpha.
-#           New: Basic functionality.
-#  v0.2.0:  [2015-11-25 14:00]
-#           New: OpenVZ checks
-#           New: YouTubeDL support
-#           New: welcome header
-#           New: asking for automated package install
-#           New: Missing operating system packages check
-#           New: Check when package manager was updated last time
-#           New: parameter support
-#           New: parameter: '-w|--no-welcome' to hide welcome text
-#           New: parameter: '-u|--no-os-update-check' to skip OS update check
-#  v0.2.1:  [2015-11-25 18:00]
-#           Fixed: Corrected calculating RAM usage (now without cached RAM)
-#           New: Added time as prefix to log messages
-#           New: Added report date including timezone to output
-#  v0.2.5:  [2015-11-25 21:00]
-#           New: Added help with '-h|--help' parameter
-#           New: More colorful output (everyone likes colors... and cookies.)
-#           Fixed: TS3Path check if exists
-#           Fixed: 'cpu model' was shown multiple times if more processors exists (even when different processors)
-#           New: Fallback for bot location when binary not found to /opt/ts3bot/
-#           Changed: Output style. From BBCode to clean text.
-#           New: Added '-v|--version' parameter
-#           New: Added '-c|--credits' parameter
-#           Improved: own function for trimming whitespaces
-#  v0.3.0:  [2015-11-26 19:00]
-#           Release: Beta.
-#           New: Added TS3Client version to output.
-#           New: Added support to retrieve SinusBot version by 'sinusbot --version' parameter (including fallback to old method)
-#           New: Added SWAP info display
-#           New: Added DISK info display
-#           New: Added KERNEL info display
-#           New: Added LOAD AVERAGE info display
-#           New: Added UPTIME info display
-#           New: Added 'installed bot scripts' display
-#           New: Added TS3client bot-plugin checks
-#           New: Added bot running checks (and under which user it is running)
-#           New: Added bot webinterface port checks
-#           Improved: Supported operating system checks.
-#  v0.3.1:  [2015-11-26 21:00]
-#           Changed: Using 'lscpu' for determining CPU data now
-#           New: Check for bot autostart script (/etc/init.d/sinusbot)
-#  v0.3.2:  [2015-11-26 21:20]
-#           New: Added advanced permissions checks for the autostart script
-#  v0.3.3:  [2015-12-02 10:00]
-#           New: Check if x64 bit operating system
-#           New: Added DNS resolution check of google.com
-#  v0.3.4:  [2015-12-04 18:15]
-#           Changed: Switched from 'nc' to 'netstat' to determine if webinterface port is up
-#           Improved: Some text changes
-#  v0.3.5:  [2016-01-01 04:00]
-#           Happy new year!
-#           Changed: Added CODE-tags for forum to output
-#           Changed copyright year
-#  v0.3.6:  [2016-01-16 13:55]
-#           Fixed some bugs in operating system package detection function
-#           Fixed lsb_release errors when checking OS support before checking package installation of lsb-release
-#           Fixed dpkg-query errors when package was never installed before (when package detection)
-#  v0.3.7:  [2016-01-29 00:45]
-#           Fixed retrieving of youtube-dl version when binary exists and is set in the bot configuration (Thanks Xuxe!, see PR #1 on Github)
-#  v0.3.8:  [2016-01-30 12:55]
-#           Added detection for LXC & Docker (Thanks Xuxe!, see PR #2 on Github)
-#  v0.3.9:  [2016-02-03 20:30]
-#           Mostly a bug fix release.
-#           Added check if the scripts-folder does exist. (which hopefully fixes the issue of displaying files of a wrong folder)
-#           Fixed issue with detecting SinusBot version with "--version" parameter on some pre-release SinusBot versions.
-#           Changed the uppercase "S" in "Installed Scripts" to lowercase. Whyever I mention this here in the changelog.
-#  v0.3.10: [2016-02-03 20:35]
-#           Fixed a little issue with collecting installed scripts
-#  v0.3.11: [2016-02-03 20:45]
-#           Fixed LXC-detection bug
-#  v0.4.0:  [2016-02-08 16:40]
-#           Added 'known issues' section to the top of the script.
-#           Added version check for this script.
-#           Added automated updater for this script.
-#           (The script is checking for a newer version of the diagnostic script on every start.)
-#           Added diagSinusBot script version to code output.
-#           Added check for vulnerable and outdated ts3client versions.
-#           Added optional display of changelog for every update (if changelog file does exist).
-#           New: New parameter '-o|--skip-update-check' to skip script update check.
-#           New: New parameter '-u|--only-update-check|--update' to only check for script update and then abort.
-#           Changed: Renamed parameter '--no-os-update-check' to '--skip-os-update-check'.
-#           Changed: Renamed short parameter '-u' to '-a' (for skipping APT OS update checks).
-#           Changed: Renamed parameter '--no-welcome' to '--skip-welcome-text'. Short parameter stays the same.
-#           Changed: Optimized say-function to be able to output bold text.
-#           Some cosmetic and overall little improvements.
-#           Fixed LXC detection (finally).
-#  v0.4.1:  [2016-03-21 13:15]
-#           Added check if webinterface is listening either on IPv4 or IPv6 localhost.
-#           Fixed detection if libglib2.0-0 package is installed properly. (Thanks for testing iTaskmanager)
-#           Improved installed-package detection a bit.
-#  v0.4.2:  [2016-04-14 13:15]
-#           > This is just a bugfix release, fixing some issues on non-english operating system-setups.
-#           > Thanks for testing and letting me know about the issues, MaxS! [from the SinusBot forum]
-#           Added connection timeout for outgoing web requests (e.g. for script update checks).
-#           Added some checks of RAM, SWAP and DISK parsing functions when any errors happens.
-#           Reworked the way how RAM and SWAP information gets read from the system (not OS language-dependend anymore).
-#           Changed: Calculate md5 hash of installed TS3 plugin even if the bot plugin does not exist in the bot directory.
-#           Fixed: Reading out RAM and SWAP-data was not possible when the operating system had any other language than english.
-#           Fixed: Retrieving permissions of the SinusBot init.d script did not work on systems with any other language than english.
-#           Known issue: Getting DISK data on OpenVZ machines and non-english systems may still not work. Not critical, fix may be released in the future.
-#  v0.4.3:  [2016-04-14 13:30]
-#           > This is just a very very small and silent micro-release making some non-mentionable improvements.
-#           Updated: Added simple warning/notice to SWAP output when SWAP is disabled.
-#           Updated: 'Known issues' section in script file itself.
-#  v0.4.4:  [2016-04-28 20:26]
-#           > Some little improvements and new version check for recent 3.0.19 TS3 client and glibc library.
-#           Added glibc version check and output.
-#           Added warning for TS3 client 3.0.19 on Debian 8 and older.
-#           Added commands "sort" and "head" to required commands for this diagnostic script.
-#           Improved bot binary search functionality.
-#  v0.4.5:  [2016-04-28 22:25]
-#           Fixed wrong calculation of RAM usage.
-#  v0.4.6:  [2016-09-04 16:30]
-#           Added: Additionally search the bot binary in /opt/ts3soundboard/
-#           Added: Additionally search the bot binary in /opt/sinusbot/
-#           Added messages when not using x64 arch or DNS resolution is broken.
-#           Updated some messages and various text output
-#           Moved TS3 client version functionality into own seperate function.
-#           Disabled "TS3 v3.0.19-outdated"-warning on Debian 8 systems. (Does work on this OS)
-#           Improved overall syntax.
-#           Cleaned up script.
-#  v0.4.7:  [2017-03-01 15:10]
-#           Restricted scripts listening to files with *.js extension. (Thanks @maxibanki, PR#4)
-#           Fixed detection of local reachable webinterface port. (finally! Issue was that passing the var to awk failed)
-#           Updated copyright.
-#  v0.5.0:  [2017-03-01 22:15]
-#           Added check mechanism if using TS3 client 3.1 and later with Sinusbot 0.9.18 and older, which is not working due to TS3 client API changes.
-#           Added outgoing HTTPS access checks, IPv4- and IPv6-only modes.
-#           Additionally searching for initd-script at /etc/init.d/ts3bot, and systemd config at /etc/systemd/system/sinusbot.service.
-#           Now checking DNS resolution of sinusbot.com instead of Google.com.
-#           Now displaying the URL where all changelogs can be found when viewing the latest changelog during the script update process.
-#           Improved version compare handling.
-#           Fixed some typos.
-#  v0.5.1:  [2017-03-14 20:30]
-#           Added some required dependencies for the script to execute.
-#           Clarify warn messages of HTTPS access checks.
-#           Fixed docker integration.
-#           Some under-the-hood improvements.
-#  v0.6.0:  [2017-11-06 20:45]
-#           Added internal flag to change if HTTPS access using IPv6 check should be performed
-#           Added locales info output
-#           Added few checks if data was correctly retrieved
-#           Added time checking and check for time difference
-#           Improved CURL checks and also added error code support
-#           Increased waiting time for important messages
-#           Now using YYYY-mm-dd as date format for changelog
-#           Some few fixes and improvements
-#  v0.6.1:  [2017-11-07 01:30]
-#           Added binary info like permission and file owner
-#           Changed critical time difference range from 5-30 to 10-30 secs
-#           Removed `screen` package as dependency
-#           Some output text improvements
-#
 ### Known issues:
 # Mostly this issues are non-critical and just kind of hard to fix or workaround.
 # If you have any ideas, feel free to tell me them.
@@ -220,12 +63,12 @@
 # SCRIPT
 SCRIPT_AUTHOR_NAME="Patrik Kernstock aka. Patschi"
 SCRIPT_AUTHOR_WEBSITE="pkern.at"
-SCRIPT_YEAR="2015-2017"
+SCRIPT_YEAR="2015-2018"
 
 SCRIPT_NAME="diagSinusbot"
 # get version number and date automatically from changelog
-SCRIPT_VERSION_NUMBER="0.6.1"
-SCRIPT_VERSION_DATE="2017-11-07 01:30"
+SCRIPT_VERSION_NUMBER="0.7.0"
+SCRIPT_VERSION_DATE="2018-01-14 18:00 UTC"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -236,7 +79,7 @@ SCRIPT_CHANGELOG_LIST="https://github.com/patschi/sinusbot-tools/tree/master/too
 SCRIPT_CHANGELOG_FILE="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/updates/diagSinusbot/changelog-{VER}.txt"
 
 # script COMMANDS dependencies
-SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf netstat sort head curl"
+SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf netstat sort head curl date"
 # script PACKAGES dependencies
 SCRIPT_REQ_PKGS="bc binutils coreutils lsb-release util-linux net-tools curl"
 
@@ -246,12 +89,13 @@ CHECK_DOMAIN_ACCESS="auto"
 
 # BOT
 # bot PACKAGES dependencies
-BOT_REQ_PACKAGES="ca-certificates bzip2 libglib2.0-0 sudo python"
-BOT_REQ_PACKAGES_VER="1"
+BOT_REQ_PACKAGES="ca-certificates libglib2.0-0"
 
 ## SCRIPT SETTINGS
 # IPv6 HTTPS check, 0 = off, 1 = on
 CHECK_CURL_IPV6=0
+# NTP server address
+NTP_SERVER_ADDR="time.google.com"
 
 ## EXECUTION VARIABLES
 EXEC_CURL="curl -q --user-agent "$SCRIPT_NAME/v$SCRIPT_VERSION_NUMBER""
@@ -401,6 +245,7 @@ show_help()
 	say "info" "  -a|--skip-os-update-check  Skips the APT OS updates check."
 	say "info" "  -o|--skip-update-check     Skips the script update check."
 	say "info" "  -u|--only-update-check     Only check for script update. (overrides update skip)"
+	say "info" "  -m|--skip-wait-messages    Skip waiting time after important messages"
 	say "info" "  -c|--credits               Show credits."
 	say "info" "  -v|--version               Show version."
 	say "info" "  moo                        The cow says."
@@ -864,6 +709,17 @@ check_dns_resolution()
 	fi
 }
 
+## Get time by NTP
+get_time_by_ntp()
+{
+	# get current external date by NTP (Credits: http://seriot.ch/ntp.php)
+	local NTP_TIME="$(echo $((0x`printf c%47s|nc -uw1 $NTP_SERVER_ADDR 123|xxd -s40 -l4 -p`-64#23GDW0)) 2>&1)"
+	if ! [[ $NTP_TIME =~ ^-?[0-9]+([.][0-9]+)?$ ]] || [ "$NTP_TIME" == "-2208988800" ]; then
+		NTP_TIME=0
+	fi
+	echo $NTP_TIME
+}
+
 ## Function await answer
 await_answer()
 {
@@ -903,6 +759,10 @@ while [ $# -gt 0 ]; do
 
 		-u|--only-update-check|--update )
 			ONLY_SCRIPT_UPDATE_CHECK="yes"
+		;;
+
+		-m|--skip-wait-messages )
+			SKIP_WAIT_MESSAGES="yes"
 		;;
 
 		-h|--help )
@@ -1156,39 +1016,42 @@ if [ "$ONLY_SCRIPT_UPDATE_CHECK" == "yes" ]; then
 	exit 0
 fi
 
-# checking bot dependencies
-PACKAGES_MISSING=$(get_missing_os_packages "$BOT_REQ_PACKAGES")
-if [ "$PACKAGES_MISSING" != "" ]; then
-	say "warning" "Required packages for the bot are not installed on this system."
-	say "info" "Following packages are missing: $PACKAGES_MISSING"
+# checking if OS is supported
+is_supported_os
 
-	say "question" "Should I install them for you now? [y/N] "
-	if [[ $(await_answer) =~ [yY](es)* ]]; then
-		INSTALL_CMD="apt-get install -y $PACKAGES_MISSING"
-		say "debug" "Installing packages using '$INSTALL_CMD'..."
-		sleep 1
-		# initiating installation
-		eval "$INSTALL_CMD"
-		# check if everything worked
-		if [ $? -ne 0 ]; then
-			say "error" "Installation went wrong! Please install required packages manually!"
-			failed "failed package installation for bot"
+# checking bot dependencies
+PACKAGES_MISSING=""
+if [ "$BOT_REQ_PACKAGES" != "" ]; then
+	PACKAGES_MISSING=$(get_missing_os_packages "$BOT_REQ_PACKAGES")
+	if [ "$PACKAGES_MISSING" != "" ]; then
+		say "warning" "Required packages for the bot are not installed on this system."
+		say "info" "Following packages are missing: $PACKAGES_MISSING"
+
+		say "question" "Should I install them for you now? [y/N] "
+		if [[ $(await_answer) =~ [yY](es)* ]]; then
+			INSTALL_CMD="apt-get install -y $PACKAGES_MISSING"
+			say "debug" "Installing packages using '$INSTALL_CMD'..."
+			sleep 1
+			# initiating installation
+			eval "$INSTALL_CMD"
+			# check if everything worked
+			if [ $? -ne 0 ]; then
+				say "error" "Installation went wrong! Please install required packages manually!"
+				failed "failed package installation for bot"
+			else
+				say "info" "Installation seems to be finished. Please re-run this script now!"
+				script_done
+			fi
 		else
-			say "info" "Installation seems to be finished. Please re-run this script now!"
-			script_done
+			say "warning" "Installation aborted. Please install the packages yourself before re-starting the bot."
+			failed "automated bot installation aborted"
 		fi
-	else
-		say "warning" "Installation aborted. Please install the packages yourself before re-starting the bot."
-		failed "automated bot installation aborted"
 	fi
 fi
 
-# checking if OS is supported after package installation
-is_supported_os
-
 # checking dependencies for bot
 if [ "$PACKAGES_MISSING" == "" ]; then
-	SYS_PACKAGES_MISSING="None (v$BOT_REQ_PACKAGES_VER)"
+	SYS_PACKAGES_MISSING="None"
 else
 	SYS_PACKAGES_MISSING="Missing packages: $PACKAGES_MISSING"
 fi
@@ -1244,11 +1107,13 @@ SYS_OS_EXTENDED=""
 
 if [ -f "/proc/user_beancounters" ]; then
 	SYS_OS_EXTENDED="(OpenVZ)"
+	say "warning" "It seems your machine is a OpenVZ container. OpenVZ is known for failing on some checks in this diagnostic scripts. These are known limitations due to restrictions and the nature of the containering software."
 
 elif [ -f "/proc/1/cgroup" ] && [ ! -f "/.dockerenv" ]; then
 	grep -Pq 'lxc' /proc/1/cgroup
 	if [ $? -eq 0 ]; then
 		SYS_OS_EXTENDED="(LXC)"
+		say "warning" "It seems your machine is a LXC container. LXC is known for failing on some checks in this diagnostic scripts. These are known limitations due to restrictions and the nature of the containering software."
 	fi
 
 elif [ -f "/proc/1/cgroup" ] && [ -f "/.dockerenv" ]; then
@@ -1372,6 +1237,9 @@ fi
 # check locales
 say "debug" "Checking for locales..."
 LOCALE_LANG=$(get_locale_current)
+if [ "$LOCALE_LANG" == "" ]; then
+	LOCALE_LANG="(not set)"
+fi
 
 # get CPU info
 say "debug" "Getting processor information..."
@@ -1465,7 +1333,7 @@ else
 	SYS_DISK_PERNT="0"
 	SYS_DISK_EXTENDED="(error when getting disk data)"
 
-	say "error" "Error when reading >df< output! [ignoring]"
+	say "error" "Error when reading df-command output! [ignoring]"
 fi
 
 # collecting bot info
@@ -1493,7 +1361,7 @@ if [ "$BOT_STATUS_PIDS" == "" ]; then
 else
 	BOT_STATUS_PID_FIRST="$(echo "$BOT_STATUS_PIDS" | awk '{ print $1 }')"
 	BOT_STATUS_PID_USER_ID="$(get_userid_from_pid "$BOT_STATUS_PID_FIRST")"
-	BOT_STATUS_PID_USER_NAME="$(get_user_name_by_uid "$BOT_STATUS_PID_USER_ID")"
+	BOT_STATUS_PID_USER_NAME="$(echo -n $(get_user_name_by_uid "$BOT_STATUS_PID_USER_ID"))"
 
 	BOT_STATUS="running"
 	BOT_STATUS_EXTENDED="(PIDs: $BOT_STATUS_PIDS, User: $BOT_STATUS_PID_USER_NAME)"
@@ -1590,9 +1458,13 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 				say "warning" "******************************* ATTENTION *******************************"
 				say
 				say "info"    "READ THE MESSAGE ABOVE! This message should warn you, do not ignore it."
-				say "info"    "It is really important. Seriously. (Script will continue in seven seconds...)"
-				sleep 7
-				pause
+
+				# check if we wait after this message.
+				if [ "$SKIP_WAIT_MESSAGES" != "yes" ]; then
+					say "info"    "It is really important. Seriously. (Script will continue in 5 seconds...)"
+					sleep 5
+					pause
+				fi
 
 			# now check if running TS3Client and newer with SinusBot 0.9.16 and older
 			elif ( compare_version 3.1 $BOT_CONFIG_TS3PATH_VERSION || [ "$BOT_CONFIG_TS3PATH_VERSION" == "3.1" ] ) && ( compare_version $BOT_VERSION 0.9.18 || [ "$BOT_VERSION" == "0.9.18" ] ); then
@@ -1608,15 +1480,20 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 				say "warning" "      (as long as an newer version is available)"
 				say "warning" "***************************** NOT SUPPORTED *****************************"
 				say
-				sleep 7
-				pause
+				# check if we wait after this message.
+				if [ "$SKIP_WAIT_MESSAGES" != "yes" ]; then
+					sleep 7
+					pause
+				fi
 			fi
 
 			# check for compatibility of client 3.0.19 and newer on Debian 7 and older
 			if [ "$BOT_CONFIG_TS3PATH_VERSION" == "3.0.19" ] || compare_version 3.0.19 $BOT_CONFIG_TS3PATH_VERSION; then
 				if [ "$SYS_OS_LSBRELEASE_ID" == "debian" ] && (( $(echo "$SYS_OS_LSBRELEASE_RELEASE_MAJOR <= 7" | bc -l) )); then
 					say "warning" "The TeamSpeak 3 client 3.0.19 and newer is not compatible with Debian 7 and older. Please switch back to an older TeamSpeak 3 version (for example 3.0.18.2) [[b]NOT[/b] recommended!] or upgrade to a newer operating system which has newer dependencies."
-					sleep 3
+					if [ "$SKIP_WAIT_MESSAGES" != "yes" ]; then
+						sleep 3
+					fi
 				fi
 			fi
 
@@ -1675,29 +1552,47 @@ else
 fi
 
 # get current operating system date
-SYS_TIME_ZONE=$(cat /etc/timezone)
+SYS_TIME_ZONE="$(cat /etc/timezone)"
 SYS_TIME_TS_LOCAL=$(date +%s)
-
-# get current external date by NTP (Credits: http://seriot.ch/ntp.php)
-SYS_TIME_TS_REMOTE=$((0x`printf c%47s|nc -uw1 time.google.com 123|xxd -s40 -l4 -p`-64#23GDW0))
-
-# get human-readable dates
+# get human-readable date
 SYS_TIME_LOCAL=$(date --date @$SYS_TIME_TS_LOCAL +"%d.%m.%Y %H:%M:%S %Z %::z")
-SYS_TIME_REMOTE=$(date --date @$SYS_TIME_TS_REMOTE +"%d.%m.%Y %H:%M:%S %Z %::z")
 
-SYS_TIME_DIFF_MAX=30
-SYS_TIME_DIFF=$(($SYS_TIME_TS_REMOTE - $SYS_TIME_TS_LOCAL))
-SYS_TIME_DIFF_EXTENDED=""
-if [ $SYS_TIME_DIFF -le 10 ]; then
-	SYS_TIME_DIFF_EXTENDED="(Time diff less than 10 secs. Aceptable.)"
+# get current external date by NTP
+SYS_TIME_TS_REMOTE=$(get_time_by_ntp)
 
-elif [ $SYS_TIME_DIFF -le $SYS_TIME_DIFF_MAX ]; then
-	say "warning" "Time difference of local and remote time is less than $SYS_TIME_DIFF_MAX seconds, but greater than 10 seconds! Please update your local time using NTP or so to prevent any server or SinusBot-specific issues! A correct server time is always strongly recommended!"
-	SYS_TIME_DIFF_EXTENDED="(Time diff between 10 and $SYS_TIME_DIFF_MAX secs! Critical!)"
+if [ "$SYS_TIME_TS_REMOTE" == "0" ]; then
+	say "error" "Failed trieving remote time from NTP server $NTP_SERVER_ADDR! Is any firewall blocking the NTP request, or is the DNS resolution failing?"
+	SYS_TIME_REMOTE="<Failed retrieving remote time!>"
+	SYS_TIME_DIFF="n/a"
 
-elif [ $SYS_TIME_DIFF -ge $SYS_TIME_DIFF_MAX ]; then
-	say "warning" "Time difference of local and remote time is greater than $SYS_TIME_DIFF_MAX seconds! Please update your local time using NTP or so to prevent any server or SinusBot-specific issues! A correct server time is always strongly recommended!"
-	SYS_TIME_DIFF_EXTENDED="(Time diff greater than $SYS_TIME_DIFF_MAX secs!)"
+else
+	# get human-readable date
+	SYS_TIME_REMOTE=$(date --date @$SYS_TIME_TS_REMOTE +"%d.%m.%Y %H:%M:%S %Z %::z")
+
+	SYS_TIME_DIFF_MAX=30
+	SYS_TIME_DIFF=$(($SYS_TIME_TS_REMOTE - $SYS_TIME_TS_LOCAL))
+	SYS_TIME_DIFF_EXTENDED=""
+
+	# always move over negative difference integer to positive, as it doesn't really matter anyway yet
+	if [ "$SYS_TIME_DIFF" -lt 0 ]; then
+		((SYS_TIME_DIFF *= -1))
+	fi
+
+	# check difference
+	if [ $SYS_TIME_DIFF -le 2 ]; then
+		SYS_TIME_DIFF_EXTENDED="(Time diff less than 2 secs. Good.)"
+
+	elif [ $SYS_TIME_DIFF -le 10 ]; then
+		SYS_TIME_DIFF_EXTENDED="(Time diff less than 10 secs. Acceptable.)"
+
+	elif [ $SYS_TIME_DIFF -le $SYS_TIME_DIFF_MAX ]; then
+		say "warning" "Time difference of local and remote time is less than $SYS_TIME_DIFF_MAX seconds, but greater than 10 seconds! Please update your local time using NTP or so to prevent any server or SinusBot-specific issues! A correct server time is always strongly recommended!"
+		SYS_TIME_DIFF_EXTENDED="(Time diff between 10 and $SYS_TIME_DIFF_MAX secs! Critical!)"
+
+	elif [ $SYS_TIME_DIFF -ge $SYS_TIME_DIFF_MAX ]; then
+		say "warning" "Time difference of local and remote time is greater than $SYS_TIME_DIFF_MAX seconds! Please update your local time using NTP or so to prevent any server or SinusBot-specific issues! A correct server time is always strongly recommended!"
+		SYS_TIME_DIFF_EXTENDED="(Time diff greater than $SYS_TIME_DIFF_MAX secs!)"
+	fi
 fi
 
 # generate output

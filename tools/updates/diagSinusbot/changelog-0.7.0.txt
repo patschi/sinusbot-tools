@@ -1,0 +1,12 @@
+[Version 0.7.0]: 2018-01-14 18:00 UTC
+> First maintenance release this year!
+Updated year dates to 2018 - happy new year!
+Added '-m|--skip-wait-messages' parameter to skip waiting time after important messages
+Added error handling for NTP time checks
+Added special warning message when OpenVZ is being detected as it is causing a lot of problems in the past
+Display default value when shell locale LANG is not set
+Removed old BOT_REQ_PACKAGES_VER variable, was deprecated anyway
+Removed old bot package dependencies
+Some internal improvements regarding NTP check
+Moved changelog to own file resulting in smaller filesize
+Several improvements and fixes
