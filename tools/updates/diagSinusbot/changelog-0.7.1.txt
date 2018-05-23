@@ -1,0 +1,4 @@
+[Version 0.7.1]: 2018-05-23 22:20 UTC
+> Small bugfix release.
+Fixed disk calculation (Thanks to JANNIX!)
+Updated required bot packages within script for latest Sinusbot 0.13+ version

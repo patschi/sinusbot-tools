@@ -67,8 +67,8 @@ SCRIPT_YEAR="2015-2018"
 
 SCRIPT_NAME="diagSinusbot"
 # get version number and date automatically from changelog
-SCRIPT_VERSION_NUMBER="0.7.0"
-SCRIPT_VERSION_DATE="2018-01-14 18:00 UTC"
+SCRIPT_VERSION_NUMBER="0.7.1"
+SCRIPT_VERSION_DATE="2018-05-23 22:20 UTC"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -89,13 +89,15 @@ CHECK_DOMAIN_ACCESS="auto"
 
 # BOT
 # bot PACKAGES dependencies
-BOT_REQ_PACKAGES="ca-certificates libglib2.0-0"
+BOT_REQ_PACKAGES="x11vnc xvfb libxcursor1 ca-certificates bzip2 libnss3 libegl1-mesa x11-xkb-utils libasound2"
 
 ## SCRIPT SETTINGS
 # IPv6 HTTPS check, 0 = off, 1 = on
 CHECK_CURL_IPV6=0
 # NTP server address
 NTP_SERVER_ADDR="time.google.com"
+# Do not force anything. Let it unchanged! (Trust me I'm an engineer.)
+MODE_FORCE=0
 
 ## EXECUTION VARIABLES
 EXEC_CURL="curl -q --user-agent "$SCRIPT_NAME/v$SCRIPT_VERSION_NUMBER""
@@ -400,8 +402,11 @@ is_supported_os()
 
 	# check if operating system supported
 	if [ "$SYS_OS_LSBRELEASE_ID" != "debian" ] && [ "$SYS_OS_LSBRELEASE_ID" != "ubuntu" ]; then
-		say "error" "This script is only working on the operating systems Debian and Ubuntu!"
-		failed "unsupported operating system"
+		say "error" "This script is only designed to run on following operating systems: Debian, Ubuntu."
+		say "error" "IMPORTANT: Running the script with parameter '--force-run|-f' will prevent aborting here. However it is /!\ STRONGLY NOT RECOMMENDED /!\ as it may result in various errors, incorrect output or unexpected errors!"
+		if [ "$MODE_FORCE" -eq 0 ]; then
+			failed "unsupported operating system"
+		fi
 	fi
 
 	say "info" "Detected operating system: $SYS_OS_LSBRELEASE_DESCRIPTION"
@@ -763,6 +768,10 @@ while [ $# -gt 0 ]; do
 
 		-m|--skip-wait-messages )
 			SKIP_WAIT_MESSAGES="yes"
+		;;
+
+		-f|--force-run )
+			MODE_FORCE=1
 		;;
 
 		-h|--help )
@@ -1324,7 +1333,7 @@ say "debug" " $ $SYS_DISK_CMD"
 SYS_DISK_DATA=$($SYS_DISK_CMD)
 if [ $? -eq 0 ]; then
 	SYS_DISK_FIELD=$(echo "$SYS_DISK_DATA" | grep total | sed 's/ \+/ /g')
-	SYS_DISK_TOTAL=$(echo "$SYS_DISK_FIELD" | cut -d " " -f5)
+	SYS_DISK_TOTAL=$(echo "$SYS_DISK_FIELD" | cut -d " " -f3)
 	SYS_DISK_USAGE=$(echo "$SYS_DISK_FIELD" | cut -d " " -f4)
 	SYS_DISK_PERNT=$(($SYS_DISK_USAGE * 10000 / $SYS_DISK_TOTAL / 100))
 else

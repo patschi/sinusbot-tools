@@ -165,3 +165,7 @@
   * Some internal improvements regarding NTP check
   * Moved changelog to own file resulting in smaller filesize
   * Several improvements and fixes
+* **v0.7.1**: [2018-05-23 22:20 UTC]
+  * Fixed disk calculation (Thanks to JANNIX!)
+  * Added undocumented `force-run` mode when executing script. Do not use it. Just forget what you've read in this line.
+  * Updated required bot packages within script for latest Sinusbot 0.13+ version
