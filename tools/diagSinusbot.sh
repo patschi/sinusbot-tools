@@ -48,13 +48,14 @@
 # May contain traces of eastereggs.
 #
 ##################################################
+#### MAGIC HAPPENS BELOW.
 #### DO NOT TOUCH ANYTHING BELOW, IF YOU
 #### DO NOT KNOW WHAT YOU ARE DOING!
 ##################################################
 
 ### SCRIPT CONFIGURATION VARIABLES
 # setting important variables
-# NOTICE: Sadly this is not working when the script file is being piped to bash binary.
+# NOTICE: Unfortunately this does not when the script file is being piped to bash.
 #SCRIPT_FILE_DETAILS="$(awk 'match($0, /v([0-9.]*)\:((\s)*)\[(.*)\]/) { print substr($0, RSTART, RLENGTH) };' "$(basename "$0")" | awk 'END{ print }')"
 #SCRIPT_VERSION_NUMBER="$(echo $SCRIPT_FILE_DETAILS | awk -F":" '{ print $1 }')"
 #SCRIPT_VERSION_DATE="$(echo $SCRIPT_FILE_DETAILS | awk -F"[" '{ print substr($2, 1, length($2)-1) }')"
@@ -67,8 +68,8 @@ SCRIPT_YEAR="2015-2019"
 
 SCRIPT_NAME="diagSinusbot"
 # get version number and date automatically from changelog
-SCRIPT_VERSION_NUMBER="0.7.1"
-SCRIPT_VERSION_DATE="2018-05-23 22:20 UTC"
+SCRIPT_VERSION_NUMBER="0.8.0"
+SCRIPT_VERSION_DATE="2019-06-16 00:01 UTC"
 
 VERSION_CHANNEL="master"
 SCRIPT_PROJECT_SITE="https://github.com/patschi/sinusbot-tools/tree/$VERSION_CHANNEL"
@@ -79,13 +80,16 @@ SCRIPT_CHANGELOG_LIST="https://github.com/patschi/sinusbot-tools/tree/master/too
 SCRIPT_CHANGELOG_FILE="https://raw.githubusercontent.com/patschi/sinusbot-tools/$VERSION_CHANNEL/tools/updates/diagSinusbot/changelog-{VER}.txt"
 
 # script COMMANDS dependencies
-SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf netstat sort head curl date"
+SCRIPT_REQ_CMDS="apt-get pwd awk wc free grep echo cat date df stat getconf netstat sort head curl date ldd"
 # script PACKAGES dependencies
 SCRIPT_REQ_PKGS="bc binutils coreutils lsb-release util-linux net-tools curl"
 
 # which domain to check for accessibility
 CHECK_WEB_URL="https://www.sinusbot.com/diag"
 CHECK_DOMAIN_ACCESS="auto"
+
+# check reachability for update servers
+CHECK_UPDATE_SERVERS="https://update01.sinusbot.com/diag https://update02.sinusbot.com/diag https://update03.sinusbot.com/diag"
 
 # BOT
 # bot PACKAGES dependencies
@@ -205,35 +209,31 @@ show_welcome()
 	# below here with the domain behind $CHECK_DOMAIN_ACCESS!
 	# AND keep the format that style! (justify the text)
 	say
-	say "welcome" "================================================="
-	say "welcome" "= [b]HELLO![/b] Please invest some time to read this.  ="
-	say "welcome" "=                                               ="
-	say "welcome" "=  Thanks  for  using  this diagnostic script!  ="
-	say "welcome" "=  The  more  information  you   provide,  the  ="
-	say "welcome" "=  better  we  can help to solve your problem.  ="
-	say "welcome" "=                                               ="
-	say "welcome" "=  The  execution  may  take  some  moments to  ="
-	say "welcome" "=  collection  the most  important information  ="
-	say "welcome" "=  of your system  and  your bot installation.  ="
-	say "welcome" "=                                               ="
-	say "welcome" "=  After  everything  is  done, you will get a  ="
-	say "welcome" "=  diagnostic output, ready for copy & pasting  ="
-	say "welcome" "=  it within a CODE-tag in the SinusBot forum.  ="
-	say "welcome" "=  [Link: https://forum.sinusbot.com]           ="
-	say "welcome" "=                                               ="
-	say "welcome" "=  No  private  information  will be collected  ="
-	say "welcome" "=  nor  the  data  will  be  sent to anywhere.  ="
-	say "welcome" "=  This  just generates an example forum post.  ="
-	say "welcome" "=                                               ="
-	say "welcome" "=  The script does perform a DNS resolution of  ="
-	say "welcome" "=  domain 'www.sinusbot.com' to  determine  if  ="
-	say "welcome" "=  your  DNS settings are working as expected.  ="
-	say "welcome" "================================================="
-	say "welcome" "= I am thankful for any feedback. Please  also  ="
-	say "welcome" "= report any issues you may find either on the  ="
-	say "welcome" "= SinusBot forum or via GitHub issues. Thanks!  ="
-	say "welcome" "=   -- $SCRIPT_AUTHOR_NAME.           ="
-	say "welcome" "================================================="
+	say "welcome" "================================================"
+	say "welcome" "= [b]HELLO![/b]  Having an issue? I'm here to assist! ="
+	say "welcome" "=                                              ="
+	say "welcome" "=  Thanks for  using  this diagnostic script!  ="
+	say "welcome" "=  The more  information  you   provide,  the  ="
+	say "welcome" "=  better we  can help to solve your problem.  ="
+	say "welcome" "=                                              ="
+	say "welcome" "=  The execution  may  take  some  moments to  ="
+	say "welcome" "=  collection the most  important information  ="
+	say "welcome" "=  of your system and  your bot installation.  ="
+	say "welcome" "=                                              ="
+	say "welcome" "=  After everything  is  done, you will get a  ="
+	say "welcome" "=  summarized output ready to copy & paste it  ="
+	say "welcome" "=  within a CODE-tag  in  the SinusBot forum.  ="
+	say "welcome" "=  [Link: https://forum.sinusbot.com]          ="
+	say "welcome" "=                                              ="
+	say "welcome" "=  This script uses DNS resolutions and HTTPS  ="
+	say "welcome" "=  requests  to  Sinusbot-related  domains to  ="
+	say "welcome" "=  check  if your network settings are valid.  ="
+	say "welcome" "================================================"
+	say "welcome" "= Please also report any feedback or issues    ="
+	say "welcome" "= related to the script in the official forum. ="
+	say "welcome" "= Thank you and happy debugging!               ="
+	say "welcome" "=   -- $SCRIPT_AUTHOR_NAME.          ="
+	say "welcome" "================================================"
 	say
 	pause
 }
@@ -276,6 +276,7 @@ show_credits()
 	say "info" "   [b]JANNIX[/b]           Jan H.         for testing"
 	say "info" "   [b]maxibanki[/b]        Max S.         for testing, finding bugs and contributing code"
 	say "info" "   [b]irgendwer[/b]        Jonas          for testing and ideas"
+	say "info" "   [b]Multivitamin[/b]     David          for testing and ideas"
 	say "info" ""
 	say "info" " ...if u see 'em somewhere, give 'em some chocolate cookieees!"
 	say "info" "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
@@ -431,6 +432,14 @@ load_webfile()
 {
 	# timeout is 10 seconds, because maybe slower internet connections or slow DNS resolutions.
 	$EXEC_CURL --fail --insecure --connect-timeout 10 --silent "$1"
+}
+
+## Function to check outgoing connections
+check_web()
+{
+	local URL=$1
+	# timeout is 10 seconds, because maybe slower internet connections or slow DNS resolutions.
+	$EXEC_CURL --head --write-out "%{http_code}" --fail --insecure --silent --connect-timeout 10 -o /dev/null "$URL"
 }
 
 ## Function to check outgoing IPv4 connections
@@ -871,7 +880,7 @@ if [ $REQ_CMDS -ne 0 ]; then
 fi
 
 # check for script update... maybe there are important changes, or something like that.
-# ofcourse skip check, if the user don't want to stay up 2 date.
+# of course skip check, if the user don't want to stay up 2 date.
 if [ "$NO_UPD_CHECK" == "yes" ] && [ "$ONLY_SCRIPT_UPDATE_CHECK" != "yes" ]; then
 	say "warning" "Script update check skipped by user. This is NOT recommended!"
 
@@ -1175,10 +1184,10 @@ say "debug" "Checking DNS resolution..."
 RESOLVED_IP="$(resolve_hostname "$CHECK_DOMAIN_ACCESS")"
 if [ "$RESOLVED_IP" != "" ]; then
 	SYS_OS_DNS_CHECK="Y"
-	SYS_OS_DNS_CHECK_TEXT="$CHECK_DOMAIN_ACCESS resolved to $RESOLVED_IP -> OK"
+	SYS_OS_DNS_CHECK_TEXT="SUCCESS [$CHECK_DOMAIN_ACCESS resolved to $RESOLVED_IP]"
 else
 	SYS_OS_DNS_CHECK="N"
-	SYS_OS_DNS_CHECK_TEXT="$CHECK_DOMAIN_ACCESS resolution failed -> ERROR"
+	SYS_OS_DNS_CHECK_TEXT="FAILED [resolution of $CHECK_DOMAIN_ACCESS failed]"
 fi
 
 # messages for DNS check
@@ -1196,14 +1205,14 @@ say "debug" "Checking web IPv4 access..."
 
 CHECK_DOMAIN_ACCESS_V4="$(parse_host_of_url "$CHECK_WEB_URL_V4")"
 
-# perform check
+# perform availability checks
 CHECK_WEB_IPV4_CODE=$(check_web_ipv4 "$CHECK_WEB_URL_V4")
 if [ "$CHECK_WEB_IPV4_CODE" -eq "200" ]; then
 	CHECK_WEB_IPV4="Y"
-	CHECK_WEB_IPV4_TEXT="SUCCESS [Connection was established to $CHECK_DOMAIN_ACCESS_V4, CODE #$CHECK_WEB_IPV4_CODE]"
+	CHECK_WEB_IPV4_TEXT="SUCCESS [Connection established to $CHECK_DOMAIN_ACCESS_V4, CODE #$CHECK_WEB_IPV4_CODE]"
 else
 	CHECK_WEB_IPV4="N"
-	CHECK_WEB_IPV4_TEXT="FAILED  [Failed establishing connection to $CHECK_DOMAIN_ACCESS_V4, CODE #$CHECK_WEB_IPV4_CODE]"
+	CHECK_WEB_IPV4_TEXT="FAILED [Failed connection to $CHECK_DOMAIN_ACCESS_V4, CODE #$CHECK_WEB_IPV4_CODE]"
 fi
 
 if [ $CHECK_CURL_IPV6 -eq 1 ]; then
@@ -1240,7 +1249,29 @@ fi
 
 # special error codes
 if [ "$CHECK_WEB_IPV4_CODE" == "403" ] || [ "$CHECK_WEB_IPV6_CODE" == "403" ]; then
-	say "warning" "Error Code 403: This possibly means that Cloudflare has classified the connection as suspicious and therefor blocked it. So this could be probably a false-positive."
+	say "warning" "Error Code 403: This possibly means that Cloudflare has classified the connection as suspicious and therefore blocked it. So this could be probably a false-positive."
+fi
+
+# check update servers
+say "debug" "Checking update server availability..."
+
+UPDSRV_CHECK_STATUS="OK"
+UPDSRV_CHECK_TEXT=""
+for UPDSRV_CHECK in $CHECK_UPDATE_SERVERS; do
+	UPDSRV_CHECK_DOMAIN="$(parse_host_of_url "$UPDSRV_CHECK")"
+	UPDSRV_CHECK_CODE=$(check_web "$UPDSRV_CHECK")
+	UPDSRV_CHECK_DNS=$(resolve_hostname "$UPDSRV_CHECK_DOMAIN")
+	if [ "$UPDSRV_CHECK_CODE" -eq "404" ]; then
+		UPDSRV_CHECK_THIS="SUCCESS"
+	else
+		UPDSRV_CHECK_STATUS="NOK"
+		UPDSRV_CHECK_THIS="FAILED"
+	fi
+	UPDSRV_CHECK_TEXT="$UPDSRV_CHECK_TEXT\n    $UPDSRV_CHECK_DOMAIN -> $UPDSRV_CHECK_DNS: $UPDSRV_CHECK_THIS [CODE #$UPDSRV_CHECK_CODE]"
+done
+
+if [ "$UPDSRV_CHECK_STATUS" == "NOK" ]; then
+	say "warning" "At least one sinusbot update server did not correctly replied. This might be a temporary issue on the sinusbot-side or a local issue."
 fi
 
 # check locales
@@ -1376,6 +1407,10 @@ else
 	BOT_STATUS_EXTENDED="(PIDs: $BOT_STATUS_PIDS, User: $BOT_STATUS_PID_USER_NAME)"
 fi
 
+# ldd output
+say "debug" "Getting LDD output from bot binary..."
+BOT_LDD=$(ldd "$BOT_PATH/$BOT_BINARY" | sed -e 's/^[ \t]*/    /')
+
 # check webinterface
 say "debug" "Reading ListenPort from bot configuration..."
 BOT_WEB_STATUS="unknown"
@@ -1396,7 +1431,7 @@ fi
 SYS_BOT_AUTOSTART="unknown"
 SYS_BOT_AUTOSTART_EXTENDED=""
 
-SYS_BOT_AUTOSTART_PATHS="/etc/init.d/sinusbot /etc/init.d/ts3bot /etc/systemd/system/sinusbot.service"
+SYS_BOT_AUTOSTART_PATHS="/etc/init.d/sinusbot /etc/init.d/ts3bot /etc/systemd/system/sinusbot.service /etc/systemd/system/ts3bot.service"
 for SYS_BOT_AUTOSTART_PATH in $SYS_BOT_AUTOSTART_PATHS; do
 	if [ -f "$SYS_BOT_AUTOSTART_PATH" ]; then
 		SYS_BOT_AUTOSTART="found at $SYS_BOT_AUTOSTART_PATH"
@@ -1448,13 +1483,14 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 
 		# check ts3 client version
 		if [ "$BOT_CONFIG_TS3PATH_VERSION" != "" ]; then
-			# check for the old vulnerable client version 3.0.18.2 and before
-			if compare_version $BOT_CONFIG_TS3PATH_VERSION 3.0.18.2 || [ $BOT_CONFIG_TS3PATH_VERSION == "3.0.18.2" ]; then
+			# check for the old vulnerable client version: 3.2.4 and older
+			TS3_SECURITY_MIN_VER=3.2.4
+			if compare_version $BOT_CONFIG_TS3PATH_VERSION $TS3_SECURITY_MIN_VER || [ $BOT_CONFIG_TS3PATH_VERSION == "$TS3_SECURITY_MIN_VER" ]; then
 				BOT_CONFIG_TS3PATH_VERSION_EXTENDED="(vulnerable! outdated!)"
 				say
 				say "warning" "******************************* ATTENTION *******************************"
 				say "warning" "[b]IMPORTANT! YOUR SYSTEM IS VULNERABLE DUE TO AN OUTDATED TS3CLIENT![/b]"
-				say "warning" "You  are  still  using  an  outdated TS3Client version 3.0.18.2 or older,"
+				say "warning" "You  are  using  an  outdated  and  vulnerable TeamSpeak 3 Client version"
 				say "warning" "which  has  very serious security vulnerabilities!  This security defects"
 				say "warning" "allows   Remote Code Executions  and  Remote Code Inclusions!   With this"
 				say "warning" "vulnerabilities it is possible to infect your system or even to take over"
@@ -1531,6 +1567,14 @@ if [ -f "$BOT_CONFIG_TS3PATH" ]; then
 	else
 		BOT_TS3_PLUGIN="not installed"
 		BOT_TS3_PLUGIN_EXTENDED=""
+	fi
+
+	# checking libqxcb-glx-integration.so file
+	say "debug" "Checking if libqxcb-glx-integration.so file exists..."
+	if [ -f "$BOT_CONFIG_TS3PATH_DIRECTORY/xcbglintegrations/libqxcb-glx-integration.so" ]; then
+		BOT_TS3_LIBQXCB_GLX_INTEGRATION="yes"
+	else
+		BOT_TS3_LIBQXCB_GLX_INTEGRATION="no"
 	fi
 
 else
@@ -1619,18 +1663,15 @@ SYSTEM INFORMATION
  - OS Updates: $SYS_AVAIL_UPDS $SYS_AVAIL_UPDS_TEXT
  - OS Missing Packages: $SYS_PACKAGES_MISSING
  - OS APT Last Update: $SYS_APT_LASTUPDATE
- - SHELL LOCALE LANG: $LOCALE_LANG
+ - Shell Locale: $LOCALE_LANG
  - Bot Start Script: $SYS_BOT_AUTOSTART $SYS_BOT_AUTOSTART_EXTENDED
- - DNS resolution check: $SYS_OS_DNS_CHECK_TEXT
- - HTTPS check with IPv4 mode: $CHECK_WEB_IPV4_TEXT
- - HTTPS check with IPv6 mode: $CHECK_WEB_IPV6_TEXT
  - CPU:
 $SYS_CPU_DATA
  - RAM: $(bytes_format $SYS_RAM_USAGE)/$(bytes_format $SYS_RAM_TOTAL) in use (${SYS_RAM_PERNT}%) $SYS_RAM_EXTENDED
  - SWAP: $(bytes_format $SYS_SWAP_USAGE)/$(bytes_format $SYS_SWAP_TOTAL) in use (${SYS_SWAP_PERNT}%) $SYS_SWAP_EXTENDED
  - DISK: $(bytes_format $SYS_DISK_USAGE)/$(bytes_format $SYS_DISK_TOTAL) in use (${SYS_DISK_PERNT}%) $SYS_DISK_EXTENDED
  - Package versions:
-   + libglib: $PKG_VERSION_GLIBC
+   - libglib: $PKG_VERSION_GLIBC
 
 BOT INFORMATION
  - Status: $BOT_STATUS $BOT_STATUS_EXTENDED
@@ -1647,6 +1688,18 @@ BOT INFORMATION
    - YoutubeDLPath = $BOT_CONFIG_YTDLPATH $BOT_CONFIG_YTDLPATH_EXTENDED
  - Installed scripts: $BOT_INSTALLED_SCRIPTS
 
+BOT TECHNICAL INFORMATION
+ - File exists:
+   - TS3Client/libqxcb-glx-integration.so: $BOT_TS3_LIBQXCB_GLX_INTEGRATION
+ - LDD output:
+$BOT_LDD
+
+REACHABILITY CHECKS
+ - HTTPS check with IPv4 mode: $CHECK_WEB_IPV4_TEXT
+ - HTTPS check with IPv6 mode: $CHECK_WEB_IPV6_TEXT
+ - DNS resolution check: $SYS_OS_DNS_CHECK_TEXT
+ - Update server checks: $UPDSRV_CHECK_TEXT
+
 TIME INFORMATION
  - Time (local): $SYS_TIME_LOCAL
  - Time (remote): $SYS_TIME_REMOTE
@@ -1654,7 +1707,7 @@ TIME INFORMATION
  - Timezone: $SYS_TIME_ZONE
 
 OTHER INFORMATION
- - TeamSpeak 3 Version: $BOT_CONFIG_TS3PATH_VERSION $BOT_CONFIG_TS3PATH_VERSION_EXTENDED
+ - TeamSpeak3 Version: $BOT_CONFIG_TS3PATH_VERSION $BOT_CONFIG_TS3PATH_VERSION_EXTENDED
  - youtube-dl Version: $YTDL_VERSION
  - DiagScript Version: $SCRIPT_VERSION_NUMBER
 ==========================================================

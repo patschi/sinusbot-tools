@@ -1,0 +1,7 @@
+[Version 0.8.0]: 2019-06-16 00:01 UTC
+> SUMMER-IS-TOO-HOT-Update-Edition.
+Added LDD output of sinusbot binary for better debugging.
+Added check for vulnerable TS3Client 3.2.4 release and older.
+Added check if TS3Client/libqxcb-glx-integration.so file exists.
+Added check for sinusbot update servers availability.
+Updated copyright year.
