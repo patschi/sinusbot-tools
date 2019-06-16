@@ -1233,7 +1233,7 @@ if [ $CHECK_CURL_IPV6 -eq 1 ]; then
 		CHECK_WEB_IPV6_TEXT="FAILED  [Failed connecting to $CHECK_DOMAIN_ACCESS_V6, CODE #$CHECK_WEB_IPV6_CODE]"
 	fi
 else
-	CHECK_WEB_IPV6_TEXT="IGNORE"
+	CHECK_WEB_IPV6_TEXT="IGNORED [Disabled]"
 fi
 
 # messages of http access
